@@ -1,0 +1,28 @@
+{
+    "originator": "Ukrainian History and Education Center Archives",
+
+    "deck": [
+        {"Studer": "blah"},
+        {"Realistic": "blah"}
+    ],
+
+    "technician": [
+        "Doe, John",
+        "Doe, Jane"
+    ],
+
+    "adc": [
+        {"Default": "blah"}
+    ],
+
+    "software": [
+        {"Audacity": "blah"}
+    ],
+
+    "copyright": [
+        {"Generic": "blah"},
+        {"RFE/RL": "blah"},
+        {"VOA": "blah"}
+    ]
+}
+ 
