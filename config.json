@@ -1,18 +1,16 @@
 {
-    "originator": "Apochryphal State University Archives",
+    "originator": "Apochryphal S. U. Archives",
 
-    "deck": [
-        {"Studer": "blah"},
-        {"Realistic": "blah"}
-    ],
+    "deck": {
+        "Studer": "blah",
+        "Realistic": "blah"
+    },
 
-    "adc": [
-        {"Default": "blah"}
-    ],
+    "adc": {
+        "Default": "blah"
+    },
 
-    "software": [
-        {"Audacity": "blah"}
-    ],
+    "software": {"Audacity": "blah"},
 
     "technician": [
         "Doe, John",
@@ -42,9 +40,9 @@
         "Metal"
     ],
 
-    "copyright": [
-        {"Generic": "Publication and other forms of distribution (including online) may be restricted. For details, contact the Apochryphal State University Archives."},
-        {"CC-BY-SA": "This content is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."}
-    ]
+    "copyright": {
+        "Generic": "Publication and other forms of distribution (including online) may be restricted. For details, contact the Apochryphal State University Archives.",
+        "CC-BY-SA": "This content is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
+    }
 }
  

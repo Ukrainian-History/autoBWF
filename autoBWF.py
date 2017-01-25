@@ -19,6 +19,10 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         self.eqSelect.addItems(config["eq"])
         self.typeSelect.addItems(config["type"])
         self.technicianBox.addItems(config["technician"])
+        self.deckSelect.addItems(config["deck"].keys())
+        self.adcSelect.addItems(config["adc"].keys())
+        self.softwareSelect.addItems(config["software"].keys())
+        self.copyrightSelect.addItems(config["copyright"].keys())
 
 
 
