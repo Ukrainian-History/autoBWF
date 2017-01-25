@@ -165,16 +165,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QCheckBox" name="descriptionOverwrite">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Overwrite</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="1" column="0">
@@ -195,16 +185,6 @@
           <widget class="QLineEdit" name="originatorLine"/>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="originatorOverwrite">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Overwrite</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
@@ -227,16 +207,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QCheckBox" name="originatorRefOverwrite">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Overwrite</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="2" column="0" colspan="2">
@@ -257,16 +227,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="originationDateOverwrite">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Overwrite</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
@@ -289,16 +249,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QCheckBox" name="originationTimeOverwrite">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Overwrite</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="3" column="0">
@@ -320,16 +270,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QCheckBox" name="titleOverwrite">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Overwrite</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item row="3" column="1" colspan="2">
@@ -348,22 +288,18 @@
          </item>
          <item row="0" column="1">
           <widget class="QComboBox" name="technicianBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="editable">
             <bool>true</bool>
            </property>
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="technicianOverwrite">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Overwrite</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
@@ -411,29 +347,6 @@
            </property>
           </spacer>
          </item>
-         <item>
-          <widget class="QCheckBox" name="copyrightOverwrite">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Overwrite</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
         </layout>
        </item>
       </layout>
@@ -468,29 +381,6 @@
          </item>
          <item>
           <spacer name="verticalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="codingHistoryOverwrite">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Overwrite</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
