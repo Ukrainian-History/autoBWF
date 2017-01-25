@@ -1,14 +1,9 @@
 {
-    "originator": "Ukrainian History and Education Center Archives",
+    "originator": "Apochryphal State University Archives",
 
     "deck": [
         {"Studer": "blah"},
         {"Realistic": "blah"}
-    ],
-
-    "technician": [
-        "Doe, John",
-        "Doe, Jane"
     ],
 
     "adc": [
@@ -19,10 +14,37 @@
         {"Audacity": "blah"}
     ],
 
+    "technician": [
+        "Doe, John",
+        "Doe, Jane"
+    ],
+
+    "media": [
+        "1/4 inch open reel",
+        "cassette"
+    ],
+
+    "speed": [
+        "",
+        "7.5 ips",
+        "3.25 ips"
+    ],
+
+    "eq": [
+        "",
+        "Dolby B",
+        "Dolby C"
+    ],
+
+    "type": [
+        "",
+        "CrO2",
+        "Metal"
+    ],
+
     "copyright": [
-        {"Generic": "blah"},
-        {"RFE/RL": "blah"},
-        {"VOA": "blah"}
+        {"Generic": "Publication and other forms of distribution (including online) may be restricted. For details, contact the Apochryphal State University Archives."},
+        {"CC-BY-SA": "This content is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."}
     ]
 }
  

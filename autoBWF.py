@@ -9,6 +9,19 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
+
+        ###############
+        ##### configure dropdowns
+        ###############
+
+        self.speedSelect.addItems(config["speed"])
+        self.mediaSelect.addItems(config["media"])
+        self.eqSelect.addItems(config["eq"])
+        self.typeSelect.addItems(config["type"])
+        self.technicianBox.addItems(config["technician"])
+
+
+
         ###############
         ##### set up signals/slots
         ###############
