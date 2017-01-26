@@ -2,15 +2,20 @@
     "originator": "Apochryphal S. U. Archives",
 
     "deck": {
-        "Studer": "blah",
-        "Realistic": "blah"
+        "list": ["Studer", "Realistic"],
+        "Studer": "Studer A810 SN:11223344",
+        "Realistic": "Realistic 909A SN:1234321"
     },
 
     "adc": {
-        "Default": "blah"
+        "list": ["Lynx"],
+        "Lynx": "Lynx Aurora 16 SN:897969"
     },
 
-    "software": {"Audacity": "blah"},
+    "software": {
+        "list": ["Audacity"],
+        "Audacity": "blah"
+    },
 
     "technician": [
         "Doe, John",
@@ -41,8 +46,9 @@
     ],
 
     "copyright": {
-        "Generic": "Publication and other forms of distribution (including online) may be restricted. For details, contact the Apochryphal State University Archives.",
-        "CC-BY-SA": "This content is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
+        "list": ["Generic", "CC-BY-SA"],
+        "Generic": "Publication and other forms of distribution (including online sharing and streaming) may be restricted. For details, contact the Apochryphal State University Archives.",
+        "CC-BY-SA": "This content is copyright by the Apochryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
     }
 }
  

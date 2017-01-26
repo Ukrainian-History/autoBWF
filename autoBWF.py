@@ -9,7 +9,6 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-
         ###############
         ##### configure dropdowns
         ###############
@@ -19,67 +18,26 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         self.eqSelect.addItems(config["eq"])
         self.typeSelect.addItems(config["type"])
         self.technicianBox.addItems(config["technician"])
-        self.deckSelect.addItems(config["deck"].keys())
-        self.adcSelect.addItems(config["adc"].keys())
-        self.softwareSelect.addItems(config["software"].keys())
-        self.copyrightSelect.addItems(config["copyright"].keys())
 
-
+        self.deckSelect.addItems(config["deck"]["list"])
+        self.adcSelect.addItems(config["adc"]["list"])
+        self.softwareSelect.addItems(config["software"]["list"])
+        self.copyrightSelect.addItems(config["copyright"]["list"])
 
         ###############
         ##### set up signals/slots
         ###############
 
-        ##### GUI elements
-
-        ## "add" buttons
-        #self.title_addbutton.clicked.connect(lambda: self.genericInputbox(self.titles))
-        
-
-    def genericInputbox(self, listobj):
-        from itertools import groupby
-
-        dlg = StartGenericInputbox()
-
-        all_attributes = listobj.options
-
-        # deal with end delimiter
-        attributes = [list(group) for k, group in groupby(all_attributes, lambda x: x == "#") if not k][0]
-
-        # deal with separators
-        attributes = [list(group) for k, group in groupby(attributes, lambda x: x == "-") if not k]
-        attributes = attributes[::-1]
-
-        this_list = attributes.pop()
-        dlg.attribute.addItems(this_list)
-
-        while (len(attributes) > 0):
-            dlg.attribute.insertSeparator(dlg.attribute.count())
-            this_list = attributes.pop()
-            dlg.attribute.addItems(this_list)
-
-        if dlg.exec_():
-            # input = dlg.getValues()
-            # listbox = listobj.list_element
-            # listbox.addItem(str(data))
-            # listobj.append(data)
-            pass
-        else:
-            return
-
-    def removeButtonToggle(self, listbox, button):
-        if len(listbox.selectedItems()) > 0:
-            button.setEnabled(True)
-        else:
-            button.setEnabled(False)
+        self.copyrightSelect.activated.connect(self.copyrightActivated)
+        self.deckSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
 
-    def removeElement(self, listobj):
-        listbox = listobj.list_element
-        current_item = listbox.currentItem()
-        current_row = listbox.row(current_item)
-        del listobj[current_row]
-        listbox.takeItem(current_row)
+    def copyrightActivated(self, index):
+        self.copyrightText.clear()
+        self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][index]])
+
+    def updateCodingHistory(self, index): 
+        dum = "File content: Accession " + acc + " Reel " + reel + ". File use: " + use + ". Original filename: " + file
 
 
 
