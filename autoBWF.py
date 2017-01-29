@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from main import Ui_Dialog
 
 config = None
@@ -8,6 +9,9 @@ filename = ""
 class MainWindow(QtWidgets.QDialog, Ui_Dialog):
     def __init__(self, parent=None):
         import re
+        # from datetime import date
+        from datetime import datetime
+        import os.path
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -24,11 +28,28 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         datestring = matches[2]
         self.datestring_iso = datestring[0:4] + "-" + datestring[4:6] + "-" + datestring[6:]
 
+        date_time = datetime.fromtimestamp(os.path.getctime(filename)).replace(microsecond=0).isoformat()
+        [date, time] = date_time.split("T")
+
+        if date != self.datestring_iso:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("Dates in filename and timestamp disagree")
+            msg.setInformativeText("filename date: " + self.datestring_iso + ", timestamp date: " + date)
+            msg.setWindowTitle("Choose date")
+            msg.addButton('Use ' + self.datestring_iso, QMessageBox.NoRole)
+            msg.addButton('Use ' + date, QMessageBox.YesRole)
+            retval = msg.exec_()
+            if retval == 1:
+                self.datestring_iso = date
+
+        self.originationDateLine.insert(self.datestring_iso)
+        self.originationTimeLine.insert(time)
+
         try:
             self.fileUse = config["fileuse"][self.fileUse]
         except KeyError:
             print(self.fileUse + " does not not have a standard translation")
-
 
         description = "File content: " + self.identifier + "; File use: " + self.fileUse + "; Original filename: " + filename
         self.descriptionLine.insert(description)
