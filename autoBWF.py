@@ -146,6 +146,10 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         #print(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename)
         sysout = subprocess.call(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename, shell=True)
 
+        sysout = subprocess.call(common_args + '--ICOP="' + self.copyrightText.toPlainText() + '" ' + filename, shell=True)
+        sysout = subprocess.call(common_args + '--INAM="' + self.titleLine.text() + '" ' + filename, shell=True)
+        sysout = subprocess.call(common_args + '--ITCH="' + self.technicianBox.currentText() + '" ' + filename, shell=True)
+
 
 def getBwfTech(allow_padding):
     import subprocess
