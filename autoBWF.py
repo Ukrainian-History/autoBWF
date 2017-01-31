@@ -128,22 +128,22 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         if config["accept-nopadding"]: common_args += "--accept-nopadding "
 
         if self.md5Check.isChecked():
-            print(common_args + "--MD5-embed " + filename)
-            #sysout = subprocess.call(common_args + "--MD5-embed " + filename, shell=True)
+            #print(common_args + "--MD5-embed " + filename)
+            sysout = subprocess.call(common_args + "--MD5-embed " + filename, shell=True)
         
-        print(common_args + '--Description="' + self.descriptionLine.text() + '" ' + filename)
+        #print(common_args + '--Description="' + self.descriptionLine.text() + '" ' + filename)
         sysout = subprocess.call(common_args + '--Description="' + self.descriptionLine.text() + '" ' + filename, shell=True)
-        print(common_args + '--Originator="' + self.originatorLine.text() + '" ' + filename)
+        #print(common_args + '--Originator="' + self.originatorLine.text() + '" ' + filename)
         sysout = subprocess.call(common_args + '--Originator="' + self.originatorLine.text() + '" ' + filename, shell=True)
-        print(common_args + '--OriginatorReference="' + self.originatorRefLine.text() + '" ' + filename)
+        #print(common_args + '--OriginatorReference="' + self.originatorRefLine.text() + '" ' + filename)
         sysout = subprocess.call(common_args + '--OriginatorReference="' + self.originatorRefLine.text() + '" ' + filename, shell=True)
-        print(common_args + '--OriginationDate="' + self.originationDateLine.text() + '" ' + filename)
+        #print(common_args + '--OriginationDate="' + self.originationDateLine.text() + '" ' + filename)
         sysout = subprocess.call(common_args + '--OriginationDate="' + self.originationDateLine.text() + '" ' + filename, shell=True)
-        print(common_args + '--OriginationTime="' + self.originationTimeLine.text() + '" ' + filename)
+        #print(common_args + '--OriginationTime="' + self.originationTimeLine.text() + '" ' + filename)
         sysout = subprocess.call(common_args + '--OriginationTime="' + self.originationTimeLine.text() + '" ' + filename, shell=True)
-        print(common_args + '--Timereference=0 ' + filename)
+        #print(common_args + '--Timereference=0 ' + filename)
         sysout = subprocess.call(common_args + '--Timereference=0 ' + filename, shell=True)
-        print(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename)
+        #print(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename)
         sysout = subprocess.call(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename, shell=True)
 
 

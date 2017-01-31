@@ -8,6 +8,4 @@ autoBWF will not edit or overwrite existing BWF metadata. Please use the FADGI B
 
 The bwfmetaedit "--accept-nopadding" flag is used by default, but can be changed in the configuration file.
 
-This code is not currently usable.
-
 Requires Python 3, PyQt 4.8, and the FADGI BWFMetaEdit CLI. It assumes that "bwfmetaedit" executable is in the current PATH.
