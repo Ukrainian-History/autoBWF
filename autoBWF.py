@@ -171,8 +171,12 @@ def getBwfTech(allow_padding):
 if __name__ == "__main__":
     import json
     import argparse
+    import inspect
+    
+    path = inspect.stack()[0][1]
+    path = path.replace("autoBWF.py", "config.json")
 
-    with open('config.json') as data_file:    
+    with open(path) as data_file:    
         config = json.load(data_file)
 
     parser = argparse.ArgumentParser(description='Create internal metadata for WAV file(s).')
