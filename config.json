@@ -1,4 +1,6 @@
 {
+    "accept-nopadding": 1,
+
     "filenameRegex": ".*_([0-9-]+_[A-Z]{2}\\d+)_\\d+_([a-zA-Z]+)_(\\d+)\\.wav",
 
     "originator": "Apochryphal St. U. Archives",
@@ -15,8 +17,9 @@
     },
 
     "software": {
-        "list": ["Audacity"],
-        "Audacity": "blah"
+        "list": ["Audacity - Mac", "Audacity - Linux"],
+        "Audacity - Mac": "Audacity 2.0.3.0 (Mac)",
+        "Audacity - Linux": "Audacity x.x.x. (Linux Ubuntu)"
     },
 
     "technician": [

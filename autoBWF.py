@@ -17,7 +17,8 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         self.setupUi(self)
 
         m = re.compile(config["filenameRegex"]).match(filename)
-        if not m: print(filename + " does not follow filenaming convention")
+        if not m: 
+            QMessageBox.warning(self, 'Warning', filename + " does not follow filenaming convention")
 
         matches = m.groups()
         self.identifier = matches[0]
@@ -76,8 +77,14 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         ###############
 
         self.copyrightSelect.activated.connect(self.copyrightActivated)
-        self.deckSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
+        self.deckSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.adcSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.softwareSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.mediaSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.speedSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
     def copyrightActivated(self, index):
         self.copyrightText.clear()
@@ -85,6 +92,23 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
 
     def updateCodingHistory(self, index): 
         pass
+
+def getBwfTech(allow_padding):
+    import subprocess
+    import io
+    import csv
+
+    if allow_padding:
+        command = "bwfmetaedit --accept-nopadding --out-tech " + filename
+    else:
+        command = "bwfmetaedit --out-tech " + filename
+
+    tech_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
+    f = io.StringIO(tech_csv)
+    reader = csv.DictReader(f, delimiter=',')
+    tech = next(reader)
+    return(tech)
+
 
 if __name__ == "__main__":
     import json
@@ -98,9 +122,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
     filename = args.filename
 
+    # techMD = getBwfTech(config["accept-nopadding"])
+    # if "Errors" in techMD:
+    #     sys.exit(1)
+
     app = QtWidgets.QApplication(sys.argv)
     form = MainWindow()
     form.show()
 
     sys.exit(app.exec_())
 
+# A=ANALOGUE,M=stereo,T=Tandberg 12-42; 2201485; 7.5 ips; open reel tape
+# A=PCM,F=96000,W=24,M=stereo,T=Focusrite; Scarlett 2i2; S363312221352
