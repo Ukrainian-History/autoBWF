@@ -7,7 +7,7 @@ config = None
 filename = ""
 
 class MainWindow(QtWidgets.QDialog, Ui_Dialog):
-    def __init__(self, parent=None):
+    def __init__(self, techMD, parent=None):
         import re
         # from datetime import date
         from datetime import datetime
@@ -86,8 +86,14 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
         self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
+        ###############
+        ##### prefill defaults
+        ###############
+
         self.updateCodingHistory(0)
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][0]])
+
+        print(techMD)
 
 
     def copyrightActivated(self, index):
@@ -104,10 +110,13 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         type = self.typeSelect.currentText()
 
         analogprops = [x for x in [config["deck"][deck], media, speed, eq, type] if x != ""]
+        channels = {"1": "mono", "2": "stereo"}
+
         history = "A=ANALOGUE,M=stereo,T=" + "; ".join(analogprops) 
-        history += "\r\nA=PCM,F=96000,W=24,M=stereo,T=" + config["adc"][adc]
-        history += "\r\nA=PCM,F=96000,W=24,M=stereo,T=" + config["software"][software] 
-        # need to change 96000, 24, and stereo to whatever is read from tech MD
+        history += "\r\nA=PCM,F=" + techMD["SampleRate"] + ",W=" + techMD["BitPerSample"] + \
+                ",M=stereo,T=" + config["adc"][adc]
+        history += "\r\nA=PCM,F=" + techMD["SampleRate"] + ",W=" + techMD["BitPerSample"] + \
+                ",M=" + channels[techMD["Channels"]] + ",T=" + config["software"][software] 
 
         self.codingHistoryText.clear()
         self.codingHistoryText.insertPlainText(history)
@@ -147,7 +156,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     app = QtWidgets.QApplication(sys.argv)
-    form = MainWindow()
+    form = MainWindow(techMD)
     form.show()
 
     sys.exit(app.exec_())
