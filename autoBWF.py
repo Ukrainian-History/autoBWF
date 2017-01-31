@@ -46,6 +46,7 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
 
         self.originationDateLine.insert(self.datestring_iso)
         self.originationTimeLine.insert(time)
+        self.originatorRefLine.insert("UkrHECA " + self.datestring_iso.replace("-", "") + " " + time.replace(":", ""))
 
         try:
             self.fileUse = config["fileuse"][self.fileUse]
