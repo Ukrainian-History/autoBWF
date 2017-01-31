@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 from main import Ui_Dialog
 
@@ -86,14 +86,14 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
         self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
+        self.buttonBox.accepted.connect(self.saveBwf)
+
         ###############
         ##### prefill defaults
         ###############
 
         self.updateCodingHistory(0)
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][0]])
-
-        print(techMD)
 
 
     def copyrightActivated(self, index):
@@ -120,6 +120,31 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
 
         self.codingHistoryText.clear()
         self.codingHistoryText.insertPlainText(history)
+
+    def saveBwf(self):
+        import subprocess
+
+        common_args = "bwfmetaedit --reject-overwrite --specialchars "
+        if config["accept-nopadding"]: common_args += "--accept-nopadding "
+
+        if self.md5Check.isChecked():
+            print(common_args + "--MD5-embed " + filename)
+            #sysout = subprocess.call(common_args + "--MD5-embed " + filename, shell=True)
+        
+        print(common_args + '--Description="' + self.descriptionLine.text() + '" ' + filename)
+        sysout = subprocess.call(common_args + '--Description="' + self.descriptionLine.text() + '" ' + filename, shell=True)
+        print(common_args + '--Originator="' + self.originatorLine.text() + '" ' + filename)
+        sysout = subprocess.call(common_args + '--Originator="' + self.originatorLine.text() + '" ' + filename, shell=True)
+        print(common_args + '--OriginatorReference="' + self.originatorRefLine.text() + '" ' + filename)
+        sysout = subprocess.call(common_args + '--OriginatorReference="' + self.originatorRefLine.text() + '" ' + filename, shell=True)
+        print(common_args + '--OriginationDate="' + self.originationDateLine.text() + '" ' + filename)
+        sysout = subprocess.call(common_args + '--OriginationDate="' + self.originationDateLine.text() + '" ' + filename, shell=True)
+        print(common_args + '--OriginationTime="' + self.originationTimeLine.text() + '" ' + filename)
+        sysout = subprocess.call(common_args + '--OriginationTime="' + self.originationTimeLine.text() + '" ' + filename, shell=True)
+        print(common_args + '--Timereference=0 ' + filename)
+        sysout = subprocess.call(common_args + '--Timereference=0 ' + filename, shell=True)
+        print(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename)
+        sysout = subprocess.call(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename, shell=True)
 
 
 def getBwfTech(allow_padding):
