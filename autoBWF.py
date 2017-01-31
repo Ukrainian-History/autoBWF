@@ -2,12 +2,10 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 from main import Ui_Dialog
-
-config = None
-filename = ""
+import subprocess
 
 class MainWindow(QtWidgets.QDialog, Ui_Dialog):
-    def __init__(self, techMD, parent=None):
+    def __init__(self, filename, techMD, config, parent=None):
         import re
         # from datetime import date
         from datetime import datetime
@@ -153,7 +151,7 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
 
 
 def getBwfTech(allow_padding):
-    import subprocess
+
     import io
     import csv
 
@@ -190,7 +188,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     app = QtWidgets.QApplication(sys.argv)
-    form = MainWindow(techMD)
+    form = MainWindow(filename, techMD, config)
     form.show()
 
     sys.exit(app.exec_())
