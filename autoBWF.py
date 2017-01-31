@@ -86,12 +86,32 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
         self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
+        self.updateCodingHistory(0)
+        self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][0]])
+
+
     def copyrightActivated(self, index):
         self.copyrightText.clear()
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][index]])
 
-    def updateCodingHistory(self, index): 
-        pass
+    def updateCodingHistory(self, index):
+        deck = self.deckSelect.currentText()
+        adc = self.adcSelect.currentText()
+        software = self.softwareSelect.currentText()
+        media = self.mediaSelect.currentText()
+        speed = self.speedSelect.currentText()
+        eq = self.eqSelect.currentText()
+        type = self.typeSelect.currentText()
+
+        analogprops = [x for x in [config["deck"][deck], media, speed, eq, type] if x != ""]
+        history = "A=ANALOGUE,M=stereo,T=" + "; ".join(analogprops) 
+        history += "\r\nA=PCM,F=96000,W=24,M=stereo,T=" + config["adc"][adc]
+        history += "\r\nA=PCM,F=96000,W=24,M=stereo,T=" + config["software"][software] 
+        # need to change 96000, 24, and stereo to whatever is read from tech MD
+
+        self.codingHistoryText.clear()
+        self.codingHistoryText.insertPlainText(history)
+
 
 def getBwfTech(allow_padding):
     import subprocess
@@ -122,15 +142,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     filename = args.filename
 
-    # techMD = getBwfTech(config["accept-nopadding"])
-    # if "Errors" in techMD:
-    #     sys.exit(1)
+    techMD = getBwfTech(config["accept-nopadding"])
+    if techMD["Errors"] != "":
+        sys.exit(1)
 
     app = QtWidgets.QApplication(sys.argv)
     form = MainWindow()
     form.show()
 
     sys.exit(app.exec_())
-
-# A=ANALOGUE,M=stereo,T=Tandberg 12-42; 2201485; 7.5 ips; open reel tape
-# A=PCM,F=96000,W=24,M=stereo,T=Focusrite; Scarlett 2i2; S363312221352
