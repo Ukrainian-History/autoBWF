@@ -5,7 +5,7 @@ from main import Ui_Dialog
 import subprocess
 
 class MainWindow(QtWidgets.QDialog, Ui_Dialog):
-    def __init__(self, filename, techMD, config, parent=None):
+    def __init__(self, filename, techMD, config, template, parent=None):
         import re
         # from datetime import date
         from datetime import datetime
@@ -94,6 +94,20 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         self.updateCodingHistory(0)
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][0]])
 
+        ###############
+        ##### replace with template values if they exist
+        ###############
+        
+        if template != None:
+            core = getBwfCore(config["accept-nopadding"], template)
+            if core["INAM"] != "": self.titleLine.insert(core["INAM"])
+            if core["ITCH"] != "": self.technicianBox.lineEdit().setText(core["ITCH"])
+            if core["CodingHistory"] != "":
+                self.codingHistoryText.clear()
+                self.codingHistoryText.insertPlainText(core["CodingHistory"])
+            if core["ICOP"] != "":
+                self.copyrightText.clear()
+                self.copyrightText.insertPlainText(core["ICOP"])
 
     def copyrightActivated(self, index):
         self.copyrightText.clear()
@@ -140,14 +154,29 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         sysout = subprocess.call(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename, shell=True)
 		# for some bizarre reason, --History has to be last, otherwise there's duplication of the last two characters of the history string...
 
-def getBwfTech(allow_padding):
+def getBwfTech(allow_padding, file):
     import io
     import csv
 
     if allow_padding:
-        command = "bwfmetaedit --accept-nopadding --out-tech " + filename
+        command = "bwfmetaedit --accept-nopadding --out-tech " + file
     else:
-        command = "bwfmetaedit --out-tech " + filename
+        command = "bwfmetaedit --out-tech " + file
+
+    tech_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
+    f = io.StringIO(tech_csv)
+    reader = csv.DictReader(f, delimiter=',')
+    tech = next(reader)
+    return(tech)
+
+def getBwfCore(allow_padding, file):
+    import io
+    import csv
+
+    if allow_padding:
+        command = "bwfmetaedit --accept-nopadding --out-core " + file
+    else:
+        command = "bwfmetaedit --out-core " + file
 
     tech_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
     f = io.StringIO(tech_csv)
@@ -169,15 +198,17 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Create internal metadata for WAV file(s).')
     parser.add_argument('filename', help='WAV file to be processed')
+    parser.add_argument('-t', help="template file")
     args = parser.parse_args()
     filename = args.filename
+    template = args.t
 
-    techMD = getBwfTech(config["accept-nopadding"])
+    techMD = getBwfTech(config["accept-nopadding"], filename)
     if techMD["Errors"] != "":
         sys.exit(1)
 
     app = QtWidgets.QApplication(sys.argv)
-    form = MainWindow(filename, techMD, config)
+    form = MainWindow(filename, techMD, config, template)
     form.show()
 
     sys.exit(app.exec_())

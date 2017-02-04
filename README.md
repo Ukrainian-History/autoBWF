@@ -9,3 +9,9 @@ autoBWF will not edit or overwrite existing BWF metadata. Please use the FADGI B
 The bwfmetaedit "--accept-nopadding" flag is used by default, but that behavior can be changed in the configuration file.
 
 Requires Python 3, PyQt 4.8, and the FADGI BWFMetaEdit CLI. It assumes that the "bwfmetaedit" executable is in the current PATH.
+
+###Usage
+
+python autoBWF.py [filename] [-t template_filename]
+
+Including the -t flag will prepopulate all relevant fields (all except OriginationDate and OriginationTime) with the BWF metadata from the template file.
