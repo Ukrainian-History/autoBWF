@@ -14,4 +14,9 @@ Requires Python 3, PyQt 4.8, and the FADGI BWFMetaEdit CLI. It assumes that the 
 
 python autoBWF.py *filename* [-t *template_filename*]
 
-Including the -t flag will prepopulate Title, Technician, Copyright, and CodingHistory with the corresponding BWF metadata from the template file.
+Including the -t flag will prepopulate Title, Technician, Copyright, and Coding History with the corresponding BWF metadata from the template file.
+
+
+##Screenshot
+
+![screenshot of GUI](screenshot.png)
