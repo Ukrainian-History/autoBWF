@@ -1,10 +1,10 @@
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
-from main import Ui_Dialog
+from main import Ui_autoBWF
 import subprocess
 
-class MainWindow(QtWidgets.QDialog, Ui_Dialog):
+class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
     def __init__(self, filename, techMD, config, template, parent=None):
         import re
         # from datetime import date
@@ -151,6 +151,7 @@ class MainWindow(QtWidgets.QDialog, Ui_Dialog):
         sysout = subprocess.call(common_args + '--ICOP="' + self.copyrightText.toPlainText() + '" ' + filename, shell=True)
         sysout = subprocess.call(common_args + '--INAM="' + self.titleLine.text() + '" ' + filename, shell=True)
         sysout = subprocess.call(common_args + '--ITCH="' + self.technicianBox.currentText() + '" ' + filename, shell=True)
+        sysout = subprocess.call(common_args + '--ICMT="' + self.commentText.toPlainText() + '" ' + filename, shell=True)
         sysout = subprocess.call(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename, shell=True)
 		# for some bizarre reason, --History has to be last, otherwise there's duplication of the last two characters of the history string...
 

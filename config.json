@@ -3,7 +3,7 @@
 
     "filenameRegex": ".*_([0-9-]+_[A-Z]{2}\\d+)_\\d+_([a-zA-Z]+)_(\\d+)\\.wav",
 
-    "originator": "Apochryphal St. U. Archives",
+    "originator": "Apocryphal St. U. Archives",
 
     "deck": {
         "list": ["Studer", "Realistic"],
@@ -52,8 +52,8 @@
 
     "copyright": {
         "list": ["Generic", "CC-BY-SA"],
-        "Generic": "Publication and other forms of distribution (including online sharing and streaming) may be restricted. For details, contact the Apochryphal State University Archives.",
-        "CC-BY-SA": "This content is copyright by the Apochryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
+        "Generic": "Publication and other forms of distribution (including online sharing and streaming) may be restricted. For details, contact the Apocryphal State University Archives.",
+        "CC-BY-SA": "This content is copyright by the Apocryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
     },
 
     "fileuse": {

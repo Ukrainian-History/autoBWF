@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>autoBWF</class>
+ <widget class="QDialog" name="autoBWF">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>autoBWF</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
@@ -141,15 +141,8 @@
     </layout>
    </item>
    <item row="1" column="0">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="3">
+     <item row="0" column="0" colspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <layout class="QFormLayout" name="formLayout_7">
@@ -191,7 +184,7 @@
        </item>
       </layout>
      </item>
-     <item row="1" column="2">
+     <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
         <layout class="QFormLayout" name="formLayout_2">
@@ -212,7 +205,7 @@
        </item>
       </layout>
      </item>
-     <item row="2" column="0" colspan="2">
+     <item row="2" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <layout class="QFormLayout" name="formLayout_3">
@@ -233,7 +226,7 @@
        </item>
       </layout>
      </item>
-     <item row="2" column="2">
+     <item row="2" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
         <layout class="QFormLayout" name="formLayout_4">
@@ -275,7 +268,7 @@
        </item>
       </layout>
      </item>
-     <item row="3" column="1" colspan="2">
+     <item row="3" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_8">
        <item>
         <layout class="QFormLayout" name="formLayout_6">
@@ -306,7 +299,28 @@
        </item>
       </layout>
      </item>
-     <item row="4" column="0" colspan="3">
+     <item row="4" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <layout class="QFormLayout" name="formLayout_13">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::ExpandingFieldsGrow</enum>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Comment</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPlainTextEdit" name="commentText"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item row="5" column="0" colspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout_9">
        <item>
         <layout class="QFormLayout" name="formLayout_8">
@@ -354,7 +368,7 @@
        </item>
       </layout>
      </item>
-     <item row="5" column="0" colspan="3">
+     <item row="6" column="0" colspan="2">
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
         <layout class="QFormLayout" name="formLayout_9">
@@ -377,7 +391,7 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -394,7 +408,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>autoBWF</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -410,7 +424,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>autoBWF</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
