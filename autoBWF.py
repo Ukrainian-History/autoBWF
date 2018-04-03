@@ -66,6 +66,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.typeSelect.addItems(config["type"])
         self.technicianBox.addItems(config["technician"])
         self.isftSelect.addItems(config["isft"])
+        self.sourceSelect.addItems(config["source"])
 
         self.deckSelect.addItems(config["deck"]["list"])
         self.adcSelect.addItems(config["adc"]["list"])

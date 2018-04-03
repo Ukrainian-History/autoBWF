@@ -61,6 +61,11 @@
         "CC-BY-SA": "This content is copyright by the Apocryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
     },
 
+    "source": [
+        "Billy Bob Apocryphal papers",
+        "Apocryphal University Radio records"
+    ],
+
     "fileuse": {
         "pres": "Preservation Master",
         "presInt": "Preservation Master-Intermediate",

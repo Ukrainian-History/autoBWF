@@ -24,7 +24,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_6">
+          <widget class="QLabel" name="titleLabel">
            <property name="text">
             <string>Title</string>
            </property>
@@ -45,7 +45,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="descriptionLabel">
            <property name="text">
             <string>Description</string>
            </property>
@@ -66,7 +66,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="originatorLabel">
            <property name="text">
             <string>Originator</string>
            </property>
@@ -90,7 +90,7 @@
           <widget class="QLineEdit" name="creationDateLine"/>
          </item>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_16">
+          <widget class="QLabel" name="creationDateLabel">
            <property name="text">
             <string>Creation Date</string>
            </property>
@@ -106,7 +106,7 @@
         <enum>QFormLayout::ExpandingFieldsGrow</enum>
        </property>
        <item row="0" column="0">
-        <widget class="QLabel" name="label_18">
+        <widget class="QLabel" name="sourceLabel">
          <property name="text">
           <string>Source</string>
          </property>
@@ -138,9 +138,9 @@
           <widget class="QLineEdit" name="originationDateLine"/>
          </item>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_4">
+          <widget class="QLabel" name="originationDateLabel">
            <property name="text">
-            <string>&lt;a href=&quot;changed&quot; style=&quot;color: red;&quot;&gt;OriginationDate&lt;a&gt;</string>
+            <string>OriginationDate</string>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::LinksAccessibleByMouse</set>
@@ -159,7 +159,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_5">
+          <widget class="QLabel" name="originationTimeLabel">
            <property name="text">
             <string>OriginationTime</string>
            </property>
@@ -180,7 +180,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="originatorRefLabel">
            <property name="text">
             <string>OriginatorRef</string>
            </property>
@@ -215,7 +215,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_11">
+          <widget class="QLabel" name="codingHistoryLabel">
            <property name="text">
             <string>CodingHistory</string>
            </property>
@@ -387,7 +387,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_14">
+          <widget class="QLabel" name="commentLabel">
            <property name="text">
             <string>Comment</string>
            </property>
@@ -410,7 +410,7 @@
             <enum>QFormLayout::ExpandingFieldsGrow</enum>
            </property>
            <item row="0" column="0">
-            <widget class="QLabel" name="label_8">
+            <widget class="QLabel" name="technicianLabel">
              <property name="text">
               <string>Technician</string>
              </property>
@@ -439,7 +439,7 @@
           <enum>QFormLayout::ExpandingFieldsGrow</enum>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_15">
+          <widget class="QLabel" name="isftLabel">
            <property name="text">
             <string>ISFT</string>
            </property>
@@ -482,7 +482,7 @@
         <enum>QFormLayout::ExpandingFieldsGrow</enum>
        </property>
        <item row="0" column="0">
-        <widget class="QLabel" name="label_9">
+        <widget class="QLabel" name="copyrightLabel">
          <property name="text">
           <string>Copyright</string>
          </property>
