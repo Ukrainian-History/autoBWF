@@ -22,6 +22,11 @@
         "Audacity - Linux": "Audacity x.x.x. (Linux Ubuntu)"
     },
 
+    "isft": [
+        "Audacity 2.0.3.0",
+        "Audacity x.x.x"
+    ],
+
     "technician": [
         "Doe, John",
         "Doe, Jane"

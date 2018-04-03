@@ -33,8 +33,8 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         if date != self.datestring_iso:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
-            msg.setText("Dates in filename and timestamp disagree")
-            msg.setInformativeText("filename date: " + self.datestring_iso + ", timestamp date: " + date)
+            msg.setText("Filename and timestamp dates disagree")
+            msg.setInformativeText("filename: " + self.datestring_iso + "\ntimestamp: " + date)
             msg.setWindowTitle("Choose date")
             msg.addButton('Use ' + self.datestring_iso, QMessageBox.NoRole)
             msg.addButton('Use ' + date, QMessageBox.YesRole)
@@ -65,6 +65,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.eqSelect.addItems(config["eq"])
         self.typeSelect.addItems(config["type"])
         self.technicianBox.addItems(config["technician"])
+        self.isftSelect.addItems(config["isft"])
 
         self.deckSelect.addItems(config["deck"]["list"])
         self.adcSelect.addItems(config["adc"]["list"])
