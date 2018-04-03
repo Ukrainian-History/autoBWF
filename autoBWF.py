@@ -90,11 +90,27 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.buttonBox.accepted.connect(self.saveBwf)
 
         ###############
-        ##### prefill defaults
+        ##### prefill defaults and insert existing values
         ###############
 
         self.updateCodingHistory(0)
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][0]])
+
+        core = getBwfCore(config["accept-nopadding"], filename)
+        if core["INAM"] != "": self.insertDefaultLine(self.titleLine, core["INAM"])
+        if core["Description"] != "": self.insertDefaultLine(self.descriptionLine, core["Description"])
+        if core["Originator"] != "": self.insertDefaultLine(self.originatorLine, core["Originator"])
+        if core["OriginatorReference"] != "": self.insertDefaultLine(self.originatorRefLine, core["OriginatorReference"])
+        if core["OriginationDate"] != "": self.insertDefaultLine(self.originationDateLine, core["OriginationDate"])
+        if core["OriginationTime"] != "": self.insertDefaultLine(self.originationTimeLine, core["OriginationTime"])
+        if core["ICRD"] != "": self.insertDefaultLine(self.creationDateLine, core["ICRD"])
+        if core["ITCH"] != "": self.insertDefaultBox(self.technicianBox, core["ITCH"])
+        if core["ISFT"] != "": self.insertDefaultBox(self.isftSelect, core["ISFT"])
+        if core["ISRC"] != "": self.insertDefaultBox(self.sourceSelect, core["ISRC"])
+        if core["CodingHistory"] != "": self.insertDefaultText(self.codingHistoryText, core["CodingHistory"])
+        if core["ICMT"] != "": self.insertDefaultText(self.commentText, core["ICMT"])
+        if core["ICOP"] != "": self.insertDefaultText(self.copyrightText, core["ICOP"])
+
 
         ###############
         ##### replace with template values if they exist
@@ -110,6 +126,21 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
             if core["ICOP"] != "":
                 self.copyrightText.clear()
                 self.copyrightText.insertPlainText(core["ICOP"])
+
+    
+    def insertDefaultLine(self, widget, text):
+        widget.clear()
+        widget.insert(text)
+        widget.setStyleSheet("color: grey; font: italic")
+
+    def insertDefaultBox(self, widget, text):
+        widget.setCurrentText(text)
+        widget.setStyleSheet("color: grey; font: italic")
+
+    def insertDefaultText(self, widget, text):
+        widget.clear()
+        widget.insertPlainText(text)
+        widget.setStyleSheet("color: grey; font: italic")
 
     def copyrightActivated(self, index):
         self.copyrightText.clear()
@@ -138,6 +169,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
 
     def saveBwf(self):
         common_args = "bwfmetaedit --reject-overwrite --specialchars "
+        common_args = "bwfmetaedit --specialchars "
         if config["accept-nopadding"]: common_args += "--accept-nopadding "
 
         if self.md5Check.isChecked():
@@ -154,6 +186,9 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         sysout = subprocess.call(common_args + '--INAM="' + self.titleLine.text() + '" ' + filename, shell=True)
         sysout = subprocess.call(common_args + '--ITCH="' + self.technicianBox.currentText() + '" ' + filename, shell=True)
         sysout = subprocess.call(common_args + '--ICMT="' + self.commentText.toPlainText() + '" ' + filename, shell=True)
+        sysout = subprocess.call(common_args + '--ICRD="' + self.creationDateLine.text() + '" ' + filename, shell=True)
+        sysout = subprocess.call(common_args + '--ISFT="' + self.isftSelect.currentText() + '" ' + filename, shell=True)
+        sysout = subprocess.call(common_args + '--ISRC="' + self.sourceSelect.currentText() + '" ' + filename, shell=True)
         sysout = subprocess.call(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename, shell=True)
 		# for some bizarre reason, --History has to be last, otherwise there's duplication of the last two characters of the history string...
 
