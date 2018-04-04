@@ -198,7 +198,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
 		# for some bizarre reason, --History has to be last, otherwise there's duplication of the last two characters of the history string...
 
     def callBwf(self, command, filename, key, text):
-        # deal with inconsistencies in bwfmetaedit
+        # deal with annoying inconsistencies in bwfmetaedit
         if key == "Timereference": 
             mdkey = "TimeReference"
         elif key == "History":
@@ -207,8 +207,6 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
             mdkey = key
 
         if text != self.originalCore[mdkey]:
-            print("saving " + key)
-            print(command + '--' + key + '="' + text + '" ' + filename)
             sysout = subprocess.call(command + '--' + key + '="' + text + '" ' + filename, shell=True)
 
 def getBwfTech(allow_padding, file):
