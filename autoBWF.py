@@ -96,21 +96,22 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.updateCodingHistory(0)
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][0]])
 
-        core = getBwfCore(config["accept-nopadding"], filename)
-        if core["INAM"] != "": self.insertDefaultLine(self.titleLine, core["INAM"])
-        if core["Description"] != "": self.insertDefaultLine(self.descriptionLine, core["Description"])
-        if core["Originator"] != "": self.insertDefaultLine(self.originatorLine, core["Originator"])
-        if core["OriginatorReference"] != "": self.insertDefaultLine(self.originatorRefLine, core["OriginatorReference"])
-        if core["OriginationDate"] != "": self.insertDefaultLine(self.originationDateLine, core["OriginationDate"])
-        if core["OriginationTime"] != "": self.insertDefaultLine(self.originationTimeLine, core["OriginationTime"])
-        if core["ICRD"] != "": self.insertDefaultLine(self.creationDateLine, core["ICRD"])
-        if core["ITCH"] != "": self.insertDefaultBox(self.technicianBox, core["ITCH"])
-        if core["ISFT"] != "": self.insertDefaultBox(self.isftSelect, core["ISFT"])
-        if core["ISRC"] != "": self.insertDefaultBox(self.sourceSelect, core["ISRC"])
-        if core["CodingHistory"] != "": self.insertDefaultText(self.codingHistoryText, core["CodingHistory"])
-        if core["ICMT"] != "": self.insertDefaultText(self.commentText, core["ICMT"])
-        if core["ICOP"] != "": self.insertDefaultText(self.copyrightText, core["ICOP"])
+        self.originalCore = getBwfCore(config["accept-nopadding"], filename)
+        if self.originalCore["INAM"] != "": self.insertDefaultLine(self.titleLine, self.originalCore["INAM"])
+        if self.originalCore["Description"] != "": self.insertDefaultLine(self.descriptionLine, self.originalCore["Description"])
+        if self.originalCore["Originator"] != "": self.insertDefaultLine(self.originatorLine, self.originalCore["Originator"])
+        if self.originalCore["OriginatorReference"] != "": self.insertDefaultLine(self.originatorRefLine, self.originalCore["OriginatorReference"])
+        if self.originalCore["OriginationDate"] != "": self.insertDefaultLine(self.originationDateLine, self.originalCore["OriginationDate"])
+        if self.originalCore["OriginationTime"] != "": self.insertDefaultLine(self.originationTimeLine, self.originalCore["OriginationTime"])
+        if self.originalCore["ICRD"] != "": self.insertDefaultLine(self.creationDateLine, self.originalCore["ICRD"])
+        if self.originalCore["ITCH"] != "" and (self.originalCore["ITCH"] is not None): self.insertDefaultBox(self.technicianBox, self.originalCore["ITCH"])
+        if self.originalCore["ISFT"] != "": self.insertDefaultBox(self.isftSelect, self.originalCore["ISFT"])
+        if self.originalCore["ISRC"] != "": self.insertDefaultBox(self.sourceSelect, self.originalCore["ISRC"])
+        if self.originalCore["CodingHistory"] != "": self.insertDefaultText(self.codingHistoryText, self.originalCore["CodingHistory"])
+        if self.originalCore["ICMT"] != "": self.insertDefaultText(self.commentText, self.originalCore["ICMT"])
+        if self.originalCore["ICOP"] != "": self.insertDefaultText(self.copyrightText, self.originalCore["ICOP"])
 
+        if techMD["MD5Stored"] != "": self.md5Check.setEnabled(False)
 
         ###############
         ##### replace with template values if they exist
@@ -132,15 +133,21 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         widget.clear()
         widget.insert(text)
         widget.setStyleSheet("color: grey; font: italic")
+        widget.textChanged.connect(lambda: self.activateChanged(widget))
 
     def insertDefaultBox(self, widget, text):
         widget.setCurrentText(text)
         widget.setStyleSheet("color: grey; font: italic")
+        widget.currentTextChanged.connect(lambda: self.activateChanged(widget))
 
     def insertDefaultText(self, widget, text):
         widget.clear()
         widget.insertPlainText(text)
         widget.setStyleSheet("color: grey; font: italic")
+        widget.textChanged.connect(lambda: self.activateChanged(widget))
+
+    def activateChanged(self, inputWidget):
+        inputWidget.setStyleSheet("color: red; font: normal")
 
     def copyrightActivated(self, index):
         self.copyrightText.clear()
@@ -168,29 +175,41 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.codingHistoryText.insertPlainText(history)
 
     def saveBwf(self):
-        common_args = "bwfmetaedit --reject-overwrite --specialchars "
-        common_args = "bwfmetaedit --specialchars "
-        if config["accept-nopadding"]: common_args += "--accept-nopadding "
+        command = "bwfmetaedit --specialchars "
+        if config["accept-nopadding"]: command += "--accept-nopadding "
 
-        if self.md5Check.isChecked():
-            #print(common_args + "--MD5-embed " + filename)
-            sysout = subprocess.call(common_args + "--MD5-embed " + filename, shell=True)
+        if self.md5Check.isChecked() and self.md5Check.isEnabled():
+            sysout = subprocess.call(command + "--MD5-embed " + filename, shell=True)
         
-        sysout = subprocess.call(common_args + '--Description="' + self.descriptionLine.text() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--Originator="' + self.originatorLine.text() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--OriginatorReference="' + self.originatorRefLine.text() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--OriginationDate="' + self.originationDateLine.text() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--OriginationTime="' + self.originationTimeLine.text() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--Timereference=0 ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--ICOP="' + self.copyrightText.toPlainText() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--INAM="' + self.titleLine.text() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--ITCH="' + self.technicianBox.currentText() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--ICMT="' + self.commentText.toPlainText() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--ICRD="' + self.creationDateLine.text() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--ISFT="' + self.isftSelect.currentText() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--ISRC="' + self.sourceSelect.currentText() + '" ' + filename, shell=True)
-        sysout = subprocess.call(common_args + '--History="' + self.codingHistoryText.toPlainText() + '" ' + filename, shell=True)
+        self.callBwf(command, filename, "Timereference", "0")
+        self.callBwf(command, filename, "Description", self.descriptionLine.text())
+        self.callBwf(command, filename, "Originator", self.originatorLine.text())
+        self.callBwf(command, filename, "OriginatorReference", self.originatorRefLine.text())
+        self.callBwf(command, filename, "OriginationDate", self.originationDateLine.text())
+        self.callBwf(command, filename, "OriginationTime", self.originationTimeLine.text())
+        self.callBwf(command, filename, "ICOP", self.copyrightText.toPlainText())
+        self.callBwf(command, filename, "INAM", self.titleLine.text())
+        self.callBwf(command, filename, "ITCH", self.technicianBox.currentText())
+        self.callBwf(command, filename, "ICMT", self.commentText.toPlainText())
+        self.callBwf(command, filename, "ICRD", self.creationDateLine.text())
+        self.callBwf(command, filename, "ISFT", self.isftSelect.currentText())
+        self.callBwf(command, filename, "ISRC", self.sourceSelect.currentText())
+        self.callBwf(command, filename, "History", self.codingHistoryText.toPlainText())
 		# for some bizarre reason, --History has to be last, otherwise there's duplication of the last two characters of the history string...
+
+    def callBwf(self, command, filename, key, text):
+        # deal with inconsistencies in bwfmetaedit
+        if key == "Timereference": 
+            mdkey = "TimeReference"
+        elif key == "History":
+            mdkey = "CodingHistory"
+        else:
+            mdkey = key
+
+        if text != self.originalCore[mdkey]:
+            print("saving " + key)
+            print(command + '--' + key + '="' + text + '" ' + filename)
+            sysout = subprocess.call(command + '--' + key + '="' + text + '" ' + filename, shell=True)
 
 def getBwfTech(allow_padding, file):
     import io
