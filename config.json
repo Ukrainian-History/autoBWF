@@ -5,6 +5,8 @@
 
     "originator": "Apocryphal St. U. Archives",
 
+    "repocode": "ApoSU",
+
     "deck": {
         "list": ["Studer", "Realistic"],
         "Studer": "Studer A810 SN:11223344",

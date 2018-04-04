@@ -14,45 +14,48 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        m = re.compile(config["filenameRegex"]).match(filename)
-        if not m: 
-            QMessageBox.warning(self, 'Warning', filename + " does not follow filenaming convention")
-
-        matches = m.groups()
-        self.identifier = matches[0]
-        self.identifier = self.identifier.replace("-", ".")
-        self.identifier = self.identifier.replace("_", "")
-
-        self.fileUse = matches[1]
-        datestring = matches[2]
-        self.datestring_iso = datestring[0:4] + "-" + datestring[4:6] + "-" + datestring[6:]
-
         date_time = datetime.fromtimestamp(os.path.getctime(filename)).replace(microsecond=0).isoformat()
-        [date, time] = date_time.split("T")
+        [date, time] = date_time.split("T") 
 
-        if date != self.datestring_iso:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setText("Filename and timestamp dates disagree")
-            msg.setInformativeText("filename: " + self.datestring_iso + "\ntimestamp: " + date)
-            msg.setWindowTitle("Choose date")
-            msg.addButton('Use ' + self.datestring_iso, QMessageBox.NoRole)
-            msg.addButton('Use ' + date, QMessageBox.YesRole)
-            retval = msg.exec_()
-            if retval == 1:
-                self.datestring_iso = date
+        m = re.compile(config["filenameRegex"]).match(filename)
+        if m:
+            matches = m.groups()
+            self.identifier = matches[0]
+            self.identifier = self.identifier.replace("-", ".")
+            self.identifier = self.identifier.replace("_", "")  
 
-        self.originationDateLine.insert(self.datestring_iso)
-        self.originationTimeLine.insert(time)
-        self.originatorRefLine.insert("UkrHECA " + self.datestring_iso.replace("-", "") + " " + time.replace(":", ""))
+            self.fileUse = matches[1]
+            datestring = matches[2]
+            self.datestring_iso = datestring[0:4] + "-" + datestring[4:6] + "-" + datestring[6:]    
 
-        try:
-            self.fileUse = config["fileuse"][self.fileUse]
-        except KeyError:
-            print(self.fileUse + " does not not have a standard translation")
+            if date != self.datestring_iso:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("Filename and timestamp dates disagree")
+                msg.setInformativeText("filename: " + self.datestring_iso + "\ntimestamp: " + date)
+                msg.setWindowTitle("Choose date")
+                msg.addButton('Use ' + self.datestring_iso, QMessageBox.NoRole)
+                msg.addButton('Use ' + date, QMessageBox.YesRole)
+                retval = msg.exec_()
+                if retval == 1:
+                    self.datestring_iso = date  
 
-        description = "File content: " + self.identifier + "; File use: " + self.fileUse + "; Original filename: " + filename
-        self.descriptionLine.insert(description)
+            self.originationDateLine.insert(self.datestring_iso)
+            self.originationTimeLine.insert(time)
+            self.originatorRefLine.insert(config["repocode"] + " " + self.datestring_iso.replace("-", "") + " " + time.replace(":", ""))  
+
+            try:
+                self.fileUse = config["fileuse"][self.fileUse]
+            except KeyError:
+                print(self.fileUse + " does not not have a standard translation")   
+
+            description = "File content: " + self.identifier + "; File use: " + self.fileUse + "; Original filename: " + filename
+            self.descriptionLine.insert(description)
+        else: 
+            QMessageBox.warning(self, 'Warning', filename + " does not follow filenaming convention")
+            self.originationDateLine.insert(date)
+            self.originationTimeLine.insert(time)
+            self.originatorRefLine.insert(config["repocode"] + " " + date.replace("-", "") + " " + time.replace(":", ""))  
 
         self.originatorLine.insert(config["originator"])
 
@@ -120,7 +123,9 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         if template != None:
             core = getBwfCore(config["accept-nopadding"], template)
             if core["INAM"] != "": self.titleLine.insert(core["INAM"])
-            if core["ITCH"] != "": self.technicianBox.lineEdit().setText(core["ITCH"])
+            if core["ISRC"] != "": self.titleLine.insert(core["ISRC"])
+            if core["ITCH"] != "" and (self.originalCore["ITCH"] is not None): 
+                self.technicianBox.lineEdit().setText(core["ITCH"])
             if core["CodingHistory"] != "":
                 self.codingHistoryText.clear()
                 self.codingHistoryText.insertPlainText(core["CodingHistory"])
