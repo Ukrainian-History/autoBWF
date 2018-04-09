@@ -199,6 +199,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.callBwf(command, filename, "ICRD", self.creationDateLine.text())
         self.callBwf(command, filename, "ISFT", self.isftSelect.currentText())
         self.callBwf(command, filename, "ISRC", self.sourceSelect.currentText())
+        self.callBwf(command, filename, "IARL", config["iarl"])
         self.callBwf(command, filename, "History", self.codingHistoryText.toPlainText())
 		# for some bizarre reason, --History has to be last, otherwise there's duplication of the last two characters of the history string...
 
