@@ -122,8 +122,10 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         
         if template != None:
             core = getBwfCore(config["accept-nopadding"], template)
-            if core["INAM"] != "": self.titleLine.insert(core["INAM"])
-            if core["ISRC"] != "": self.titleLine.insert(core["ISRC"])
+            if core["INAM"] != "":
+                self.titleLine.clear() 
+                self.titleLine.insert(core["INAM"])
+            if core["ISRC"] != "": self.sourceSelect.lineEdit().setText(core["ISRC"])
             if core["ITCH"] != "" and (self.originalCore["ITCH"] is not None): 
                 self.technicianBox.lineEdit().setText(core["ITCH"])
             if core["CodingHistory"] != "":
