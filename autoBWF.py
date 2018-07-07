@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMessageBox
 from main import Ui_autoBWF
 import subprocess
 
+
 class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
     def __init__(self, filename, techMD, config, template, parent=None):
         import re
@@ -14,54 +15,80 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        date_time = datetime.fromtimestamp(os.path.getctime(filename)).replace(microsecond=0).isoformat()
-        [date, time] = date_time.split("T") 
+        date_time = datetime. \
+            .fromtimestamp(os.path.getctime(filename)) \
+            .replace(microsecond=0) \
+            .isoformat()
+        [date, time] = date_time.split("T")
 
         m = re.compile(config["filenameRegex"]).match(filename)
         if m:
             matches = m.groups()
             self.identifier = matches[0]
             self.identifier = self.identifier.replace("-", ".")
-            self.identifier = self.identifier.replace("_", "")  
+            self.identifier = self.identifier.replace("_", "")
 
             self.fileUse = matches[1]
             datestring = matches[2]
-            self.datestring_iso = datestring[0:4] + "-" + datestring[4:6] + "-" + datestring[6:]    
+            self.datestring_iso = (
+                datestring[0:4] + "-" +
+                datestring[4:6] + "-" +
+                datestring[6:]
+            )
 
             if date != self.datestring_iso:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
                 msg.setText("Filename and timestamp dates disagree")
-                msg.setInformativeText("filename: " + self.datestring_iso + "\ntimestamp: " + date)
+                msg.setInformativeText(
+                    "filename: " + self.datestring_iso +
+                    "\ntimestamp: " + date)
                 msg.setWindowTitle("Choose date")
                 msg.addButton('Use ' + self.datestring_iso, QMessageBox.NoRole)
                 msg.addButton('Use ' + date, QMessageBox.YesRole)
                 retval = msg.exec_()
                 if retval == 1:
-                    self.datestring_iso = date  
+                    self.datestring_iso = date
 
             self.originationDateLine.insert(self.datestring_iso)
             self.originationTimeLine.insert(time)
-            self.originatorRefLine.insert(config["repocode"] + " " + self.datestring_iso.replace("-", "") + " " + time.replace(":", ""))  
+            self.originatorRefLine.insert(
+                config["repocode"] + " " +
+                self.datestring_iso.replace("-", "") + " " +
+                time.replace(":", ""))
 
             try:
                 self.fileUse = config["fileuse"][self.fileUse]
             except KeyError:
-                print(self.fileUse + " does not not have a standard translation")   
+                print(
+                    self.fileUse +
+                    " does not not have a standard translation"
+                )
 
-            description = "File content: " + self.identifier + "; File use: " + self.fileUse + "; Original filename: " + filename
+            description = (
+                "File content: " + self.identifier +
+                "; File use: " + self.fileUse +
+                "; Original filename: " + filename
+            )
             self.descriptionLine.insert(description)
-        else: 
-            QMessageBox.warning(self, 'Warning', filename + " does not follow filenaming convention")
+        else:
+            QMessageBox.warning(
+                self, 'Warning',
+                filename + " does not follow filenaming convention"
+            )
             self.originationDateLine.insert(date)
             self.originationTimeLine.insert(time)
-            self.originatorRefLine.insert(config["repocode"] + " " + date.replace("-", "") + " " + time.replace(":", ""))  
+            self.originatorRefLine.insert(
+                config["repocode"] + " " +
+                date.replace("-", "") + " " +
+                time.replace(":", "")
+            )
 
         self.originatorLine.insert(config["originator"])
 
-        ###############
-        ##### configure dropdowns
-        ###############
+        #
+        # configure dropdowns
+        #
 
         self.speedSelect.addItems(config["speed"])
         self.mediaSelect.addItems(config["media"])
@@ -76,9 +103,9 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.softwareSelect.addItems(config["software"]["list"])
         self.copyrightSelect.addItems(config["copyright"]["list"])
 
-        ###############
-        ##### set up signals/slots
-        ###############
+        #
+        # set up signals/slots
+        #
 
         self.copyrightSelect.activated.connect(self.copyrightActivated)
 
@@ -92,41 +119,58 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
 
         self.buttonBox.accepted.connect(self.saveBwf)
 
-        ###############
-        ##### prefill defaults and insert existing values
-        ###############
+        #
+        # prefill defaults and insert existing values
+        #
 
         self.updateCodingHistory(0)
-        self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][0]])
+        self.copyrightText.insertPlainText(
+            config["copyright"][config["copyright"]["list"][0]]
+        )
 
         self.originalCore = getBwfCore(config["accept-nopadding"], filename)
-        if self.originalCore["INAM"] != "": self.insertDefaultLine(self.titleLine, self.originalCore["INAM"])
-        if self.originalCore["Description"] != "": self.insertDefaultLine(self.descriptionLine, self.originalCore["Description"])
-        if self.originalCore["Originator"] != "": self.insertDefaultLine(self.originatorLine, self.originalCore["Originator"])
-        if self.originalCore["OriginatorReference"] != "": self.insertDefaultLine(self.originatorRefLine, self.originalCore["OriginatorReference"])
-        if self.originalCore["OriginationDate"] != "": self.insertDefaultLine(self.originationDateLine, self.originalCore["OriginationDate"])
-        if self.originalCore["OriginationTime"] != "": self.insertDefaultLine(self.originationTimeLine, self.originalCore["OriginationTime"])
-        if self.originalCore["ICRD"] != "": self.insertDefaultLine(self.creationDateLine, self.originalCore["ICRD"])
-        if self.originalCore["ITCH"] != "" and (self.originalCore["ITCH"] is not None): self.insertDefaultBox(self.technicianBox, self.originalCore["ITCH"])
-        if self.originalCore["ISFT"] != "": self.insertDefaultBox(self.isftSelect, self.originalCore["ISFT"])
-        if self.originalCore["ISRC"] != "": self.insertDefaultBox(self.sourceSelect, self.originalCore["ISRC"])
-        if self.originalCore["CodingHistory"] != "": self.insertDefaultText(self.codingHistoryText, self.originalCore["CodingHistory"])
-        if self.originalCore["ICMT"] != "": self.insertDefaultText(self.commentText, self.originalCore["ICMT"])
-        if self.originalCore["ICOP"] != "": self.insertDefaultText(self.copyrightText, self.originalCore["ICOP"])
+        if self.originalCore["INAM"] != "":
+            self.insertDefaultLine(self.titleLine, self.originalCore["INAM"])
+        if self.originalCore["Description"] != "":
+            self.insertDefaultLine(self.descriptionLine, self.originalCore["Description"])
+        if self.originalCore["Originator"] != "":
+            self.insertDefaultLine(self.originatorLine, self.originalCore["Originator"])
+        if self.originalCore["OriginatorReference"] != "":
+            self.insertDefaultLine(self.originatorRefLine, self.originalCore["OriginatorReference"])
+        if self.originalCore["OriginationDate"] != "":
+            self.insertDefaultLine(self.originationDateLine, self.originalCore["OriginationDate"])
+        if self.originalCore["OriginationTime"] != "":
+            self.insertDefaultLine(self.originationTimeLine, self.originalCore["OriginationTime"])
+        if self.originalCore["ICRD"] != "":
+            self.insertDefaultLine(self.creationDateLine, self.originalCore["ICRD"])
+        if self.originalCore["ITCH"] != "" and (self.originalCore["ITCH"] is not None):
+            self.insertDefaultBox(self.technicianBox, self.originalCore["ITCH"])
+        if self.originalCore["ISFT"] != "":
+            self.insertDefaultBox(self.isftSelect, self.originalCore["ISFT"])
+        if self.originalCore["ISRC"] != "":
+            self.insertDefaultBox(self.sourceSelect, self.originalCore["ISRC"])
+        if self.originalCore["CodingHistory"] != "":
+            self.insertDefaultText(self.codingHistoryText, self.originalCore["CodingHistory"])
+        if self.originalCore["ICMT"] != "":
+            self.insertDefaultText(self.commentText, self.originalCore["ICMT"])
+        if self.originalCore["ICOP"] != "":
+            self.insertDefaultText(self.copyrightText, self.originalCore["ICOP"])
 
-        if techMD["MD5Stored"] != "": self.md5Check.setEnabled(False)
+        if techMD["MD5Stored"] != "":
+            self.md5Check.setEnabled(False)
 
-        ###############
-        ##### replace with template values if they exist
-        ###############
-        
-        if template != None:
+        #
+        # replace with template values if they exist
+        #
+
+        if template is not None:
             core = getBwfCore(config["accept-nopadding"], template)
             if core["INAM"] != "":
-                self.titleLine.clear() 
+                self.titleLine.clear()
                 self.titleLine.insert(core["INAM"])
-            if core["ISRC"] != "": self.sourceSelect.lineEdit().setText(core["ISRC"])
-            if core["ITCH"] != "" and (self.originalCore["ITCH"] is not None): 
+            if core["ISRC"] != "":
+                self.sourceSelect.lineEdit().setText(core["ISRC"])
+            if core["ITCH"] != "" and (self.originalCore["ITCH"] is not None):
                 self.technicianBox.lineEdit().setText(core["ITCH"])
             if core["CodingHistory"] != "":
                 self.codingHistoryText.clear()
@@ -135,7 +179,6 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
                 self.copyrightText.clear()
                 self.copyrightText.insertPlainText(core["ICOP"])
 
-    
     def insertDefaultLine(self, widget, text):
         widget.clear()
         widget.insert(text)
@@ -172,22 +215,29 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         analogprops = [x for x in [config["deck"][deck], media, speed, eq, type] if x != ""]
         channels = {"1": "mono", "2": "stereo"}
 
-        history = "A=ANALOGUE,M=stereo,T=" + "; ".join(analogprops) 
-        history += "\r\nA=PCM,F=" + techMD["SampleRate"] + ",W=" + techMD["BitPerSample"] + \
-                ",M=stereo,T=" + config["adc"][adc]
-        history += "\r\nA=PCM,F=" + techMD["SampleRate"] + ",W=" + techMD["BitPerSample"] + \
-                ",M=" + channels[techMD["Channels"]] + ",T=" + config["software"][software] 
+        history_list = [
+            "A=ANALOGUE,M=stereo,T=", "; ".join(analogprops),
+            "\r\nA=PCM,F=", techMD["SampleRate"],
+            ",W=", techMD["BitPerSample"],
+            ",M=stereo,T=", config["adc"][adc],
+            "\r\nA=PCM,F=", techMD["SampleRate"],
+            ",W=" + techMD["BitPerSample"],
+            ",M=" + channels[techMD["Channels"]],
+            ",T=" + config["software"][software]
+        ]
 
+        history = "".join(history_list)
         self.codingHistoryText.clear()
         self.codingHistoryText.insertPlainText(history)
 
     def saveBwf(self):
         command = "bwfmetaedit --specialchars "
-        if config["accept-nopadding"]: command += "--accept-nopadding "
+        if config["accept-nopadding"]:
+            command += "--accept-nopadding "
 
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
             sysout = subprocess.call(command + "--MD5-embed " + filename, shell=True)
-        
+
         self.callBwf(command, filename, "Timereference", "0")
         self.callBwf(command, filename, "Description", self.descriptionLine.text())
         self.callBwf(command, filename, "Originator", self.originatorLine.text())
@@ -203,11 +253,12 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.callBwf(command, filename, "ISRC", self.sourceSelect.currentText())
         self.callBwf(command, filename, "IARL", config["iarl"])
         self.callBwf(command, filename, "History", self.codingHistoryText.toPlainText())
-		# for some bizarre reason, --History has to be last, otherwise there's duplication of the last two characters of the history string...
+        # for some bizarre reason, --History has to be last,
+        # otherwise there's duplication of the last two characters of the history string...
 
     def callBwf(self, command, filename, key, text):
         # deal with annoying inconsistencies in bwfmetaedit
-        if key == "Timereference": 
+        if key == "Timereference":
             mdkey = "TimeReference"
         elif key == "History":
             mdkey = "CodingHistory"
@@ -216,6 +267,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
 
         if text != self.originalCore[mdkey]:
             sysout = subprocess.call(command + '--' + key + '="' + text + '" ' + filename, shell=True)
+
 
 def getBwfTech(allow_padding, file):
     import io
@@ -231,6 +283,7 @@ def getBwfTech(allow_padding, file):
     reader = csv.DictReader(f, delimiter=',')
     tech = next(reader)
     return(tech)
+
 
 def getBwfCore(allow_padding, file):
     import io
@@ -252,11 +305,11 @@ if __name__ == "__main__":
     import json
     import argparse
     import inspect
-    
+
     path = inspect.stack()[0][1]
     path = path.replace("autoBWF.py", "config.json")
 
-    with open(path) as data_file:    
+    with open(path) as data_file:
         config = json.load(data_file)
 
     parser = argparse.ArgumentParser(description='Create internal metadata for WAV file(s).')
