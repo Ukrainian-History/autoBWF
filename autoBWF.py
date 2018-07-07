@@ -8,14 +8,13 @@ import subprocess
 class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
     def __init__(self, filename, techMD, config, template, parent=None):
         import re
-        # from datetime import date
         from datetime import datetime
         import os.path
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
-        date_time = datetime. \
+        date_time = datetime \
             .fromtimestamp(os.path.getctime(filename)) \
             .replace(microsecond=0) \
             .isoformat()
@@ -64,6 +63,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
                     self.fileUse +
                     " does not not have a standard translation"
                 )
+                self.fileUse = "Unknown"
 
             description = (
                 "File content: " + self.identifier +
@@ -129,6 +129,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         )
 
         self.originalCore = getBwfCore(config["accept-nopadding"], filename)
+        
         if self.originalCore["INAM"] != "":
             self.insertDefaultLine(self.titleLine, self.originalCore["INAM"])
         if self.originalCore["Description"] != "":
