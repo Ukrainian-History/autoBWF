@@ -1,11 +1,11 @@
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox
-from main import Ui_autoBWF
+from tabbed import Ui_autoBWF
 import subprocess
 
 
-class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
+class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def __init__(self, filename, techMD, config, template, parent=None):
         import re
         from datetime import datetime
@@ -117,7 +117,7 @@ class MainWindow(QtWidgets.QDialog, Ui_autoBWF):
         self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
         self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
-        self.buttonBox.accepted.connect(self.saveBwf)
+        self.actionUpdate_metadata.triggered.connect(self.saveBwf)
 
         #
         # prefill defaults and insert existing values
