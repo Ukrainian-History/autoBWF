@@ -118,6 +118,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
 
         self.actionUpdate_metadata.triggered.connect(self.saveBwf)
+        self.actionQuit.triggered.connect(self.close)
+        self.actionOpen.triggered.connect(
+            lambda:
+                print("Open button not yet implemented. Please use command line argument.")
+            )
 
         #
         # prefill defaults and insert existing values
