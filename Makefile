@@ -1,7 +1,4 @@
-all: main tabbed
-
-main: main.ui
-	pyuic5 main.ui -o main.py
+all: tabbed
 
 tabbed: tabbed.ui
 	pyuic5 tabbed.ui -o tabbed.py
