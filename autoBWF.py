@@ -1,6 +1,6 @@
 import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from tabbed import Ui_autoBWF
 import subprocess
 
@@ -12,6 +12,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+
+        self.filename = filename
 
         #
         # configure dropdowns and texts
@@ -48,21 +50,44 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
         self.actionUpdate_metadata.triggered.connect(self.saveBwf)
         self.actionQuit.triggered.connect(self.close)
-        self.actionOpen.triggered.connect(
-            lambda:
-                print("Open button not yet implemented. Please use command line argument.")
-        )
+        self.actionOpen.triggered.connect(self.openFile)
+
+        self.tabWidget.setEnabled(False)
+        self.actionUpdate_metadata.setEnabled(False)
 
         if filename:
+            self.tabWidget.setEnabled(True)
+            self.actionUpdate_metadata.setEnabled(True)
             self.populateFileInfo(filename)
 
         if template:
             self.populateTemplateInfo(template)
 
+    def openFile(self):
+        fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
+        if fname:
+            # check to make sure file is legit
+            md = getBwfTech(config["accept-nopadding"], fname)
+            if md["Errors"] != "":
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText(fname + " does not appear to be a valid Wave file")
+                msg.exec_()
+            else:
+                self.tabWidget.setEnabled(True)
+                self.actionUpdate_metadata.setEnabled(True)
+                self.actionOpen_template.setEnabled(True)
+                self.actionOpen.setEnabled(False)
+                self.populateFileInfo(fname)
+
+        self.filename = fname
+
     def populateFileInfo(self, file):
         import re
         import os.path
         from datetime import datetime
+
+        techMD = getBwfTech(config["accept-nopadding"], file)
 
         date_time = datetime \
             .fromtimestamp(os.path.getctime(file)) \
@@ -316,28 +341,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             command += "--accept-nopadding "
 
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
-            sysout = subprocess.call(command + "--MD5-embed " + filename, shell=True)
+            sysout = subprocess.call(command + "--MD5-embed " + self.filename, shell=True)
 
-        self.callBwf(command, filename, "Timereference", "0")
-        self.callBwf(command, filename, "Description", self.descriptionLine.text())
-        self.callBwf(command, filename, "Originator", self.originatorLine.text())
-        self.callBwf(command, filename, "OriginatorReference", self.originatorRefLine.text())
-        self.callBwf(command, filename, "OriginationDate", self.originationDateLine.text())
-        self.callBwf(command, filename, "OriginationTime", self.originationTimeLine.text())
-        self.callBwf(command, filename, "ICOP", self.copyrightText.toPlainText())
-        self.callBwf(command, filename, "INAM", self.titleLine.text())
-        self.callBwf(command, filename, "ITCH", self.technicianBox.currentText())
-        self.callBwf(command, filename, "ICMT", self.commentText.toPlainText())
-        self.callBwf(command, filename, "ICRD", self.creationDateLine.text())
-        self.callBwf(command, filename, "ISFT", self.isftSelect.currentText())
-        self.callBwf(command, filename, "ISRC", self.sourceSelect.currentText())
-        self.callBwf(command, filename, "IARL", config["iarl"])
-        self.callBwf(command, filename, "History", self.codingHistoryText.toPlainText())
+        self.callBwf(command, self.filename, "Timereference", "0")
+        self.callBwf(command, self.filename, "Description", self.descriptionLine.text())
+        self.callBwf(command, self.filename, "Originator", self.originatorLine.text())
+        self.callBwf(command, self.filename, "OriginatorReference", self.originatorRefLine.text())
+        self.callBwf(command, self.filename, "OriginationDate", self.originationDateLine.text())
+        self.callBwf(command, self.filename, "OriginationTime", self.originationTimeLine.text())
+        self.callBwf(command, self.filename, "ICOP", self.copyrightText.toPlainText())
+        self.callBwf(command, self.filename, "INAM", self.titleLine.text())
+        self.callBwf(command, self.filename, "ITCH", self.technicianBox.currentText())
+        self.callBwf(command, self.filename, "ICMT", self.commentText.toPlainText())
+        self.callBwf(command, self.filename, "ICRD", self.creationDateLine.text())
+        self.callBwf(command, self.filename, "ISFT", self.isftSelect.currentText())
+        self.callBwf(command, self.filename, "ISRC", self.sourceSelect.currentText())
+        self.callBwf(command, self.filename, "IARL", config["iarl"])
+        self.callBwf(command, self.filename, "History", self.codingHistoryText.toPlainText())
         # for some bizarre reason, --History has to be last,
         # otherwise there's duplication of the last two characters of the history string...
 
         # XMP must be done after RIFF, as xmp library crashes if wav has no RIFF tags
-        xmpfile = XMPFiles(file_path=filename, open_forupdate=True)
+        xmpfile = XMPFiles(file_path=self.filename, open_forupdate=True)
         xmp = xmpfile.get_xmp()
 
         xmp.set_localized_text(
@@ -363,7 +388,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         xmpfile.put_xmp(xmp)
         xmpfile.close_file()
 
-    def callBwf(self, command, filename, key, text):
+    def callBwf(self, file, command, key, text):
         # deal with annoying inconsistencies in bwfmetaedit
         if key == "Timereference":
             mdkey = "TimeReference"
@@ -373,7 +398,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             mdkey = key
 
         if text != self.originalCore[mdkey]:
-            sysout = subprocess.call(command + '--' + key + '="' + text + '" ' + filename, shell=True)
+            sysout = subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
 
 
 def getBwfTech(allow_padding, file):
