@@ -10,8 +10,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         import re
         from datetime import datetime
         import os.path
-
-        self.autobwf_ns = None
+        
+        self.autobwf_ns_short = None
+        self.autobwf_ns = "http://ns.ukrhec.org/autoBWF/0.1"
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -167,6 +168,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if techMD["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
 
+        self.originalXmp = self.getXmp()
+        if self.originalXmp["description"] != "":
+            self.insertDefaultText(self.descriptionText, self.originalXmp["description"])
+        if self.originalXmp["owner"] != "":
+            self.insertDefaultBox(self.rightsOwnerSelect, self.originalXmp["owner"])
+        if self.originalXmp["language"] != "":
+            self.insertDefaultLine(self.languageLine, self.originalXmp["language"])
+        if self.originalXmp["interviewer"] != "":
+            self.insertDefaultLine(self.interviewerLine, self.originalXmp["interviewer"])
+        if self.originalXmp["interviewee"] != "":
+            self.insertDefaultLine(self.intervieweeLine, self.originalXmp["interviewee"])
+
         #
         # replace with template values if they exist
         #
@@ -238,6 +251,49 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.codingHistoryText.clear()
         self.codingHistoryText.insertPlainText(history)
 
+    def getXmp(self):
+        import libxmp
+
+        xmpfile = libxmp.XMPFiles(file_path=filename, open_forupdate=False)
+        xmp = xmpfile.get_xmp()        
+        xmp_dict = {"owner": "", "description": "", "language": "", 
+                    "interviewer": "", "interviewee": ""}
+        
+        if xmp:
+            try:
+                xmp_dict["owner"] = xmp.get_localized_text(
+                    libxmp.consts.XMP_NS_XMP_Rights, 'Owner', 'en', 'en-US')
+            except libxmp.XMPError:
+                pass
+
+            try:
+                xmp_dict["description"] = xmp.get_localized_text(
+                    libxmp.consts.XMP_NS_DC, 'description', 'en', 'en-US')
+            except libxmp.XMPError:
+                pass
+
+            try:
+                xmp_dict["language"] = xmp.get_localized_text(
+                    libxmp.consts.XMP_NS_DC, 'language', 'en', 'en-US')
+            except libxmp.XMPError:
+                pass
+
+            try:
+                xmp_dict["interviewer"] = xmp.get_localized_text(
+                    self.autobwf_ns, 'Interviewer', 'en', 'en-US')
+            except libxmp.XMPError:
+                pass
+
+            try:
+                xmp_dict["interviewee"] = xmp.get_localized_text(
+                    self.autobwf_ns, 'Interviewee', 'en', 'en-US')
+            except libxmp.XMPError:
+                pass
+
+            
+        return xmp_dict
+
+
     def saveBwf(self):
         from libxmp import XMPFiles, consts
 
@@ -281,14 +337,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             consts.XMP_NS_DC, 'language', 
             'en', 'en-US', self.languageLine.text())
 
-        if not self.autobwf_ns:
-            self.autobwf_ns = xmp.register_namespace("www.ukrhec.org/autoBWF/0.1", 'autoBWF')
+        if not self.autobwf_ns_short:
+            self.autobwf_ns_short = xmp.register_namespace(self.autobwf_ns, 'autoBWF')
 
         xmp.set_localized_text(
-            "www.ukrhec.org/autoBWF/0.1", 'Interviewer', 
+            self.autobwf_ns, 'Interviewer', 
             'en', 'en-US', self.interviewerLine.text())
         xmp.set_localized_text(
-            "www.ukrhec.org/autoBWF/0.1", 'Interviewee', 
+            self.autobwf_ns, 'Interviewee', 
             'en', 'en-US', self.intervieweeLine.text())
 
         xmpfile.put_xmp(xmp)
