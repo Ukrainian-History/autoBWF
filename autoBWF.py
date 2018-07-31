@@ -100,6 +100,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.technicianBox.addItems(config["technician"])
         self.isftSelect.addItems(config["isft"])
         self.sourceSelect.addItems(config["source"])
+        self.rightsOwnerSelect.addItems(config["owner"])
 
         self.deckSelect.addItems(config["deck"]["list"])
         self.adcSelect.addItems(config["adc"]["list"])

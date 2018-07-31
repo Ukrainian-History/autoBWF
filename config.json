@@ -74,6 +74,11 @@
         "pres": "Preservation Master",
         "presInt": "Preservation Master-Intermediate",
         "prod": "Production Master"
-    }
+    },
+
+    "owner": [
+        "Apocryphal State University",
+        "Big Donor"
+    ]
 }
  
