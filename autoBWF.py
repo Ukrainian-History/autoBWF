@@ -6,24 +6,71 @@ import subprocess
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
-    def __init__(self, filename, techMD, config, template, parent=None):
-        import re
-        from datetime import datetime
-        import os.path
-
+    def __init__(self, filename, config, template, parent=None):
         self.autobwf_ns_short = None
         self.autobwf_ns = "http://ns.ukrhec.org/autoBWF/0.1"
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
+        #
+        # configure dropdowns and texts
+        #
+
+        self.originatorLine.insert(config["originator"])
+        self.speedSelect.addItems(config["speed"])
+        self.mediaSelect.addItems(config["media"])
+        self.eqSelect.addItems(config["eq"])
+        self.typeSelect.addItems(config["type"])
+        self.technicianBox.addItems(config["technician"])
+        self.isftSelect.addItems(config["isft"])
+        self.sourceSelect.addItems(config["source"])
+        self.rightsOwnerSelect.addItems(config["owner"])
+        self.deckSelect.addItems(config["deck"]["list"])
+        self.adcSelect.addItems(config["adc"]["list"])
+        self.softwareSelect.addItems(config["software"]["list"])
+        self.copyrightSelect.addItems(config["copyright"]["list"])
+        self.copyrightText.insertPlainText(
+            config["copyright"][config["copyright"]["list"][0]]
+        )
+
+        #
+        # set up signals/slots
+        #
+
+        self.copyrightSelect.activated.connect(self.copyrightActivated)
+        self.deckSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.adcSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.softwareSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.mediaSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.speedSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
+        self.actionUpdate_metadata.triggered.connect(self.saveBwf)
+        self.actionQuit.triggered.connect(self.close)
+        self.actionOpen.triggered.connect(
+            lambda:
+                print("Open button not yet implemented. Please use command line argument.")
+        )
+
+        if filename:
+            self.populateFileInfo(filename)
+
+        if template:
+            self.populateTemplateInfo(template)
+
+    def populateFileInfo(self, file):
+        import re
+        import os.path
+        from datetime import datetime
+
         date_time = datetime \
-            .fromtimestamp(os.path.getctime(filename)) \
+            .fromtimestamp(os.path.getctime(file)) \
             .replace(microsecond=0) \
             .isoformat()
         [date, time] = date_time.split("T")
 
-        m = re.compile(config["filenameRegex"]).match(filename)
+        m = re.compile(config["filenameRegex"]).match(file)
         if m:
             matches = m.groups()
             self.identifier = matches[0]
@@ -71,13 +118,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             description = (
                 "File content: " + self.identifier +
                 "; File use: " + self.fileUse +
-                "; Original filename: " + filename
+                "; Original filename: " + file
             )
             self.descriptionLine.insert(description)
         else:
             QMessageBox.warning(
                 self, 'Warning',
-                filename + " does not follow filenaming convention"
+                file + " does not follow filenaming convention"
             )
             self.originationDateLine.insert(date)
             self.originationTimeLine.insert(time)
@@ -87,57 +134,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 time.replace(":", "")
             )
 
-        self.originatorLine.insert(config["originator"])
-
-        #
-        # configure dropdowns
-        #
-
-        self.speedSelect.addItems(config["speed"])
-        self.mediaSelect.addItems(config["media"])
-        self.eqSelect.addItems(config["eq"])
-        self.typeSelect.addItems(config["type"])
-        self.technicianBox.addItems(config["technician"])
-        self.isftSelect.addItems(config["isft"])
-        self.sourceSelect.addItems(config["source"])
-        self.rightsOwnerSelect.addItems(config["owner"])
-
-        self.deckSelect.addItems(config["deck"]["list"])
-        self.adcSelect.addItems(config["adc"]["list"])
-        self.softwareSelect.addItems(config["software"]["list"])
-        self.copyrightSelect.addItems(config["copyright"]["list"])
-
-        #
-        # set up signals/slots
-        #
-
-        self.copyrightSelect.activated.connect(self.copyrightActivated)
-
-        self.deckSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.adcSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.softwareSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.mediaSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.speedSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
-
-        self.actionUpdate_metadata.triggered.connect(self.saveBwf)
-        self.actionQuit.triggered.connect(self.close)
-        self.actionOpen.triggered.connect(
-            lambda:
-                print("Open button not yet implemented. Please use command line argument.")
-        )
+        self.updateCodingHistory(0, techMD)
 
         #
         # prefill defaults and insert existing values
         #
 
-        self.updateCodingHistory(0)
-        self.copyrightText.insertPlainText(
-            config["copyright"][config["copyright"]["list"][0]]
-        )
-
-        self.originalCore = getBwfCore(config["accept-nopadding"], filename)
+        self.originalCore = getBwfCore(config["accept-nopadding"], file)
 
         if self.originalCore["INAM"] != "":
             self.insertDefaultLine(self.titleLine, self.originalCore["INAM"])
@@ -169,7 +172,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if techMD["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
 
-        self.originalXmp = self.getXmp(filename)
+        self.originalXmp = self.getXmp(file)
         if self.originalXmp["description"] != "":
             self.insertDefaultText(self.descriptionText, self.originalXmp["description"])
         if self.originalXmp["owner"] != "":
@@ -181,12 +184,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if self.originalXmp["interviewee"] != "":
             self.insertDefaultLine(self.intervieweeLine, self.originalXmp["interviewee"])
 
-        #
+    def populateTemplateInfo(self, file):
         # replace with template values if they exist
-        #
 
-        if template is not None:
-            core = getBwfCore(config["accept-nopadding"], template)
+        if file is not None:
+            core = getBwfCore(config["accept-nopadding"], file)
             if core["INAM"] != "":
                 self.titleLine.clear()
                 self.titleLine.insert(core["INAM"])
@@ -201,7 +203,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.copyrightText.clear()
                 self.copyrightText.insertPlainText(core["ICOP"])
 
-            templateXmp = self.getXmp(template)
+            templateXmp = self.getXmp(file)
             if templateXmp["description"] != "":
                 self.insertDefaultText(self.descriptionText, templateXmp["description"])
             if templateXmp["owner"] != "":
@@ -237,7 +239,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.copyrightText.clear()
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][index]])
 
-    def updateCodingHistory(self, index):
+    def updateCodingHistory(self, index, techMD):
         deck = self.deckSelect.currentText()
         adc = self.adcSelect.currentText()
         software = self.softwareSelect.currentText()
@@ -418,18 +420,28 @@ if __name__ == "__main__":
         config = json.load(data_file)
 
     parser = argparse.ArgumentParser(description='Create internal metadata for WAV file(s).')
-    parser.add_argument('filename', help='WAV file to be processed')
+    parser.add_argument('filename', nargs='?', help='WAV file to be processed')
     parser.add_argument('-t', help="template file")
     args = parser.parse_args()
     filename = args.filename
     template = args.t
 
-    techMD = getBwfTech(config["accept-nopadding"], filename)
-    if techMD["Errors"] != "":
-        sys.exit(1)
+    if filename:
+        # check to make sure file is legit
+        techMD = getBwfTech(config["accept-nopadding"], filename)
+        if techMD["Errors"] != "":
+            print(filename + " does not appear to be a valid Wave file")
+            sys.exit(1)
+
+    if template:
+        # check to make sure file is legit
+        dum = getBwfTech(config["accept-nopadding"], template)
+        if dum["Errors"] != "":
+            print(template + " does not appear to be a valid Wave file")
+            sys.exit(1)
 
     app = QtWidgets.QApplication(sys.argv)
-    form = MainWindow(filename, techMD, config, template)
+    form = MainWindow(filename, config, template)
     form.show()
 
     sys.exit(app.exec_())
