@@ -11,6 +11,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         from datetime import datetime
         import os.path
 
+        self.autobwf_ns = None
+
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
@@ -237,6 +239,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.codingHistoryText.insertPlainText(history)
 
     def saveBwf(self):
+        from libxmp import XMPFiles, consts
+
+        # first the BWF and RIFF
         command = "bwfmetaedit --specialchars "
         if config["accept-nopadding"]:
             command += "--accept-nopadding "
@@ -261,6 +266,33 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.callBwf(command, filename, "History", self.codingHistoryText.toPlainText())
         # for some bizarre reason, --History has to be last,
         # otherwise there's duplication of the last two characters of the history string...
+
+        # XMP must be done after RIFF, as xmp library crashes if wav has no RIFF tags
+        xmpfile = XMPFiles(file_path=filename, open_forupdate=True)
+        xmp = xmpfile.get_xmp()
+
+        xmp.set_localized_text(
+            consts.XMP_NS_XMP_Rights, 'Owner', 
+            'en', 'en-US', self.rightsOwnerSelect.currentText())
+        xmp.set_localized_text(
+            consts.XMP_NS_DC, 'description', 
+            'en', 'en-US', self.descriptionText.toPlainText())
+        xmp.set_localized_text(
+            consts.XMP_NS_DC, 'language', 
+            'en', 'en-US', self.languageLine.text())
+
+        if not self.autobwf_ns:
+            self.autobwf_ns = xmp.register_namespace("www.ukrhec.org/autoBWF/0.1", 'autoBWF')
+
+        xmp.set_localized_text(
+            "www.ukrhec.org/autoBWF/0.1", 'Interviewer', 
+            'en', 'en-US', self.interviewerLine.text())
+        xmp.set_localized_text(
+            "www.ukrhec.org/autoBWF/0.1", 'Interviewee', 
+            'en', 'en-US', self.intervieweeLine.text())
+
+        xmpfile.put_xmp(xmp)
+        xmpfile.close_file()
 
     def callBwf(self, command, filename, key, text):
         # deal with annoying inconsistencies in bwfmetaedit
