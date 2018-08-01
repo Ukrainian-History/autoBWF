@@ -60,6 +60,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if filename:
             self.tabWidget.setEnabled(True)
             self.actionUpdate_metadata.setEnabled(True)
+            self.actionOpen.setEnabled(False)
             self.populateFileInfo(filename)
 
         if template:
