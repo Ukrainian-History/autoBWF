@@ -7,7 +7,6 @@ import subprocess
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def __init__(self, filename, config, template, parent=None):
-        self.autobwf_ns_short = None
         self.autobwf_ns = "http://ns.ukrhec.org/autoBWF/0.1"
 
         super(MainWindow, self).__init__(parent)
@@ -329,11 +328,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             except libxmp.XMPError:
                 pass
 
-            try:
-                xmp_dict["language"] = xmp.get_localized_text(
-                    libxmp.consts.XMP_NS_DC, 'language', 'en', 'en-US')
-            except libxmp.XMPError:
-                pass
+            languages = []
+            i = 1
+            while True:
+                try:
+                    languages.append(xmp.get_array_item(
+                        libxmp.consts.XMP_NS_DC, 'language', i))
+                except libxmp.XMPError:
+                    xmp_dict["language"] = ";".join(languages)
+                    break
+
+                i += 1
+
+            xmp.register_namespace(self.autobwf_ns, 'autoBWF')
 
             try:
                 xmp_dict["interviewer"] = xmp.get_localized_text(
@@ -390,15 +397,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             xmp.set_localized_text(
                 consts.XMP_NS_DC, 'description',
                 'en', 'en-US', self.descriptionText.toPlainText())
+
         if self.languageLine.text():
+            # delete languages first to prevent appending to existing array
+            xmp.delete_property(consts.XMP_NS_DC, 'language')
+
             for lang in self.languageLine.text().split(";"):
                 xmp.append_array_item(consts.XMP_NS_DC, 'language',
                                       lang.strip(),
                                       {'prop_array_is_ordered': False,
                                        'prop_value_is_array': True})
 
-        if not self.autobwf_ns_short:
-            self.autobwf_ns_short = xmp.register_namespace(self.autobwf_ns, 'autoBWF')
+        xmp.register_namespace(self.autobwf_ns, 'autoBWF')
 
         if self.interviewerLine.text():
             xmp.set_localized_text(
