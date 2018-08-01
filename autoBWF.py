@@ -381,28 +381,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         xmpfile = XMPFiles(file_path=self.filename, open_forupdate=True)
         xmp = xmpfile.get_xmp()
 
-        xmp.set_localized_text(
-            consts.XMP_NS_XMP_Rights, 'Owner',
-            'en', 'en-US', self.rightsOwnerSelect.currentText())
-        xmp.set_localized_text(
-            consts.XMP_NS_DC, 'description',
-            'en', 'en-US', self.descriptionText.toPlainText())
-        xmp.set_localized_text(
-            consts.XMP_NS_DC, 'language',
-            'en', 'en-US', self.languageLine.text())
+        if self.rightsOwnerSelect.currentText():
+            xmp.set_localized_text(
+                consts.XMP_NS_XMP_Rights, 'Owner',
+                'en', 'en-US', self.rightsOwnerSelect.currentText())
+        if self.descriptionText.toPlainText():
+            xmp.set_localized_text(
+                consts.XMP_NS_DC, 'description',
+                'en', 'en-US', self.descriptionText.toPlainText())
+        if self.languageLine.text():
+            for lang in self.languageLine.text().split(";"):
+                xmp.append_array_item(consts.XMP_NS_DC, 'language',
+                                      lang.strip(),
+                                      {'prop_array_is_ordered': False,
+                                       'prop_value_is_array': True})
 
         if not self.autobwf_ns_short:
             self.autobwf_ns_short = xmp.register_namespace(self.autobwf_ns, 'autoBWF')
 
-        xmp.set_localized_text(
-            self.autobwf_ns, 'Interviewer',
-            'en', 'en-US', self.interviewerLine.text())
-        xmp.set_localized_text(
-            self.autobwf_ns, 'Interviewee',
-            'en', 'en-US', self.intervieweeLine.text())
+        if self.interviewerLine.text():
+            xmp.set_localized_text(
+                self.autobwf_ns, 'Interviewer',
+                'en', 'en-US', self.interviewerLine.text())
+        if self.intervieweeLine.text():
+            xmp.set_localized_text(
+                self.autobwf_ns, 'Interviewee',
+                'en', 'en-US', self.intervieweeLine.text())
 
         xmpfile.put_xmp(xmp)
         xmpfile.close_file()
+
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText("Metadata saved successfully")
+        msg.exec_()
 
     def callBwf(self, command, file, key, text):
         # deal with annoying inconsistencies in bwfmetaedit

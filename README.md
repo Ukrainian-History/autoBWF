@@ -47,3 +47,10 @@ The text box labels in the GUI correspond directly to BWF metadata field names, 
 #### Automatic metadata generation details
 
  The code assumes that filenames follow the convention of Indiana University Archives of Traditional Music as described in the ["Sound Directions" publication](http://www.dlib.indiana.edu/projects/sounddirections/papersPresent/index.shtml). If the naming convention at your archives is different, then you may be able to make things work by modifying the regex string in config.json, or more substantial customization to the Python code may need to be made. The values of Description, Originator, OriginationDate, OriginationTime, and OriginatorRef are prefilled based on parsing the filename and using file creation date and times obtained from OS metadata together with default values in config.json. If there is a conflict between the OS metadata date and that in the filename, then the program will display a warning and will allow you to choose which one you want to use. If the program cannot parse the filename, then it will display a warning, use the OS file creation date and time to generate OriginationDate, OriginationTime, and OriginatorRef, and will leave Description blank.
+
+
+#### Known issues
+
+does not remove existing XMP metadata fields (i.e. setting a field to "" causes the existing data to remain unchanged)
+
+for some reason, XMP dc:description shows up as RIFF ISBJ in BWFMetaEdit
