@@ -1,0 +1,5 @@
+file1.wav 02:40+54392s 03:03+26995s fade 0 5
+file1.wav 03:31+26995s 04:35+08823s fade 0 20 pad 1.5 2.5
+file2.wav 14:12+26995s 15:02+08823s fade 15 5
+file3.wav 0 5
+output_file.wav
