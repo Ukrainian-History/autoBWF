@@ -397,7 +397,7 @@ class Ui_autoBWF(object):
         self.actionQuit = QtWidgets.QAction(autoBWF)
         self.actionQuit.setObjectName("actionQuit")
         self.actionOpen_template = QtWidgets.QAction(autoBWF)
-        self.actionOpen_template.setEnabled(False)
+        self.actionOpen_template.setEnabled(True)
         self.actionOpen_template.setObjectName("actionOpen_template")
         self.toolBar.addAction(self.actionOpen)
         self.toolBar.addAction(self.actionOpen_template)

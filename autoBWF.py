@@ -51,6 +51,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.actionUpdate_metadata.triggered.connect(self.saveBwf)
         self.actionQuit.triggered.connect(self.close)
         self.actionOpen.triggered.connect(self.openFile)
+        self.actionOpen_template.connect(self.openTemplate)
 
         self.tabWidget.setEnabled(False)
         self.actionUpdate_metadata.setEnabled(False)
@@ -81,6 +82,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.populateFileInfo(fname)
 
         self.filename = fname
+
+    def openTemplate(self):
+        fname = str(QFileDialog.getOpenFileName(self, "Open template file", "~")[0])
+        if fname:
+            # check to make sure file is legit
+            md = getBwfTech(config["accept-nopadding"], fname)
+            if md["Errors"] != "":
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Critical)
+                msg.setText(fname + " does not appear to be a valid Wave file")
+                msg.exec_()
+            else:
+                self.actionOpen_template.setEnabled(False)
+                self.populateTemplateInfo(fname)
 
     def populateFileInfo(self, file):
         import re
@@ -388,7 +403,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         xmpfile.put_xmp(xmp)
         xmpfile.close_file()
 
-    def callBwf(self, file, command, key, text):
+    def callBwf(self, command, file, key, text):
         # deal with annoying inconsistencies in bwfmetaedit
         if key == "Timereference":
             mdkey = "TimeReference"
