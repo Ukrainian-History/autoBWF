@@ -679,7 +679,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Open template...</string>
+    <string>Load template...</string>
+   </property>
+   <property name="toolTip">
+    <string>Load template</string>
    </property>
   </action>
  </widget>

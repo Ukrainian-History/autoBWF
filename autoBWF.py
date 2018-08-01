@@ -51,10 +51,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.actionUpdate_metadata.triggered.connect(self.saveBwf)
         self.actionQuit.triggered.connect(self.close)
         self.actionOpen.triggered.connect(self.openFile)
-        self.actionOpen_template.connect(self.openTemplate)
+        self.actionOpen_template.triggered.connect(self.openTemplate)
 
         self.tabWidget.setEnabled(False)
         self.actionUpdate_metadata.setEnabled(False)
+        self.actionOpen_template.setEnabled(False)
 
         if filename:
             self.tabWidget.setEnabled(True)
@@ -158,7 +159,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             description = (
                 "File content: " + self.identifier +
                 "; File use: " + self.fileUse +
-                "; Original filename: " + file
+                "; Original filename: " + os.path.basename(file)
             )
             self.descriptionLine.insert(description)
         else:

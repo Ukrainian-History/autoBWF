@@ -442,5 +442,6 @@ class Ui_autoBWF(object):
         self.actionOpen.setText(_translate("autoBWF", "Open..."))
         self.actionQuit.setText(_translate("autoBWF", "Quit"))
         self.actionQuit.setShortcut(_translate("autoBWF", "Q"))
-        self.actionOpen_template.setText(_translate("autoBWF", "Open template..."))
+        self.actionOpen_template.setText(_translate("autoBWF", "Load template..."))
+        self.actionOpen_template.setToolTip(_translate("autoBWF", "Load template"))
 
