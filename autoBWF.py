@@ -39,18 +39,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # set up signals/slots
         #
 
-        self.copyrightSelect.activated.connect(self.copyrightActivated)
-        self.deckSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.adcSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.softwareSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.mediaSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.speedSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.eqSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.typeSelect.currentIndexChanged.connect(self.updateCodingHistory)
-        self.actionUpdate_metadata.triggered.connect(self.saveBwf)
+        self.copyrightSelect.activated.connect(self.copyright_activated)
+        self.deckSelect.currentIndexChanged.connect(self.update_coding_history)
+        self.adcSelect.currentIndexChanged.connect(self.update_coding_history)
+        self.softwareSelect.currentIndexChanged.connect(self.update_coding_history)
+        self.mediaSelect.currentIndexChanged.connect(self.update_coding_history)
+        self.speedSelect.currentIndexChanged.connect(self.update_coding_history)
+        self.eqSelect.currentIndexChanged.connect(self.update_coding_history)
+        self.typeSelect.currentIndexChanged.connect(self.update_coding_history)
+        self.actionUpdate_metadata.triggered.connect(self.save_metadata)
         self.actionQuit.triggered.connect(self.close)
-        self.actionOpen.triggered.connect(self.openFile)
-        self.actionOpen_template.triggered.connect(self.openTemplate)
+        self.actionOpen.triggered.connect(self.open_file)
+        self.actionOpen_template.triggered.connect(self.open_template)
 
         self.tabWidget.setEnabled(False)
         self.actionUpdate_metadata.setEnabled(False)
@@ -60,16 +60,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.tabWidget.setEnabled(True)
             self.actionUpdate_metadata.setEnabled(True)
             self.actionOpen.setEnabled(False)
-            self.populateFileInfo(filename)
+            self.populate_file_info(filename)
 
         if template:
-            self.populateTemplateInfo(template)
+            self.populate_template_info(template)
 
-    def openFile(self):
+    def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
         if fname:
             # check to make sure file is legit
-            md = getBwfTech(config["accept-nopadding"], fname)
+            md = get_bwf_tech(config["accept-nopadding"], fname)
             if md["Errors"] != "":
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
@@ -80,15 +80,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionUpdate_metadata.setEnabled(True)
                 self.actionOpen_template.setEnabled(True)
                 self.actionOpen.setEnabled(False)
-                self.populateFileInfo(fname)
+                self.populate_file_info(fname)
 
         self.filename = fname
 
-    def openTemplate(self):
+    def open_template(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open template file", "~")[0])
         if fname:
             # check to make sure file is legit
-            md = getBwfTech(config["accept-nopadding"], fname)
+            md = get_bwf_tech(config["accept-nopadding"], fname)
             if md["Errors"] != "":
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
@@ -96,14 +96,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 msg.exec_()
             else:
                 self.actionOpen_template.setEnabled(False)
-                self.populateTemplateInfo(fname)
+                self.populate_template_info(fname)
 
-    def populateFileInfo(self, file):
+    def populate_file_info(self, file):
         import re
         import os.path
         from datetime import datetime
 
-        techMD = getBwfTech(config["accept-nopadding"], file)
+        tech_md = get_bwf_tech(config["accept-nopadding"], file)
 
         date_time = datetime \
             .fromtimestamp(os.path.getctime(file)) \
@@ -175,61 +175,61 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 time.replace(":", "")
             )
 
-        self.updateCodingHistory(0, techMD)
+        self.update_coding_history(0, tech_md)
 
         #
         # prefill defaults and insert existing values
         #
 
-        self.originalCore = getBwfCore(config["accept-nopadding"], file)
+        self.originalCore = get_bwf_core(config["accept-nopadding"], file)
 
         if self.originalCore["INAM"] != "":
-            self.insertDefaultLine(self.titleLine, self.originalCore["INAM"])
+            self.insert_default_line(self.titleLine, self.originalCore["INAM"])
         if self.originalCore["Description"] != "":
-            self.insertDefaultLine(self.descriptionLine, self.originalCore["Description"])
+            self.insert_default_line(self.descriptionLine, self.originalCore["Description"])
         if self.originalCore["Originator"] != "":
-            self.insertDefaultLine(self.originatorLine, self.originalCore["Originator"])
+            self.insert_default_line(self.originatorLine, self.originalCore["Originator"])
         if self.originalCore["OriginatorReference"] != "":
-            self.insertDefaultLine(self.originatorRefLine, self.originalCore["OriginatorReference"])
+            self.insert_default_line(self.originatorRefLine, self.originalCore["OriginatorReference"])
         if self.originalCore["OriginationDate"] != "":
-            self.insertDefaultLine(self.originationDateLine, self.originalCore["OriginationDate"])
+            self.insert_default_line(self.originationDateLine, self.originalCore["OriginationDate"])
         if self.originalCore["OriginationTime"] != "":
-            self.insertDefaultLine(self.originationTimeLine, self.originalCore["OriginationTime"])
+            self.insert_default_line(self.originationTimeLine, self.originalCore["OriginationTime"])
         if self.originalCore["ICRD"] != "":
-            self.insertDefaultLine(self.creationDateLine, self.originalCore["ICRD"])
+            self.insert_default_line(self.creationDateLine, self.originalCore["ICRD"])
         if self.originalCore["ITCH"] != "" and (self.originalCore["ITCH"] is not None):
-            self.insertDefaultBox(self.technicianBox, self.originalCore["ITCH"])
+            self.insert_default_box(self.technicianBox, self.originalCore["ITCH"])
         if self.originalCore["ISFT"] != "":
-            self.insertDefaultBox(self.isftSelect, self.originalCore["ISFT"])
+            self.insert_default_box(self.isftSelect, self.originalCore["ISFT"])
         if self.originalCore["ISRC"] != "":
-            self.insertDefaultBox(self.sourceSelect, self.originalCore["ISRC"])
+            self.insert_default_box(self.sourceSelect, self.originalCore["ISRC"])
         if self.originalCore["CodingHistory"] != "":
-            self.insertDefaultText(self.codingHistoryText, self.originalCore["CodingHistory"])
+            self.insert_default_text(self.codingHistoryText, self.originalCore["CodingHistory"])
         if self.originalCore["ICMT"] != "":
-            self.insertDefaultText(self.commentText, self.originalCore["ICMT"])
+            self.insert_default_text(self.commentText, self.originalCore["ICMT"])
         if self.originalCore["ICOP"] != "":
-            self.insertDefaultText(self.copyrightText, self.originalCore["ICOP"])
+            self.insert_default_text(self.copyrightText, self.originalCore["ICOP"])
 
-        if techMD["MD5Stored"] != "":
+        if tech_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
 
-        self.originalXmp = self.getXmp(file)
+        self.originalXmp = self.get_xmp(file)
         if self.originalXmp["description"] != "":
-            self.insertDefaultText(self.descriptionText, self.originalXmp["description"])
+            self.insert_default_text(self.descriptionText, self.originalXmp["description"])
         if self.originalXmp["owner"] != "":
-            self.insertDefaultBox(self.rightsOwnerSelect, self.originalXmp["owner"])
+            self.insert_default_box(self.rightsOwnerSelect, self.originalXmp["owner"])
         if self.originalXmp["language"] != "":
-            self.insertDefaultLine(self.languageLine, self.originalXmp["language"])
+            self.insert_default_line(self.languageLine, self.originalXmp["language"])
         if self.originalXmp["interviewer"] != "":
-            self.insertDefaultLine(self.interviewerLine, self.originalXmp["interviewer"])
+            self.insert_default_line(self.interviewerLine, self.originalXmp["interviewer"])
         if self.originalXmp["interviewee"] != "":
-            self.insertDefaultLine(self.intervieweeLine, self.originalXmp["interviewee"])
+            self.insert_default_line(self.intervieweeLine, self.originalXmp["interviewee"])
 
-    def populateTemplateInfo(self, file):
+    def populate_template_info(self, file):
         # replace with template values if they exist
 
         if file is not None:
-            core = getBwfCore(config["accept-nopadding"], file)
+            core = get_bwf_core(config["accept-nopadding"], file)
             if core["INAM"] != "":
                 self.titleLine.clear()
                 self.titleLine.insert(core["INAM"])
@@ -244,43 +244,43 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.copyrightText.clear()
                 self.copyrightText.insertPlainText(core["ICOP"])
 
-            templateXmp = self.getXmp(file)
-            if templateXmp["description"] != "":
-                self.insertDefaultText(self.descriptionText, templateXmp["description"])
-            if templateXmp["owner"] != "":
-                self.insertDefaultBox(self.rightsOwnerSelect, templateXmp["owner"])
-            if templateXmp["language"] != "":
-                self.insertDefaultLine(self.languageLine, templateXmp["language"])
-            if templateXmp["interviewer"] != "":
-                self.insertDefaultLine(self.interviewerLine, templateXmp["interviewer"])
-            if templateXmp["interviewee"] != "":
-                self.insertDefaultLine(self.intervieweeLine, templateXmp["interviewee"])
+            template_xmp = self.get_xmp(file)
+            if template_xmp["description"] != "":
+                self.insert_default_text(self.descriptionText, template_xmp["description"])
+            if template_xmp["owner"] != "":
+                self.insert_default_box(self.rightsOwnerSelect, template_xmp["owner"])
+            if template_xmp["language"] != "":
+                self.insert_default_line(self.languageLine, template_xmp["language"])
+            if template_xmp["interviewer"] != "":
+                self.insert_default_line(self.interviewerLine, template_xmp["interviewer"])
+            if template_xmp["interviewee"] != "":
+                self.insert_default_line(self.intervieweeLine, template_xmp["interviewee"])
 
-    def insertDefaultLine(self, widget, text):
+    def insert_default_line(self, widget, text):
         widget.clear()
         widget.insert(text)
         widget.setStyleSheet("color: grey; font: italic")
-        widget.textChanged.connect(lambda: self.activateChanged(widget))
+        widget.textChanged.connect(lambda: self.activate_changed(widget))
 
-    def insertDefaultBox(self, widget, text):
+    def insert_default_box(self, widget, text):
         widget.setCurrentText(text)
         widget.setStyleSheet("color: grey; font: italic")
-        widget.currentTextChanged.connect(lambda: self.activateChanged(widget))
+        widget.currentTextChanged.connect(lambda: self.activate_changed(widget))
 
-    def insertDefaultText(self, widget, text):
+    def insert_default_text(self, widget, text):
         widget.clear()
         widget.insertPlainText(text)
         widget.setStyleSheet("color: grey; font: italic")
-        widget.textChanged.connect(lambda: self.activateChanged(widget))
+        widget.textChanged.connect(lambda: self.activate_changed(widget))
 
-    def activateChanged(self, inputWidget):
-        inputWidget.setStyleSheet("color: red; font: normal")
+    def activate_changed(self, input_widget):
+        input_widget.setStyleSheet("color: red; font: normal")
 
-    def copyrightActivated(self, index):
+    def copyright_activated(self, index):
         self.copyrightText.clear()
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][index]])
 
-    def updateCodingHistory(self, index, techMD):
+    def update_coding_history(self, index, tech_md):
         deck = self.deckSelect.currentText()
         adc = self.adcSelect.currentText()
         software = self.softwareSelect.currentText()
@@ -294,12 +294,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         history_list = [
             "A=ANALOGUE,M=stereo,T=", "; ".join(analogprops),
-            "\r\nA=PCM,F=", techMD["SampleRate"],
-            ",W=", techMD["BitPerSample"],
+            "\r\nA=PCM,F=", tech_md["SampleRate"],
+            ",W=", tech_md["BitPerSample"],
             ",M=stereo,T=", config["adc"][adc],
-            "\r\nA=PCM,F=", techMD["SampleRate"],
-            ",W=" + techMD["BitPerSample"],
-            ",M=" + channels[techMD["Channels"]],
+            "\r\nA=PCM,F=", tech_md["SampleRate"],
+            ",W=" + tech_md["BitPerSample"],
+            ",M=" + channels[tech_md["Channels"]],
             ",T=" + config["software"][software]
         ]
 
@@ -307,7 +307,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.codingHistoryText.clear()
         self.codingHistoryText.insertPlainText(history)
 
-    def getXmp(self, file):
+    def get_xmp(self, file):
         import libxmp
 
         xmpfile = libxmp.XMPFiles(file_path=file, open_forupdate=False)
@@ -356,7 +356,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         return xmp_dict
 
-    def saveBwf(self):
+    def save_metadata(self):
         from libxmp import XMPFiles, consts
 
         # first the BWF and RIFF
@@ -365,23 +365,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             command += "--accept-nopadding "
 
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
-            sysout = subprocess.call(command + "--MD5-embed " + self.filename, shell=True)
+            subprocess.call(command + "--MD5-embed " + self.filename, shell=True)
 
-        self.callBwf(command, self.filename, "Timereference", "0")
-        self.callBwf(command, self.filename, "Description", self.descriptionLine.text())
-        self.callBwf(command, self.filename, "Originator", self.originatorLine.text())
-        self.callBwf(command, self.filename, "OriginatorReference", self.originatorRefLine.text())
-        self.callBwf(command, self.filename, "OriginationDate", self.originationDateLine.text())
-        self.callBwf(command, self.filename, "OriginationTime", self.originationTimeLine.text())
-        self.callBwf(command, self.filename, "ICOP", self.copyrightText.toPlainText())
-        self.callBwf(command, self.filename, "INAM", self.titleLine.text())
-        self.callBwf(command, self.filename, "ITCH", self.technicianBox.currentText())
-        self.callBwf(command, self.filename, "ICMT", self.commentText.toPlainText())
-        self.callBwf(command, self.filename, "ICRD", self.creationDateLine.text())
-        self.callBwf(command, self.filename, "ISFT", self.isftSelect.currentText())
-        self.callBwf(command, self.filename, "ISRC", self.sourceSelect.currentText())
-        self.callBwf(command, self.filename, "IARL", config["iarl"])
-        self.callBwf(command, self.filename, "History", self.codingHistoryText.toPlainText())
+        self.call_bwf(command, self.filename, "Timereference", "0")
+        self.call_bwf(command, self.filename, "Description", self.descriptionLine.text())
+        self.call_bwf(command, self.filename, "Originator", self.originatorLine.text())
+        self.call_bwf(command, self.filename, "OriginatorReference", self.originatorRefLine.text())
+        self.call_bwf(command, self.filename, "OriginationDate", self.originationDateLine.text())
+        self.call_bwf(command, self.filename, "OriginationTime", self.originationTimeLine.text())
+        self.call_bwf(command, self.filename, "ICOP", self.copyrightText.toPlainText())
+        self.call_bwf(command, self.filename, "INAM", self.titleLine.text())
+        self.call_bwf(command, self.filename, "ITCH", self.technicianBox.currentText())
+        self.call_bwf(command, self.filename, "ICMT", self.commentText.toPlainText())
+        self.call_bwf(command, self.filename, "ICRD", self.creationDateLine.text())
+        self.call_bwf(command, self.filename, "ISFT", self.isftSelect.currentText())
+        self.call_bwf(command, self.filename, "ISRC", self.sourceSelect.currentText())
+        self.call_bwf(command, self.filename, "IARL", config["iarl"])
+        self.call_bwf(command, self.filename, "History", self.codingHistoryText.toPlainText())
         # for some bizarre reason, --History has to be last,
         # otherwise there's duplication of the last two characters of the history string...
 
@@ -427,7 +427,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         msg.setText("Metadata saved successfully")
         msg.exec_()
 
-    def callBwf(self, command, file, key, text):
+    def call_bwf(self, command, file, key, text):
         # deal with annoying inconsistencies in bwfmetaedit
         if key == "Timereference":
             mdkey = "TimeReference"
@@ -437,10 +437,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             mdkey = key
 
         if text != self.originalCore[mdkey]:
-            sysout = subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
+            subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
 
 
-def getBwfTech(allow_padding, file):
+def get_bwf_tech(allow_padding, file):
     import io
     import csv
 
@@ -456,7 +456,7 @@ def getBwfTech(allow_padding, file):
     return(tech)
 
 
-def getBwfCore(allow_padding, file):
+def get_bwf_core(allow_padding, file):
     import io
     import csv
 
@@ -492,14 +492,14 @@ if __name__ == "__main__":
 
     if filename:
         # check to make sure file is legit
-        techMD = getBwfTech(config["accept-nopadding"], filename)
+        techMD = get_bwf_tech(config["accept-nopadding"], filename)
         if techMD["Errors"] != "":
             print(filename + " does not appear to be a valid Wave file")
             sys.exit(1)
 
     if template:
         # check to make sure file is legit
-        dum = getBwfTech(config["accept-nopadding"], template)
+        dum = get_bwf_tech(config["accept-nopadding"], template)
         if dum["Errors"] != "":
             print(template + " does not appear to be a valid Wave file")
             sys.exit(1)
