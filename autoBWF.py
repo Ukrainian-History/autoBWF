@@ -358,6 +358,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
     def save_metadata(self):
         from libxmp import XMPFiles, consts
+        from datetime import datetime
 
         # first the BWF and RIFF
         command = "bwfmetaedit --specialchars "
@@ -418,6 +419,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             xmp.set_localized_text(
                 self.autobwf_ns, 'Interviewee',
                 'en', 'en-US', self.intervieweeLine.text())
+
+        xmp.set_property_datetime(consts.XMP_NS_XMP,
+                                  "MetadataDate", datetime.now())
 
         xmpfile.put_xmp(xmp)
         xmpfile.close_file()
