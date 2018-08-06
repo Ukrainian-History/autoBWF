@@ -103,7 +103,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         import os.path
         from datetime import datetime
 
-        tech_md = get_bwf_tech(config["accept-nopadding"], file)
+        self.tech_md = get_bwf_tech(config["accept-nopadding"], file)
 
         date_time = datetime \
             .fromtimestamp(os.path.getctime(file)) \
@@ -175,7 +175,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 time.replace(":", "")
             )
 
-        self.update_coding_history(0, tech_md)
+        self.update_coding_history()
 
         #
         # prefill defaults and insert existing values
@@ -210,7 +210,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if self.originalCore["ICOP"] != "":
             self.insert_default_text(self.copyrightText, self.originalCore["ICOP"])
 
-        if tech_md["MD5Stored"] != "":
+        if self.tech_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
 
         self.originalXmp = self.get_xmp(file)
@@ -280,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.copyrightText.clear()
         self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][index]])
 
-    def update_coding_history(self, index, tech_md):
+    def update_coding_history(self):
         deck = self.deckSelect.currentText()
         adc = self.adcSelect.currentText()
         software = self.softwareSelect.currentText()
@@ -294,12 +294,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         history_list = [
             "A=ANALOGUE,M=stereo,T=", "; ".join(analogprops),
-            "\r\nA=PCM,F=", tech_md["SampleRate"],
-            ",W=", tech_md["BitPerSample"],
+            "\r\nA=PCM,F=", self.tech_md["SampleRate"],
+            ",W=", self.tech_md["BitPerSample"],
             ",M=stereo,T=", config["adc"][adc],
-            "\r\nA=PCM,F=", tech_md["SampleRate"],
-            ",W=" + tech_md["BitPerSample"],
-            ",M=" + channels[tech_md["Channels"]],
+            "\r\nA=PCM,F=", self.tech_md["SampleRate"],
+            ",W=" + self.tech_md["BitPerSample"],
+            ",M=" + channels[self.tech_md["Channels"]],
             ",T=" + config["software"][software]
         ]
 
