@@ -82,3 +82,5 @@ Specifically, the input file consists of any number of lines of the form
  
 See `autosplice-example.txt` for an example of an `autosplice` input file. 
 
+## Security warning
+The code here is a wrapper for a number of external command-line programs (`bwfmetaedit`, `lame`, and `sox`). It calls these programs using unsanitized strings passed to the Python `subprocess.call()` function with the `shell=True` parameter set. This is obviously a potential security hole. If you are dealing only with Wave files generated within your repository by trusted users, then the risk is minimal. However, it is conceivable that a Wave file obtained from an untrusted outside source could result in injection attacks or other nastiness via maliciously-crafted metadata. If you are dealing with such files, then you should check any existing metadata using another tool (e.g. `exiftool` or `BWFMetaEdit`) to make sure there is nothing unusual.
