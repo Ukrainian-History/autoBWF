@@ -479,13 +479,23 @@ def get_bwf_core(allow_padding, file):
 if __name__ == "__main__":
     import json
     import argparse
-    import inspect
+    import autobwfconfig
+    from appdirs import AppDirs
+    from pathlib import Path
 
-    path = inspect.stack()[0][1]
-    path = path.replace("autoBWF.py", "config.json")
+    default_text = autobwfconfig.default_config()
 
-    with open(path) as data_file:
-        config = json.load(data_file)
+    dirs = AppDirs("autoBWF", "UHEC")
+    config_file = Path(dirs.user_data_dir) / "autobwfconfig.json"
+
+    try:
+        config_text = config_file.read_text()
+    except FileNotFoundError:
+        Path(dirs.user_data_dir).mkdir(parents=True, exist_ok=True)
+        config_handle = config_file.write_text(default_text)
+        config_text = default_text
+
+    config = json.loads(config_text)
 
     parser = argparse.ArgumentParser(description='Create internal metadata for WAV file(s).')
     parser.add_argument('filename', nargs='?', help='WAV file to be processed')

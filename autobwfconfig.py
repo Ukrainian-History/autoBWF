@@ -1,7 +1,9 @@
+def default_config():
+    default = """\
 {
     "accept-nopadding": 1,
 
-    "filenameRegex": ".*_([0-9-]+_[A-Z]{2}\\d+)_\\d+_([a-zA-Z]+)_(\\d+)\\.wav",
+    "filenameRegex": ".*_([0-9-]+_[A-Z]{2}\\\d+)_\\\d+_([a-zA-Z]+)_(\\\d+)\\\.wav",
 
     "originator": "Apocryphal St. U. Archives",
 
@@ -81,4 +83,5 @@
         "Big Donor"
     ]
 }
- 
+"""
+    return default

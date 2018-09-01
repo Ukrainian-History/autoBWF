@@ -44,7 +44,7 @@ It is strongly recommended that you play around using test files and confirm (us
 
 #### Configuration
 
-You can edit the file config.json to customize the values in the dropdown menus and other program behavior to the needs of your use case. In particular, it contains the model, serial number, and software version strings that go into constructing the CodingHistory element, as well as the copyright boilerplate texts. 
+Program configuration is stored as a JSON file in a directory appropriate to your operating system (e.g. `~/.local/share/autoBWF` on Linux or `/Users/yourname/Library/Application Support/autoBWF` on MacOS). If the file does not exist, then a "starter" autobwfconfig.json will be created for you. You should edit this file to customize the values in the dropdown menus and other program behavior to the needs of your repository. In addition, the config file includes the model, serial number, and software version strings that go into constructing the CodingHistory element and copyright boilerplate texts. 
 
 The bwfmetaedit `--accept-nopadding` flag is used by default, but that behavior can also be changed in the configuration file.
 
