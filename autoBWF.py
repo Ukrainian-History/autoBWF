@@ -243,6 +243,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             if core["ICOP"] != "":
                 self.copyrightText.clear()
                 self.copyrightText.insertPlainText(core["ICOP"])
+            if core["ICRD"] != "":
+                self.creationDateLine.clear()
+                self.creationDateLine.insert(core["ICRD"])
 
             template_xmp = self.get_xmp(file)
             if template_xmp["description"] != "":
