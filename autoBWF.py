@@ -249,15 +249,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
             template_xmp = self.get_xmp(file)
             if template_xmp["description"] != "":
-                self.insert_default_text(self.descriptionText, template_xmp["description"])
+                self.descriptionText.clear()
+                self.descriptionText.insertPlainText(template_xmp["description"])
             if template_xmp["owner"] != "":
-                self.insert_default_box(self.rightsOwnerSelect, template_xmp["owner"])
+                self.rightsOwnerSelect.lineEdit().setText(template_xmp["owner"])
             if template_xmp["language"] != "":
-                self.insert_default_line(self.languageLine, template_xmp["language"])
+                self.languageLine.clear()
+                self.languageLine.insert(template_xmp["language"])
             if template_xmp["interviewer"] != "":
-                self.insert_default_line(self.interviewerLine, template_xmp["interviewer"])
+                self.interviewerLine.clear()
+                self.interviewerLine.insert(template_xmp["interviewer"])
             if template_xmp["interviewee"] != "":
-                self.insert_default_line(self.intervieweeLine, template_xmp["interviewee"])
+                self.intervieweeLine.clear()
+                self.intervieweeLine.insert(template_xmp["interviewee"])
 
     def insert_default_line(self, widget, text):
         widget.clear()
