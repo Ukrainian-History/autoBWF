@@ -12,6 +12,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
+        self.gui_text_widgets = {
+                                  "Description": self.descriptionLine,
+                                  "Originator": self.originatorLine,
+                                  "OriginationDate": self.originationDateLine,
+                                  "OriginationTime": self.originationTimeLine,
+                                  "OriginatorRef": self.originatorRefLine,
+                                  "CodingHistory": self.codingHistoryText,
+                                  "INAM": self.titleLine,
+                                  "ICRD": self.creationDateLine,
+                                  "ITCH": self.technicianBox,
+                                  "ISFT": self.isftSelect,
+                                  "ISRC": self.sourceSelect,
+                                  "ICMT": self.commentText,
+                                  "ICOP": self.copyrightText,
+                                  "description": self.descriptionText,
+                                  "owner": self.rightsOwnerSelect,
+                                  "language": self.languageLine,
+                                  "interviewer": self.interviewerLine,
+                                  "interviewee": self.intervieweeLine
+                                 }
+
         self.filename = filename
 
         #
@@ -65,6 +86,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if template:
             self.populate_template_info(template)
 
+    def get_gui_text(self, widget_name):
+        widget = self.gui_text_widgets[widget_name]
+        widget_type = type(widget)
+        if widget_type is QtWidgets.QPlainTextEdit:
+            return widget.toPlainText()
+        if widget_type is QtWidgets.QLineEdit:
+            return widget.text()
+        if widget_type is QtWidgets.QComboBox:
+            return widget.currentText()
+        return None
+
+    def set_gui_text(self, widget_name, value):
+        widget = self.gui_text_widgets[widget_name]
+        widget_type = type(widget)
+        if widget_type is QtWidgets.QPlainTextEdit:
+            widget.clear()
+            widget.insertPlainText(value)
+        if widget_type is QtWidgets.QLineEdit:
+            widget.clear()
+            widget.insert(value)
+        if widget_type is QtWidgets.QComboBox:
+            widget.setCurrentText()
+
     def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
         if fname:
@@ -105,11 +149,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         self.tech_md = get_bwf_tech(config["accept-nopadding"], file)
 
-        date_time = datetime \
+        date_time_created = datetime \
             .fromtimestamp(os.path.getctime(file)) \
             .replace(microsecond=0) \
             .isoformat()
-        [date, time] = date_time.split("T")
+        [date_created, time] = date_time_created.split("T")
 
         m = re.compile(config["filenameRegex"]).match(file)
         if m:
@@ -119,37 +163,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.identifier = self.identifier.replace("_", "")
 
             self.fileUse = matches[1]
-            datestring = matches[2]
-            self.datestring_iso = (
-                datestring[0:4] + "-" +
-                datestring[4:6] + "-" +
-                datestring[6:]
+            self.date_from_filename = matches[2]
+            self.date_from_filename = (
+                    self.date_from_filename[0:4] + "-" +
+                    self.date_from_filename[4:6] + "-" +
+                    self.date_from_filename[6:]
             )
 
-            if date != self.datestring_iso:
+            if date_created != self.date_from_filename:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
                 msg.setText("Filename and timestamp dates disagree")
                 msg.setInformativeText(
-                    "filename: " + self.datestring_iso +
-                    "\ntimestamp: " + date)
+                    "filename: " + self.date_from_filename +
+                    "\ntimestamp: " + date_created)
                 msg.setWindowTitle("Choose date")
-                msg.addButton('Use ' + self.datestring_iso, QMessageBox.NoRole)
-                msg.addButton('Use ' + date, QMessageBox.YesRole)
+                msg.addButton('Use ' + self.date_from_filename, QMessageBox.NoRole)
+                msg.addButton('Use ' + date_created, QMessageBox.YesRole)
                 retval = msg.exec_()
                 if retval == 1:
-                    self.datestring_iso = date
+                    self.date_from_filename = date_created
 
-            self.originationDateLine.insert(self.datestring_iso)
-            self.originationTimeLine.insert(time)
-            self.originatorRefLine.insert(
-                config["repocode"] + " " +
-                self.datestring_iso.replace("-", "") + " " +
-                time.replace(":", ""))
+            self.set_gui_text("OriginationDate", self.date_from_filename)
+            self.set_gui_text("OriginationTime", time)
+            self.set_gui_text("OriginatorRef",
+                              config["repocode"] + " " +
+                              self.date_from_filename.replace("-", "") + " " +
+                              time.replace(":", ""))
 
             try:
                 self.fileUse = config["fileuse"][self.fileUse]
             except KeyError:
+                # TODO: make this a dialog
                 print(
                     self.fileUse +
                     " does not not have a standard translation"
@@ -161,19 +206,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 "; File use: " + self.fileUse +
                 "; Original filename: " + os.path.basename(file)
             )
-            self.descriptionLine.insert(description)
+            self.set_gui_text("Description", description)
         else:
             QMessageBox.warning(
                 self, 'Warning',
-                file + " does not follow filenaming convention"
+                file + " does not follow file naming convention"
             )
-            self.originationDateLine.insert(date)
-            self.originationTimeLine.insert(time)
-            self.originatorRefLine.insert(
-                config["repocode"] + " " +
-                date.replace("-", "") + " " +
-                time.replace(":", "")
-            )
+            self.set_gui_text("OriginationDate", date_created)
+            self.set_gui_text("OriginationTime", time)
+            self.set_gui_text("OriginatorRef",
+                              config["repocode"] + " " +
+                              date_created.replace("-", "") + " " +
+                              time.replace(":", ""))
 
         self.update_coding_history()
 
@@ -284,8 +328,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         input_widget.setStyleSheet("color: red; font: normal")
 
     def copyright_activated(self, index):
-        self.copyrightText.clear()
-        self.copyrightText.insertPlainText(config["copyright"][config["copyright"]["list"][index]])
+        self.set_gui_text("Copyright", config["copyright"][config["copyright"]["list"][index]])
 
     def update_coding_history(self):
         deck = self.deckSelect.currentText()
@@ -309,10 +352,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             ",M=" + channels[self.tech_md["Channels"]],
             ",T=" + config["software"][software]
         ]
-
-        history = "".join(history_list)
-        self.codingHistoryText.clear()
-        self.codingHistoryText.insertPlainText(history)
+        self.set_gui_text("CodingHistory", "".join(history_list))
 
     def get_xmp(self, file):
         import libxmp
