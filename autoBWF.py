@@ -120,11 +120,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             widget.clear()
             widget.insert(value)
         if widget_type is QtWidgets.QComboBox:
-            widget.setCurrentText()
+            widget.setCurrentText(value)
 
         if is_original_md:
             widget.setStyleSheet("color: grey; font: italic")
-            widget.textChanged.connect(lambda: self.activate_changed(widget))
+            if widget_type is QtWidgets.QComboBox:
+                widget.currentTextChanged.connect(lambda: self.activate_changed(widget))
+            else:
+                widget.textChanged.connect(lambda: self.activate_changed(widget))
 
     def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
@@ -268,7 +271,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                                "OriginationTime", "OriginatorReference", "CodingHistory",
                                "INAM", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP"]
 
-        map(self.set_existing, fields_to_fill)
+        for field in fields_to_fill:
+            self.set_existing(field)
 
         if self.original_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
@@ -324,7 +328,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.intervieweeLine.insert(template_xmp["interviewee"])
 
     def copyright_activated(self, index):
-        self.set_gui_text("Copyright", config["copyright"][config["copyright"]["list"][index]])
+        self.set_gui_text("ICOP", config["copyright"][config["copyright"]["list"][index]])
 
     def update_coding_history(self):
         deck = self.deckSelect.currentText()
@@ -483,7 +487,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         else:
             mdkey = key
 
-        if text != self.originalCore[mdkey]:
+        if text != self.original_md[mdkey]:
             subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
 
 
