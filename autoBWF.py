@@ -17,7 +17,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                                   "Originator": self.originatorLine,
                                   "OriginationDate": self.originationDateLine,
                                   "OriginationTime": self.originationTimeLine,
-                                  "OriginatorRef": self.originatorRefLine,
+                                  "OriginatorReference": self.originatorRefLine,
                                   "CodingHistory": self.codingHistoryText,
                                   "INAM": self.titleLine,
                                   "ICRD": self.creationDateLine,
@@ -34,6 +34,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                                  }
 
         self.filename = filename
+        self.original_md = {}
+        self.template_md = {}
+        self.current_md = {}
 
         #
         # configure dropdowns and texts
@@ -81,10 +84,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.tabWidget.setEnabled(True)
             self.actionUpdate_metadata.setEnabled(True)
             self.actionOpen.setEnabled(False)
+
+            md = get_bwf_tech(config["accept-nopadding"], filename)
+            if md["Errors"] != "":
+                print(filename + " does not appear to be a valid Wave file")
+            else:
+                self.original_md.update(md)
             self.populate_file_info(filename)
 
         if template:
             self.populate_template_info(template)
+
+    @staticmethod
+    def activate_changed(input_widget):
+        input_widget.setStyleSheet("color: red; font: normal")
 
     def get_gui_text(self, widget_name):
         widget = self.gui_text_widgets[widget_name]
@@ -97,7 +110,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             return widget.currentText()
         return None
 
-    def set_gui_text(self, widget_name, value):
+    def set_gui_text(self, widget_name, value, is_original_md=False):
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
         if widget_type is QtWidgets.QPlainTextEdit:
@@ -108,6 +121,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             widget.insert(value)
         if widget_type is QtWidgets.QComboBox:
             widget.setCurrentText()
+
+        if is_original_md:
+            widget.setStyleSheet("color: grey; font: italic")
+            widget.textChanged.connect(lambda: self.activate_changed(widget))
 
     def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
@@ -120,13 +137,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 msg.setText(fname + " does not appear to be a valid Wave file")
                 msg.exec_()
             else:
+                self.original_md.update(md)
+                self.filename = fname
+
                 self.tabWidget.setEnabled(True)
                 self.actionUpdate_metadata.setEnabled(True)
                 self.actionOpen_template.setEnabled(True)
                 self.actionOpen.setEnabled(False)
                 self.populate_file_info(fname)
-
-        self.filename = fname
 
     def open_template(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open template file", "~")[0])
@@ -142,12 +160,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionOpen_template.setEnabled(False)
                 self.populate_template_info(fname)
 
+    def insert_default_line(self, widget, text):
+        widget.clear()
+        widget.insert(text)
+        widget.setStyleSheet("color: grey; font: italic")
+        widget.textChanged.connect(lambda: self.activate_changed(widget))
+
+    def insert_default_box(self, widget, text):
+        widget.setCurrentText(text)
+        widget.setStyleSheet("color: grey; font: italic")
+        widget.currentTextChanged.connect(lambda: self.activate_changed(widget))
+
+    def insert_default_text(self, widget, text):
+        widget.clear()
+        widget.insertPlainText(text)
+        widget.setStyleSheet("color: grey; font: italic")
+        widget.textChanged.connect(lambda: self.activate_changed(widget))
+
+    def set_existing(self, name):
+        if self.original_md[name] != "" and (self.original_md[name] is not None):
+            self.set_gui_text(name, self.original_md[name], is_original_md=True)
+
     def populate_file_info(self, file):
         import re
         import os.path
         from datetime import datetime
-
-        self.tech_md = get_bwf_tech(config["accept-nopadding"], file)
 
         date_time_created = datetime \
             .fromtimestamp(os.path.getctime(file)) \
@@ -158,52 +195,52 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         m = re.compile(config["filenameRegex"]).match(file)
         if m:
             matches = m.groups()
-            self.identifier = matches[0]
-            self.identifier = self.identifier.replace("-", ".")
-            self.identifier = self.identifier.replace("_", "")
+            identifier = matches[0]
+            identifier = identifier.replace("-", ".")
+            identifier = identifier.replace("_", "")
 
-            self.fileUse = matches[1]
-            self.date_from_filename = matches[2]
-            self.date_from_filename = (
-                    self.date_from_filename[0:4] + "-" +
-                    self.date_from_filename[4:6] + "-" +
-                    self.date_from_filename[6:]
+            file_use = matches[1]
+            date_from_filename = matches[2]
+            date_from_filename = (
+                    date_from_filename[0:4] + "-" +
+                    date_from_filename[4:6] + "-" +
+                    date_from_filename[6:]
             )
 
-            if date_created != self.date_from_filename:
+            if date_created != date_from_filename:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
                 msg.setText("Filename and timestamp dates disagree")
                 msg.setInformativeText(
-                    "filename: " + self.date_from_filename +
+                    "filename: " + date_from_filename +
                     "\ntimestamp: " + date_created)
                 msg.setWindowTitle("Choose date")
-                msg.addButton('Use ' + self.date_from_filename, QMessageBox.NoRole)
+                msg.addButton('Use ' + date_from_filename, QMessageBox.NoRole)
                 msg.addButton('Use ' + date_created, QMessageBox.YesRole)
                 retval = msg.exec_()
                 if retval == 1:
-                    self.date_from_filename = date_created
+                    date_from_filename = date_created
 
-            self.set_gui_text("OriginationDate", self.date_from_filename)
+            self.set_gui_text("OriginationDate", date_from_filename)
             self.set_gui_text("OriginationTime", time)
-            self.set_gui_text("OriginatorRef",
+            self.set_gui_text("OriginatorReference",
                               config["repocode"] + " " +
-                              self.date_from_filename.replace("-", "") + " " +
+                              date_from_filename.replace("-", "") + " " +
                               time.replace(":", ""))
 
             try:
-                self.fileUse = config["fileuse"][self.fileUse]
+                file_use = config["fileuse"][file_use]
             except KeyError:
                 # TODO: make this a dialog
                 print(
-                    self.fileUse +
+                    file_use +
                     " does not not have a standard translation"
                 )
-                self.fileUse = "Unknown"
+                file_use = "Unknown"
 
             description = (
-                "File content: " + self.identifier +
-                "; File use: " + self.fileUse +
+                "File content: " + identifier +
+                "; File use: " + file_use +
                 "; Original filename: " + os.path.basename(file)
             )
             self.set_gui_text("Description", description)
@@ -214,7 +251,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             )
             self.set_gui_text("OriginationDate", date_created)
             self.set_gui_text("OriginationTime", time)
-            self.set_gui_text("OriginatorRef",
+            self.set_gui_text("OriginatorReference",
                               config["repocode"] + " " +
                               date_created.replace("-", "") + " " +
                               time.replace(":", ""))
@@ -225,36 +262,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # prefill defaults and insert existing values
         #
 
-        self.originalCore = get_bwf_core(config["accept-nopadding"], file)
+        self.original_md.update(get_bwf_core(config["accept-nopadding"], file))
 
-        if self.originalCore["INAM"] != "":
-            self.insert_default_line(self.titleLine, self.originalCore["INAM"])
-        if self.originalCore["Description"] != "":
-            self.insert_default_line(self.descriptionLine, self.originalCore["Description"])
-        if self.originalCore["Originator"] != "":
-            self.insert_default_line(self.originatorLine, self.originalCore["Originator"])
-        if self.originalCore["OriginatorReference"] != "":
-            self.insert_default_line(self.originatorRefLine, self.originalCore["OriginatorReference"])
-        if self.originalCore["OriginationDate"] != "":
-            self.insert_default_line(self.originationDateLine, self.originalCore["OriginationDate"])
-        if self.originalCore["OriginationTime"] != "":
-            self.insert_default_line(self.originationTimeLine, self.originalCore["OriginationTime"])
-        if self.originalCore["ICRD"] != "":
-            self.insert_default_line(self.creationDateLine, self.originalCore["ICRD"])
-        if self.originalCore["ITCH"] != "" and (self.originalCore["ITCH"] is not None):
-            self.insert_default_box(self.technicianBox, self.originalCore["ITCH"])
-        if self.originalCore["ISFT"] != "":
-            self.insert_default_box(self.isftSelect, self.originalCore["ISFT"])
-        if self.originalCore["ISRC"] != "":
-            self.insert_default_box(self.sourceSelect, self.originalCore["ISRC"])
-        if self.originalCore["CodingHistory"] != "":
-            self.insert_default_text(self.codingHistoryText, self.originalCore["CodingHistory"])
-        if self.originalCore["ICMT"] != "":
-            self.insert_default_text(self.commentText, self.originalCore["ICMT"])
-        if self.originalCore["ICOP"] != "":
-            self.insert_default_text(self.copyrightText, self.originalCore["ICOP"])
+        fields_to_fill = ["Description", "Originator","OriginationDate",
+                               "OriginationTime", "OriginatorReference", "CodingHistory",
+                               "INAM", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP"]
 
-        if self.tech_md["MD5Stored"] != "":
+        map(self.set_existing, fields_to_fill)
+
+        if self.original_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
 
         self.originalXmp = self.get_xmp(file)
@@ -307,26 +323,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.intervieweeLine.clear()
                 self.intervieweeLine.insert(template_xmp["interviewee"])
 
-    def insert_default_line(self, widget, text):
-        widget.clear()
-        widget.insert(text)
-        widget.setStyleSheet("color: grey; font: italic")
-        widget.textChanged.connect(lambda: self.activate_changed(widget))
-
-    def insert_default_box(self, widget, text):
-        widget.setCurrentText(text)
-        widget.setStyleSheet("color: grey; font: italic")
-        widget.currentTextChanged.connect(lambda: self.activate_changed(widget))
-
-    def insert_default_text(self, widget, text):
-        widget.clear()
-        widget.insertPlainText(text)
-        widget.setStyleSheet("color: grey; font: italic")
-        widget.textChanged.connect(lambda: self.activate_changed(widget))
-
-    def activate_changed(self, input_widget):
-        input_widget.setStyleSheet("color: red; font: normal")
-
     def copyright_activated(self, index):
         self.set_gui_text("Copyright", config["copyright"][config["copyright"]["list"][index]])
 
@@ -344,12 +340,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         history_list = [
             "A=ANALOGUE,M=stereo,T=", "; ".join(analogprops),
-            "\r\nA=PCM,F=", self.tech_md["SampleRate"],
-            ",W=", self.tech_md["BitPerSample"],
+            "\r\nA=PCM,F=", self.original_md["SampleRate"],
+            ",W=", self.original_md["BitPerSample"],
             ",M=stereo,T=", config["adc"][adc],
-            "\r\nA=PCM,F=", self.tech_md["SampleRate"],
-            ",W=" + self.tech_md["BitPerSample"],
-            ",M=" + channels[self.tech_md["Channels"]],
+            "\r\nA=PCM,F=", self.original_md["SampleRate"],
+            ",W=" + self.original_md["BitPerSample"],
+            ",M=" + channels[self.original_md["Channels"]],
             ",T=" + config["software"][software]
         ]
         self.set_gui_text("CodingHistory", "".join(history_list))
@@ -504,7 +500,7 @@ def get_bwf_tech(allow_padding, file):
     f = io.StringIO(tech_csv)
     reader = csv.DictReader(f, delimiter=',')
     tech = next(reader)
-    return(tech)
+    return tech
 
 
 def get_bwf_core(allow_padding, file):
@@ -516,11 +512,11 @@ def get_bwf_core(allow_padding, file):
     else:
         command = "bwfmetaedit --out-core " + file
 
-    tech_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
-    f = io.StringIO(tech_csv)
+    core_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
+    f = io.StringIO(core_csv)
     reader = csv.DictReader(f, delimiter=',')
-    tech = next(reader)
-    return(tech)
+    core = next(reader)
+    return core
 
 
 if __name__ == "__main__":
