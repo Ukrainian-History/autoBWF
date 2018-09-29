@@ -267,10 +267,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         self.original_md.update(get_bwf_core(config["accept-nopadding"], file))
 
-        fields_to_fill = ["Description", "Originator","OriginationDate",
-                               "OriginationTime", "OriginatorReference", "CodingHistory",
-                               "INAM", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP"]
-
+        fields_to_fill = ["Description", "Originator", "OriginationDate",
+                          "OriginationTime", "OriginatorReference", "CodingHistory",
+                          "INAM", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP"]
         for field in fields_to_fill:
             self.set_existing(field)
 
@@ -289,27 +288,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if self.originalXmp["interviewee"] != "":
             self.insert_default_line(self.intervieweeLine, self.originalXmp["interviewee"])
 
+    def set_value_from_template(self, name):
+        if self.template_md[name] != "":
+            self.set_gui_text(name, self.template_md[name])
+
     def populate_template_info(self, file):
         # replace with template values if they exist
 
         if file is not None:
-            core = get_bwf_core(config["accept-nopadding"], file)
-            if core["INAM"] != "":
-                self.titleLine.clear()
-                self.titleLine.insert(core["INAM"])
-            if core["ISRC"] != "":
-                self.sourceSelect.lineEdit().setText(core["ISRC"])
-            if core["ITCH"] != "" and (self.originalCore["ITCH"] is not None):
-                self.technicianBox.lineEdit().setText(core["ITCH"])
-            if core["CodingHistory"] != "":
-                self.codingHistoryText.clear()
-                self.codingHistoryText.insertPlainText(core["CodingHistory"])
-            if core["ICOP"] != "":
-                self.copyrightText.clear()
-                self.copyrightText.insertPlainText(core["ICOP"])
-            if core["ICRD"] != "":
-                self.creationDateLine.clear()
-                self.creationDateLine.insert(core["ICRD"])
+            self.template_md.update(get_bwf_core(config["accept-nopadding"], file))
+
+            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP"]
+            for field in fields_to_fill:
+                self.set_value_from_template(field)
 
             template_xmp = self.get_xmp(file)
             if template_xmp["description"] != "":
