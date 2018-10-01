@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from tabbed import Ui_autoBWF
 import subprocess
+from BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
@@ -269,7 +270,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         fields_to_fill = ["Description", "Originator", "OriginationDate",
                           "OriginationTime", "OriginatorReference", "CodingHistory",
-                          "INAM", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP"]
+                          "INAM", "ICMT", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP"]
         for field in fields_to_fill:
             self.set_existing(field)
 
@@ -406,21 +407,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
             subprocess.call(command + "--MD5-embed " + self.filename, shell=True)
 
-        self.call_bwf(command, self.filename, "Timereference", "0")
-        self.call_bwf(command, self.filename, "Description", self.descriptionLine.text())
-        self.call_bwf(command, self.filename, "Originator", self.originatorLine.text())
-        self.call_bwf(command, self.filename, "OriginatorReference", self.originatorRefLine.text())
-        self.call_bwf(command, self.filename, "OriginationDate", self.originationDateLine.text())
-        self.call_bwf(command, self.filename, "OriginationTime", self.originationTimeLine.text())
-        self.call_bwf(command, self.filename, "ICOP", self.copyrightText.toPlainText())
-        self.call_bwf(command, self.filename, "INAM", self.titleLine.text())
-        self.call_bwf(command, self.filename, "ITCH", self.technicianBox.currentText())
-        self.call_bwf(command, self.filename, "ICMT", self.commentText.toPlainText())
-        self.call_bwf(command, self.filename, "ICRD", self.creationDateLine.text())
-        self.call_bwf(command, self.filename, "ISFT", self.isftSelect.currentText())
-        self.call_bwf(command, self.filename, "ISRC", self.sourceSelect.currentText())
-        self.call_bwf(command, self.filename, "IARL", config["iarl"])
-        self.call_bwf(command, self.filename, "History", self.codingHistoryText.toPlainText())
+        call_bwf(command, self.filename, "Timereference", "0")
+        call_bwf(command, self.filename, "Description", self.descriptionLine.text())
+        call_bwf(command, self.filename, "Originator", self.originatorLine.text())
+        call_bwf(command, self.filename, "OriginatorReference", self.originatorRefLine.text())
+        call_bwf(command, self.filename, "OriginationDate", self.originationDateLine.text())
+        call_bwf(command, self.filename, "OriginationTime", self.originationTimeLine.text())
+        call_bwf(command, self.filename, "ICOP", self.copyrightText.toPlainText())
+        call_bwf(command, self.filename, "INAM", self.titleLine.text())
+        call_bwf(command, self.filename, "ITCH", self.technicianBox.currentText())
+        call_bwf(command, self.filename, "ICMT", self.commentText.toPlainText())
+        call_bwf(command, self.filename, "ICRD", self.creationDateLine.text())
+        call_bwf(command, self.filename, "ISFT", self.isftSelect.currentText())
+        call_bwf(command, self.filename, "ISRC", self.sourceSelect.currentText())
+        call_bwf(command, self.filename, "IARL", config["iarl"])
+        call_bwf(command, self.filename, "History", self.codingHistoryText.toPlainText())
         # for some bizarre reason, --History has to be last,
         # otherwise there's duplication of the last two characters of the history string...
 
@@ -468,50 +469,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         msg.setIcon(QMessageBox.Information)
         msg.setText("Metadata saved successfully")
         msg.exec_()
-
-    def call_bwf(self, command, file, key, text):
-        # deal with annoying inconsistencies in bwfmetaedit
-        if key == "Timereference":
-            mdkey = "TimeReference"
-        elif key == "History":
-            mdkey = "CodingHistory"
-        else:
-            mdkey = key
-
-        if text != self.original_md[mdkey]:
-            subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
-
-
-def get_bwf_tech(allow_padding, file):
-    import io
-    import csv
-
-    if allow_padding:
-        command = "bwfmetaedit --accept-nopadding --out-tech " + file
-    else:
-        command = "bwfmetaedit --out-tech " + file
-
-    tech_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
-    f = io.StringIO(tech_csv)
-    reader = csv.DictReader(f, delimiter=',')
-    tech = next(reader)
-    return tech
-
-
-def get_bwf_core(allow_padding, file):
-    import io
-    import csv
-
-    if allow_padding:
-        command = "bwfmetaedit --accept-nopadding --out-core " + file
-    else:
-        command = "bwfmetaedit --out-core " + file
-
-    core_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
-    f = io.StringIO(core_csv)
-    reader = csv.DictReader(f, delimiter=',')
-    core = next(reader)
-    return core
 
 
 if __name__ == "__main__":
