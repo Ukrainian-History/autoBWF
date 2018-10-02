@@ -1,17 +1,39 @@
 import subprocess
+import os
+
+namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
+              'xmp': 'http://ns.adobe.com/xap/1.0/',
+              'xmpRights': "http://ns.adobe.com/xap/1.0/rights/",
+              'xmpDM': "http://ns.adobe.com/xmp/1.0/DynamicMedia/",
+              'autoBWF': "http://ns.ukrhec.org/autoBWF/0.1",
+              'rdf': "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+              'x': "adobe:ns:meta/",
+              "xml": "http://www.w3.org/XML/1998/namespace"}
 
 
-def call_bwf(command, file, key, text):
-        # deal with annoying inconsistencies in bwfmetaedit
-        if key == "Timereference":
-            mdkey = "TimeReference"
-        elif key == "History":
-            mdkey = "CodingHistory"
-        else:
-            mdkey = key
+def get_XMP(filename):
+    """New version of XMP getter using bwfmetaedit"""
+    import xml.etree.ElementTree as ET
 
-        if text != self.original_md[mdkey]:
-            subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
+    subprocess.run(["bwfmetaedit", "--out-XMP-xml", filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    outfile = filename + ".XMP.xml"
+    try:
+        tree = ET.parse(outfile)
+    except FileNotFoundError:
+        return None
+    root = tree.getroot()
+
+    md = {"interviewer": root.find('.//autoBWF:Interviewer//rdf:li', namespaces).text,
+          "interviewee": root.find('.//autoBWF:Interviewee//rdf:li', namespaces).text,
+          "owner": root.find('.//xmpRights:Owner//rdf:li', namespaces).text,
+          "metadataDate": root.find('.//xmp:MetadataDate', namespaces).text,
+          "language": [node.text for node in root.findall('.//dc:language//rdf:li', namespaces)],
+          "description": root.find('.//dc:description//rdf:li', namespaces).text
+          }
+
+    os.remove(outfile)
+    return md
+
 
 def get_bwf_tech(allow_padding, file):
     import io
@@ -43,3 +65,30 @@ def get_bwf_core(allow_padding, file):
     reader = csv.DictReader(f, delimiter=',')
     core = next(reader)
     return core
+
+
+def call_bwf(command, file, key, text):
+    # deal with annoying inconsistencies in bwfmetaedit
+    if key == "Timereference":
+        mdkey = "TimeReference"
+    elif key == "History":
+        mdkey = "CodingHistory"
+    else:
+        mdkey = key
+
+    # if text != self.original_md[mdkey]:
+    #     subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
+    # TODO this checking needs to be done "upstairs" in the object, not here
+
+    subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Test IO functions.')
+    parser.add_argument('filename', help='WAV file to be processed')
+    args = parser.parse_args()
+    filename = args.filename
+
+    print(get_XMP(filename))
