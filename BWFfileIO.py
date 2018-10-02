@@ -11,7 +11,7 @@ namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
               "xml": "http://www.w3.org/XML/1998/namespace"}
 
 
-def get_XMP(filename):
+def get_xmp(filename):
     """New version of XMP getter using bwfmetaedit"""
     import xml.etree.ElementTree as ET
 
@@ -20,7 +20,9 @@ def get_XMP(filename):
     try:
         tree = ET.parse(outfile)
     except FileNotFoundError:
-        return None
+        md = {"interviewer": None, "interviewee": None, "owner": None,
+              "metadataDate": None, "language": None, "description": None}
+        return md
     root = tree.getroot()
 
     md = {"interviewer": root.find('.//autoBWF:Interviewer//rdf:li', namespaces).text,
@@ -91,4 +93,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     filename = args.filename
 
-    print(get_XMP(filename))
+    print(get_xmp(filename))

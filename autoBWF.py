@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from tabbed import Ui_autoBWF
 import subprocess
-from BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech
+from BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
@@ -112,6 +112,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         return None
 
     def set_gui_text(self, widget_name, value, is_original_md=False):
+        if widget_name == "language":  # convert list to string
+            value = ";".join(value)
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
         if widget_type is QtWidgets.QPlainTextEdit:
@@ -267,27 +269,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         #
 
         self.original_md.update(get_bwf_core(config["accept-nopadding"], file))
+        self.original_md.update(get_xmp(file))  # TODO accept-nopadding...
 
         fields_to_fill = ["Description", "Originator", "OriginationDate",
                           "OriginationTime", "OriginatorReference", "CodingHistory",
-                          "INAM", "ICMT", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP"]
+                          "INAM", "ICMT", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP",
+                          "description", "owner", "language", "interviewer", "interviewee"]
         for field in fields_to_fill:
             self.set_existing(field)
 
         if self.original_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
-
-        self.originalXmp = self.get_xmp(file)
-        if self.originalXmp["description"] != "":
-            self.insert_default_text(self.descriptionText, self.originalXmp["description"])
-        if self.originalXmp["owner"] != "":
-            self.insert_default_box(self.rightsOwnerSelect, self.originalXmp["owner"])
-        if self.originalXmp["language"] != "":
-            self.insert_default_line(self.languageLine, self.originalXmp["language"])
-        if self.originalXmp["interviewer"] != "":
-            self.insert_default_line(self.interviewerLine, self.originalXmp["interviewer"])
-        if self.originalXmp["interviewee"] != "":
-            self.insert_default_line(self.intervieweeLine, self.originalXmp["interviewee"])
 
     def set_value_from_template(self, name):
         if self.template_md[name] != "":
@@ -298,26 +290,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         if file is not None:
             self.template_md.update(get_bwf_core(config["accept-nopadding"], file))
+            self.original_md.update(get_xmp(file))  # TODO accept-nopadding...
 
-            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP"]
+            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
+                              "description", "owner", "language", "interviewer", "interviewee"]
             for field in fields_to_fill:
                 self.set_value_from_template(field)
-
-            template_xmp = self.get_xmp(file)
-            if template_xmp["description"] != "":
-                self.descriptionText.clear()
-                self.descriptionText.insertPlainText(template_xmp["description"])
-            if template_xmp["owner"] != "":
-                self.rightsOwnerSelect.lineEdit().setText(template_xmp["owner"])
-            if template_xmp["language"] != "":
-                self.languageLine.clear()
-                self.languageLine.insert(template_xmp["language"])
-            if template_xmp["interviewer"] != "":
-                self.interviewerLine.clear()
-                self.interviewerLine.insert(template_xmp["interviewer"])
-            if template_xmp["interviewee"] != "":
-                self.intervieweeLine.clear()
-                self.intervieweeLine.insert(template_xmp["interviewee"])
 
     def copyright_activated(self, index):
         self.set_gui_text("ICOP", config["copyright"][config["copyright"]["list"][index]])
@@ -345,55 +323,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             ",T=" + config["software"][software]
         ]
         self.set_gui_text("CodingHistory", "".join(history_list))
-
-    def get_xmp(self, file):
-        import libxmp
-
-        xmpfile = libxmp.XMPFiles(file_path=file, open_forupdate=False)
-        xmp = xmpfile.get_xmp()
-        xmp_dict = {"owner": "", "description": "", "language": "",
-                    "interviewer": "", "interviewee": ""}
-
-        if xmp:
-            try:
-                xmp_dict["owner"] = xmp.get_localized_text(
-                    libxmp.consts.XMP_NS_XMP_Rights, 'Owner', 'en', 'en-US')
-            except libxmp.XMPError:
-                pass
-
-            try:
-                xmp_dict["description"] = xmp.get_localized_text(
-                    libxmp.consts.XMP_NS_DC, 'description', 'en', 'en-US')
-            except libxmp.XMPError:
-                pass
-
-            languages = []
-            i = 1
-            while True:
-                try:
-                    languages.append(xmp.get_array_item(
-                        libxmp.consts.XMP_NS_DC, 'language', i))
-                except libxmp.XMPError:
-                    xmp_dict["language"] = ";".join(languages)
-                    break
-
-                i += 1
-
-            xmp.register_namespace(self.autobwf_ns, 'autoBWF')
-
-            try:
-                xmp_dict["interviewer"] = xmp.get_localized_text(
-                    self.autobwf_ns, 'Interviewer', 'en', 'en-US')
-            except libxmp.XMPError:
-                pass
-
-            try:
-                xmp_dict["interviewee"] = xmp.get_localized_text(
-                    self.autobwf_ns, 'Interviewee', 'en', 'en-US')
-            except libxmp.XMPError:
-                pass
-
-        return xmp_dict
 
     def save_metadata(self):
         from libxmp import XMPFiles, consts
