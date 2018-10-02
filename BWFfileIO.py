@@ -25,13 +25,20 @@ def get_xmp(filename):
         return md
     root = tree.getroot()
 
-    md = {"interviewer": root.find('.//autoBWF:Interviewer//rdf:li', namespaces).text,
-          "interviewee": root.find('.//autoBWF:Interviewee//rdf:li', namespaces).text,
-          "owner": root.find('.//xmpRights:Owner//rdf:li', namespaces).text,
-          "metadataDate": root.find('.//xmp:MetadataDate', namespaces).text,
-          "language": [node.text for node in root.findall('.//dc:language//rdf:li', namespaces)],
-          "description": root.find('.//dc:description//rdf:li', namespaces).text
+    md = {"interviewer": root.find('.//autoBWF:Interviewer//rdf:li', namespaces),
+          "interviewee": root.find('.//autoBWF:Interviewee//rdf:li', namespaces),
+          "owner": root.find('.//xmpRights:Owner//rdf:li', namespaces),
+          "metadataDate": root.find('.//xmp:MetadataDate', namespaces),
+          "language": root.findall('.//dc:language//rdf:li', namespaces),
+          "description": root.find('.//dc:description//rdf:li', namespaces)
           }
+
+    for field in md:
+        if md[field] is not None:
+            if field == "language":
+                md[field] = [node.text for node in md[field]]
+            else:
+                md[field] = md[field].text
 
     os.remove(outfile)
     return md

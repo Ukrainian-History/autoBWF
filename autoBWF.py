@@ -27,7 +27,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                                   "ISRC": self.sourceSelect,
                                   "ICMT": self.commentText,
                                   "ICOP": self.copyrightText,
-                                  "description": self.descriptionText,
+                                  "description": self.descriptionText,  # TODO terrible choice of key...
                                   "owner": self.rightsOwnerSelect,
                                   "language": self.languageLine,
                                   "interviewer": self.interviewerLine,
@@ -166,23 +166,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionOpen_template.setEnabled(False)
                 self.populate_template_info(fname)
 
-    def insert_default_line(self, widget, text):
-        widget.clear()
-        widget.insert(text)
-        widget.setStyleSheet("color: grey; font: italic")
-        widget.textChanged.connect(lambda: self.activate_changed(widget))
-
-    def insert_default_box(self, widget, text):
-        widget.setCurrentText(text)
-        widget.setStyleSheet("color: grey; font: italic")
-        widget.currentTextChanged.connect(lambda: self.activate_changed(widget))
-
-    def insert_default_text(self, widget, text):
-        widget.clear()
-        widget.insertPlainText(text)
-        widget.setStyleSheet("color: grey; font: italic")
-        widget.textChanged.connect(lambda: self.activate_changed(widget))
-
     def set_existing(self, name):
         if self.original_md[name] != "" and (self.original_md[name] is not None):
             self.set_gui_text(name, self.original_md[name], is_original_md=True)
@@ -290,7 +273,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         if file is not None:
             self.template_md.update(get_bwf_core(config["accept-nopadding"], file))
-            self.original_md.update(get_xmp(file))  # TODO accept-nopadding...
+            self.template_md.update(get_xmp(file))  # TODO accept-nopadding...
 
             fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
                               "description", "owner", "language", "interviewer", "interviewee"]
