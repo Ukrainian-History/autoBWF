@@ -29,7 +29,7 @@ def get_xmp(filename, base_command):
         # provide backwards compatibility for XMP
         # saved using exempi and python-metadata-toolkit
         node = element.find(xpath + "//rdf:li", namespaces)
-        if node:
+        if node is not None:
             return node
         else:
             return element.find(xpath, namespaces)
