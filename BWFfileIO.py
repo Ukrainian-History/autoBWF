@@ -60,23 +60,31 @@ def set_xmp(md, filename):
     rdf = ET.SubElement(root, qualified_element("rdf", "RDF"))
     rdf_description = ET.SubElement(rdf, qualified_element("rdf", "Description"))
 
-    description = ET.SubElement(rdf_description, qualified_element("dc", "description"))
-    description.text = "This is description text"
+    # if set_xmp() is being called, then some metadata somewhere has changed,
+    # and therefore we MUST have an xmp:MetadataDate
     date = ET.SubElement(rdf_description, qualified_element("xmp", "MetadataDate"))
     date.text = datetime.now().isoformat()
-    owner = ET.SubElement(rdf_description, qualified_element("xmpRights", "Owner"))
-    owner.text = "Owner"
-    interviewer = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewer"))
-    interviewer.text = "interviewer"
-    interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewee"))
-    interviewee.text = "interviewee"
 
-    language = ET.SubElement(rdf_description, qualified_element("dc", "language"))
-    language_seq = ET.SubElement(language, qualified_element("rdf", "Seq"))
-    language_item = ET.SubElement(language_seq, qualified_element("rdf", "li"))
-    language_item.text = "ukr"
+    if md["description"] != "":
+        description = ET.SubElement(rdf_description, qualified_element("dc", "description"))
+        description.text = md["description"]
+    if md["owner"] != "":
+        owner = ET.SubElement(rdf_description, qualified_element("xmpRights", "Owner"))
+        owner.text = md["owner"]
+    if md["interviewer"] != "":
+        interviewer = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewer"))
+        interviewer.text = md["interviewer"]
+    if md["interviewee"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewee"))
+        interviewee.text = md["interviewee"]
+    if md["language"] != "":
+        language = ET.SubElement(rdf_description, qualified_element("dc", "language"))
+        language_seq = ET.SubElement(language, qualified_element("rdf", "Bag"))
+        for lang in md["language"].split(';'):
+            language_item = ET.SubElement(language_seq, qualified_element("rdf", "li"))
+            language_item.text = lang
 
-    return root
+    return ET.tostring(root, encoding="unicode")
 
 
 def get_bwf_tech(allow_padding, file):
@@ -111,20 +119,18 @@ def get_bwf_core(allow_padding, file):
     return core
 
 
-def call_bwf(command, file, key, text):
+def call_bwf(base_command, file, mdkey, text):
     # deal with annoying inconsistencies in bwfmetaedit
-    if key == "Timereference":
-        mdkey = "TimeReference"
-    elif key == "History":
-        mdkey = "CodingHistory"
+    if mdkey == "TimeReference":
+        key = "Timereference"
+    elif mdkey == "CodingHistory":
+        key = "History"
     else:
-        mdkey = key
+        key = mdkey
 
-    # if text != self.original_md[mdkey]:
-    #     subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
-    # TODO this checking needs to be done "upstairs" in the object, not here
-
-    subprocess.call(command + '--' + key + '="' + text + '" ' + file, shell=True)
+    command = base_command
+    command.extend(['--' + key + "=" + text, file])
+    subprocess.run(command)
 
 
 if __name__ == "__main__":

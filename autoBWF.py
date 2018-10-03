@@ -39,6 +39,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.original_md = {}
         self.template_md = {}
 
+        self.base_command = ["bwfmetaedit", "--specialchars"]
+        if config["accept-nopadding"]:
+            self.base_command.append("--accept-nopadding")
+
         #
         # configure dropdowns and texts
         #
@@ -312,81 +316,46 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.set_gui_text("CodingHistory", "".join(history_list))
 
     def save_metadata(self):
-        from libxmp import XMPFiles, consts
-        from datetime import datetime
-
         current_md = self.get_all_gui_texts()
-        set_xmp({k: current_md[k] for k in self.xmp_fields if k in current_md}, None)
+        changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
+        current_xmp = {k: current_md[k] for k in self.xmp_fields}
+        changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
+                           if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
 
-        # first the BWF and RIFF
-        command = "bwfmetaedit --specialchars "
-        if config["accept-nopadding"]:
-            command += "--accept-nopadding "
+        if not changed_xmp and not changed_bwf_riff:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("Metadata is unchanged. Nothing to update.")
+            msg.exec_()
+            return
 
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
-            subprocess.call(command + "--MD5-embed " + self.filename, shell=True)
+            command = self.base_command
+            command.extend(["--MD5-embed", self.filename])
+            subprocess.run(command)
 
-        call_bwf(command, self.filename, "Timereference", "0")
-        call_bwf(command, self.filename, "Description", self.descriptionLine.text())
-        call_bwf(command, self.filename, "Originator", self.originatorLine.text())
-        call_bwf(command, self.filename, "OriginatorReference", self.originatorRefLine.text())
-        call_bwf(command, self.filename, "OriginationDate", self.originationDateLine.text())
-        call_bwf(command, self.filename, "OriginationTime", self.originationTimeLine.text())
-        call_bwf(command, self.filename, "ICOP", self.copyrightText.toPlainText())
-        call_bwf(command, self.filename, "INAM", self.titleLine.text())
-        call_bwf(command, self.filename, "ITCH", self.technicianBox.currentText())
-        call_bwf(command, self.filename, "ICMT", self.commentText.toPlainText())
-        call_bwf(command, self.filename, "ICRD", self.creationDateLine.text())
-        call_bwf(command, self.filename, "ISFT", self.isftSelect.currentText())
-        call_bwf(command, self.filename, "ISRC", self.sourceSelect.currentText())
-        call_bwf(command, self.filename, "IARL", config["iarl"])
-        call_bwf(command, self.filename, "History", self.codingHistoryText.toPlainText())
-        # for some bizarre reason, --History has to be last,
-        # otherwise there's duplication of the last two characters of the history string...
+        if self.original_md["TimeReference"] != '0':
+            call_bwf(self.base_command, self.filename, "TimeReference", "0")
 
-        # XMP must be done after RIFF, as xmp library crashes if wav has no RIFF tags
-        xmpfile = XMPFiles(file_path=self.filename, open_forupdate=True)
-        xmp = xmpfile.get_xmp()
+        # need to save coding history for last.
+        # If we don't, then for some bizarre reason
+        # there's duplication of the last two characters of the history string...
+        coding_history = changed_bwf_riff.pop("CodingHistory", None)
 
-        if self.rightsOwnerSelect.currentText():
-            xmp.set_localized_text(
-                consts.XMP_NS_XMP_Rights, 'Owner',
-                'en', 'en-US', self.rightsOwnerSelect.currentText())
-        if self.descriptionText.toPlainText():
-            xmp.set_localized_text(
-                consts.XMP_NS_DC, 'description',
-                'en', 'en-US', self.descriptionText.toPlainText())
+        for key in changed_bwf_riff:
+            call_bwf(self.base_command, self.filename, key, current_md[key])
 
-        if self.languageLine.text():
-            # delete languages first to prevent appending to existing array
-            xmp.delete_property(consts.XMP_NS_DC, 'language')
+        if coding_history:
+            call_bwf(self.base_command, self.filename, "CodingHistory", coding_history)
 
-            for lang in self.languageLine.text().split(";"):
-                xmp.append_array_item(consts.XMP_NS_DC, 'language',
-                                      lang.strip(),
-                                      {'prop_array_is_ordered': False,
-                                       'prop_value_is_array': True})
-
-        xmp.register_namespace(self.autobwf_ns, 'autoBWF')
-
-        if self.interviewerLine.text():
-            xmp.set_localized_text(
-                self.autobwf_ns, 'Interviewer',
-                'en', 'en-US', self.interviewerLine.text())
-        if self.intervieweeLine.text():
-            xmp.set_localized_text(
-                self.autobwf_ns, 'Interviewee',
-                'en', 'en-US', self.intervieweeLine.text())
-
-        xmp.set_property_datetime(consts.XMP_NS_XMP,
-                                  "MetadataDate", datetime.now())
-
-        xmpfile.put_xmp(xmp)
-        xmpfile.close_file()
+        # something has changed, therefore at minimum we need to update xmp:MetadataDate
+        foo = set_xmp(current_xmp, None)
+        print(foo)
 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setText("Metadata saved successfully")
+        # TODO what if it wasn't successful???
         msg.exec_()
 
 
