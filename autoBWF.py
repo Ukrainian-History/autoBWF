@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from tabbed import Ui_autoBWF
 import subprocess
-from BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp
+from BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp, set_xmp
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
@@ -33,11 +33,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                                   "interviewer": self.interviewerLine,
                                   "interviewee": self.intervieweeLine
                                  }
+        self.xmp_fields = ("description", "owner", "language", "interviewer", "interviewee")
 
         self.filename = filename
         self.original_md = {}
         self.template_md = {}
-        self.current_md = {}
 
         #
         # configure dropdowns and texts
@@ -111,9 +111,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             return widget.currentText()
         return None
 
+    def get_all_gui_texts(self):
+        md = {}
+        for field in self.gui_text_widgets.keys():
+            md[field] = self.get_gui_text(field)
+        return md
+
     def set_gui_text(self, widget_name, value, is_original_md=False):
-        if widget_name == "language":  # convert list to string
-            value = ";".join(value)
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
         if widget_type is QtWidgets.QPlainTextEdit:
@@ -310,6 +314,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def save_metadata(self):
         from libxmp import XMPFiles, consts
         from datetime import datetime
+
+        current_md = self.get_all_gui_texts()
+        set_xmp({k: current_md[k] for k in self.xmp_fields if k in current_md}, None)
 
         # first the BWF and RIFF
         command = "bwfmetaedit --specialchars "

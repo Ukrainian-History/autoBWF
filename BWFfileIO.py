@@ -1,5 +1,6 @@
 import subprocess
 import os
+import xml.etree.ElementTree as ET
 
 namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
               'xmp': 'http://ns.adobe.com/xap/1.0/',
@@ -13,15 +14,14 @@ namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
 
 def get_xmp(filename):
     """New version of XMP getter using bwfmetaedit"""
-    import xml.etree.ElementTree as ET
 
     subprocess.run(["bwfmetaedit", "--out-XMP-xml", filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outfile = filename + ".XMP.xml"
     try:
         tree = ET.parse(outfile)
     except FileNotFoundError:
-        md = {"interviewer": None, "interviewee": None, "owner": None,
-              "metadataDate": None, "language": None, "description": None}
+        md = {"interviewer": "", "interviewee": "", "owner": "",
+              "metadataDate": "", "language": "", "description": ""}
         return md
     root = tree.getroot()
 
@@ -36,12 +36,47 @@ def get_xmp(filename):
     for field in md:
         if md[field] is not None:
             if field == "language":
-                md[field] = [node.text for node in md[field]]
+                md[field] = ";".join([node.text for node in md[field]])
             else:
                 md[field] = md[field].text
+        else:
+            md[field] = ""
 
     os.remove(outfile)
     return md
+
+
+def qualified_element(ns, element):
+    return "{{{0}}}{1}".format(namespaces[ns], element)
+
+
+def set_xmp(md, filename):
+    from datetime import datetime
+
+    for ns in namespaces.keys():
+        ET.register_namespace(ns, namespaces[ns])
+
+    root = ET.Element(qualified_element("x", "xmpmeta"))
+    rdf = ET.SubElement(root, qualified_element("rdf", "RDF"))
+    rdf_description = ET.SubElement(rdf, qualified_element("rdf", "Description"))
+
+    description = ET.SubElement(rdf_description, qualified_element("dc", "description"))
+    description.text = "This is description text"
+    date = ET.SubElement(rdf_description, qualified_element("xmp", "MetadataDate"))
+    date.text = datetime.now().isoformat()
+    owner = ET.SubElement(rdf_description, qualified_element("xmpRights", "Owner"))
+    owner.text = "Owner"
+    interviewer = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewer"))
+    interviewer.text = "interviewer"
+    interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewee"))
+    interviewee.text = "interviewee"
+
+    language = ET.SubElement(rdf_description, qualified_element("dc", "language"))
+    language_seq = ET.SubElement(language, qualified_element("rdf", "Seq"))
+    language_item = ET.SubElement(language_seq, qualified_element("rdf", "li"))
+    language_item.text = "ukr"
+
+    return root
 
 
 def get_bwf_tech(allow_padding, file):
@@ -95,9 +130,14 @@ def call_bwf(command, file, key, text):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description='Test IO functions.')
-    parser.add_argument('filename', help='WAV file to be processed')
-    args = parser.parse_args()
-    filename = args.filename
+    # parser = argparse.ArgumentParser(description='Test IO functions.')
+    # parser.add_argument('filename', help='WAV file to be processed')
+    # args = parser.parse_args()
+    # filename = args.filename
 
-    print(get_xmp(filename))
+    # print(get_xmp(filename))
+
+    md = {"description": "This is a description", "owner": "Bozo Owner"}
+
+    dum = set_xmp(md, None)
+    print(ET.tostring(dum, encoding="unicode"))
