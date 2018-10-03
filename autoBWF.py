@@ -349,8 +349,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             call_bwf(self.base_command, self.filename, "CodingHistory", coding_history)
 
         # something has changed, therefore at minimum we need to update xmp:MetadataDate
-        foo = set_xmp(current_xmp, None)
-        print(foo)
+        set_xmp(current_xmp, self.filename, self.base_command)
 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)

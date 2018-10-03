@@ -50,7 +50,7 @@ def qualified_element(ns, element):
     return "{{{0}}}{1}".format(namespaces[ns], element)
 
 
-def set_xmp(md, filename):
+def set_xmp(md, filename, base_command):
     from datetime import datetime
 
     for ns in namespaces.keys():
@@ -84,7 +84,12 @@ def set_xmp(md, filename):
             language_item = ET.SubElement(language_seq, qualified_element("rdf", "li"))
             language_item.text = lang
 
-    return ET.tostring(root, encoding="unicode")
+    xmlfile = filename + ".XMPin.xml"
+    ET.ElementTree(root).write(xmlfile)
+    command = base_command
+    command.extend(['--in-XMP=' + xmlfile, filename])
+    subprocess.run(command)
+    os.remove(xmlfile)
 
 
 def get_bwf_tech(allow_padding, file):
