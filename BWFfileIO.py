@@ -12,10 +12,10 @@ namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
               "xml": "http://www.w3.org/XML/1998/namespace"}
 
 
-def get_xmp(filename):
-    """New version of XMP getter using bwfmetaedit"""
-
-    subprocess.run(["bwfmetaedit", "--out-XMP-xml", filename], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def get_xmp(filename, base_command):
+    command = base_command
+    command.extend(["--out-XMP-xml", filename])
+    subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outfile = filename + ".XMP.xml"
     try:
         tree = ET.parse(outfile)
@@ -25,12 +25,21 @@ def get_xmp(filename):
         return md
     root = tree.getroot()
 
-    md = {"interviewer": root.find('.//autoBWF:Interviewer//rdf:li', namespaces),
-          "interviewee": root.find('.//autoBWF:Interviewee//rdf:li', namespaces),
-          "owner": root.find('.//xmpRights:Owner//rdf:li', namespaces),
+    def check_li_child(element, xpath):
+        # provide backwards compatibility for XMP
+        # saved using exempi and python-metadata-toolkit
+        node = element.find(xpath + "//rdf:li", namespaces)
+        if node:
+            return node
+        else:
+            return element.find(xpath, namespaces)
+
+    md = {"interviewer": check_li_child(root, './/autoBWF:Interviewer'),
+          "interviewee": check_li_child(root, './/autoBWF:Interviewee'),
+          "owner": check_li_child(root, './/xmpRights:Owner'),
           "metadataDate": root.find('.//xmp:MetadataDate', namespaces),
           "language": root.findall('.//dc:language//rdf:li', namespaces),
-          "description": root.find('.//dc:description//rdf:li', namespaces)
+          "description": check_li_child(root, './/dc:description')
           }
 
     for field in md:

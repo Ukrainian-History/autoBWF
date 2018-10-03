@@ -260,7 +260,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         #
 
         self.original_md.update(get_bwf_core(config["accept-nopadding"], file))
-        self.original_md.update(get_xmp(file))  # TODO accept-nopadding...
+        self.original_md.update(get_xmp(file, self.base_command))
 
         fields_to_fill = ["Description", "Originator", "OriginationDate",
                           "OriginationTime", "OriginatorReference", "CodingHistory",
@@ -281,7 +281,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         if file is not None:
             self.template_md.update(get_bwf_core(config["accept-nopadding"], file))
-            self.template_md.update(get_xmp(file))  # TODO accept-nopadding...
+            self.template_md.update(get_xmp(file, self.base_command))
 
             fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
                               "description", "owner", "language", "interviewer", "interviewee"]
