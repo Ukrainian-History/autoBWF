@@ -97,7 +97,7 @@ def set_xmp(md, filename, base_command):
             language_item = ET.SubElement(language_bag, qualified_element("rdf", "li"))
             language_item.text = lang
 
-    xmlfile = filename + ".XMPin.xml"
+    xmlfile = filename + ".XMP.xml"
     ET.ElementTree(root).write(xmlfile)
     command = base_command
     command.extend(['--in-XMP=' + xmlfile, filename])
