@@ -55,12 +55,11 @@ def get_xmp(filename, base_command):
     return md
 
 
-def qualified_element(ns, element):
-    return "{{{0}}}{1}".format(namespaces[ns], element)
-
-
 def set_xmp(md, filename, base_command):
     from datetime import datetime
+
+    def qualified_element(ns, element):
+        return "{{{0}}}{1}".format(namespaces[ns], element)
 
     for ns in namespaces.keys():
         ET.register_namespace(ns, namespaces[ns])
@@ -76,10 +75,15 @@ def set_xmp(md, filename, base_command):
 
     if md["description"] != "":
         description = ET.SubElement(rdf_description, qualified_element("dc", "description"))
-        description.text = md["description"]
+        alt = ET.SubElement(description, qualified_element("rdf", "Alt"))
+        li = ET.SubElement(alt, qualified_element("rdf", "li"))
+        li.set("xml:lang", "x-default")
+        li.text = md["description"]
     if md["owner"] != "":
         owner = ET.SubElement(rdf_description, qualified_element("xmpRights", "Owner"))
-        owner.text = md["owner"]
+        owner_bag = ET.SubElement(owner, qualified_element("rdf", "Bag"))
+        owner_item = ET.SubElement(owner_bag, qualified_element("rdf", "li"))
+        owner_item.text = md["owner"]
     if md["interviewer"] != "":
         interviewer = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewer"))
         interviewer.text = md["interviewer"]
@@ -88,9 +92,9 @@ def set_xmp(md, filename, base_command):
         interviewee.text = md["interviewee"]
     if md["language"] != "":
         language = ET.SubElement(rdf_description, qualified_element("dc", "language"))
-        language_seq = ET.SubElement(language, qualified_element("rdf", "Bag"))
+        language_bag = ET.SubElement(language, qualified_element("rdf", "Bag"))
         for lang in md["language"].split(';'):
-            language_item = ET.SubElement(language_seq, qualified_element("rdf", "li"))
+            language_item = ET.SubElement(language_bag, qualified_element("rdf", "li"))
             language_item.text = lang
 
     xmlfile = filename + ".XMPin.xml"
