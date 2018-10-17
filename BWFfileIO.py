@@ -152,16 +152,4 @@ def call_bwf(base_command, file, mdkey, text):
 
 
 if __name__ == "__main__":
-    import argparse
-
-    # parser = argparse.ArgumentParser(description='Test IO functions.')
-    # parser.add_argument('filename', help='WAV file to be processed')
-    # args = parser.parse_args()
-    # filename = args.filename
-
-    # print(get_xmp(filename))
-
-    md = {"description": "This is a description", "owner": "Bozo Owner"}
-
-    dum = set_xmp(md, None)
-    print(ET.tostring(dum, encoding="unicode"))
+    pass

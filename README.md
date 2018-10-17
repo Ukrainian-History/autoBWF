@@ -62,7 +62,7 @@ The bwfmetaedit `--accept-nopadding` flag is used by default, but that behavior 
 
 `python autolame.py [--vbr-level n] <infile> <outfile>`
 
-The default VBR level is currently 6.
+The default VBR level is currently 7.
 
 ### `autosplice` usage
 
