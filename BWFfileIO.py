@@ -110,11 +110,11 @@ def get_bwf_tech(allow_padding, file):
     import csv
 
     if allow_padding:
-        command = "bwfmetaedit --accept-nopadding --out-tech " + file
+        command = ["bwfmetaedit", "--accept-nopadding", "--out-tech", file]
     else:
-        command = "bwfmetaedit --out-tech " + file
+        command = ["bwfmetaedit", "--out-tech", file]
 
-    tech_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
+    tech_csv = subprocess.check_output(command, universal_newlines=True)
     f = io.StringIO(tech_csv)
     reader = csv.DictReader(f, delimiter=',')
     tech = next(reader)
@@ -126,11 +126,11 @@ def get_bwf_core(allow_padding, file):
     import csv
 
     if allow_padding:
-        command = "bwfmetaedit --accept-nopadding --out-core " + file
+        command = ["bwfmetaedit", "--accept-nopadding", "--out-core", file]
     else:
-        command = "bwfmetaedit --out-core " + file
+        command = ["bwfmetaedit", "--out-core", file]
 
-    core_csv = subprocess.check_output(command, shell=True, universal_newlines=True)
+    core_csv = subprocess.check_output(command, universal_newlines=True)
     f = io.StringIO(core_csv)
     reader = csv.DictReader(f, delimiter=',')
     core = next(reader)
