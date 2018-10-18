@@ -1,13 +1,10 @@
 import sys
 import argparse
-import subprocess
 import re
 from BWFfileIO import *
 
 
 def main(arguments):
-    from libxmp import XMPFiles, consts
-
     parser = argparse.ArgumentParser(
         description='Use lame to create mp3 file from BWF, using BWF metadata to populate IDv2 tags')
     parser.add_argument('infile', help="WAV file")
@@ -41,43 +38,8 @@ def main(arguments):
     command.extend(["--id3v2-only", args.infile, args.outfile])
     subprocess.call(command)
 
-    # xmpfile = XMPFiles(file_path=args.outfile, open_forupdate=True)
-    # xmp = xmpfile.get_xmp()
-    #
-    # if xmp_metadata["owner"]:
-    #     xmp.set_localized_text(
-    #         consts.XMP_NS_XMP_Rights, 'Owner',
-    #         'en', 'en-US', xmp_metadata["owner"])
-    # if xmp_metadata["description"]:
-    #     xmp.set_localized_text(
-    #         consts.XMP_NS_DC, 'description',
-    #         'en', 'en-US', xmp_metadata["description"])
-    #
-    # if xmp_metadata["language"]:
-    #     for lang in xmp_metadata["language"].split(";"):
-    #         xmp.append_array_item(consts.XMP_NS_DC, 'language',
-    #                               lang.strip(),
-    #                               {'prop_array_is_ordered': False,
-    #                                'prop_value_is_array': True})
-    #
-    # xmp.register_namespace(autobwf_ns, 'autoBWF')
-    #
-    # if xmp_metadata["interviewer"]:
-    #     xmp.set_localized_text(
-    #         autobwf_ns, 'Interviewer',
-    #         'en', 'en-US', xmp_metadata["interviewer"])
-    # if xmp_metadata["interviewee"]:
-    #     xmp.set_localized_text(
-    #         autobwf_ns, 'Interviewee',
-    #         'en', 'en-US', xmp_metadata["interviewee"])
-    #
-    # if xmp_metadata["metadataDate"]:
-    #     xmp.set_property_datetime(
-    #         consts.XMP_NS_XMP, 'MetadataDate',
-    #         xmp_metadata["metadataDate"])
-    #
-    # xmpfile.put_xmp(xmp)
-    # xmpfile.close_file()
+    # no easy way to write XMP to MP3 without the python-xmp-toolkit and exempi (which has been eliminated), so
+    # we're eliminating the extra tags that were encoded in the earlier versions
 
 
 if __name__ == '__main__':
