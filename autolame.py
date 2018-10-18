@@ -21,23 +21,23 @@ def main(arguments):
     xmp_metadata = get_xmp(args.infile, ["bwfmetaedit", "--specialchars", "--accept-nopadding"])
 
     if bwf_metadata["INAM"] != "":
-        command.append('--tv "TIT2={}" '.format(bwf_metadata["INAM"]))
+        command.extend(['--tv', 'TIT2={}'.format(bwf_metadata["INAM"])])
     if bwf_metadata["IARL"] != "":
-        command.append('--tv "TOWN={}" '.format(bwf_metadata["IARL"]))
+        command.extend(['--tv', "TOWN={}".format(bwf_metadata["IARL"])])
     if bwf_metadata["ICOP"] != "":
-        command.append('--tv "TCOP={}" '.format(bwf_metadata["ICOP"]))
+        command.extend(['--tv', "TCOP={}".format(bwf_metadata["ICOP"])])
     if bwf_metadata["ISRC"] != "":
-        command.append('--tv "TIT1={}" '.format(bwf_metadata["ISRC"]))
+        command.extend(['--tv', "TIT1={}".format(bwf_metadata["ISRC"])])
 
     if bwf_metadata["Description"] != "":
         m = re.search(r'File content: +(.+?);', bwf_metadata["Description"])
         if m:
-            command.append('--tv "TIT3={}" '.format(m.group(1)))
+            command.extend(['--tv', "TIT3={}".format(m.group(1))])
 
     if bwf_metadata["ICRD"] != "":
-        command.append('--ty "{}" '.format(bwf_metadata["ICRD"]))
+        command.extend(["--ty", bwf_metadata["ICRD"]])
 
-    command.append('--tv "TLAN={}" '.format(xmp_metadata["language"]))
+    command.extend(['--tv', "TLAN={}".format(xmp_metadata["language"])])
     command.extend(["--id3v2-only", args.infile, args.outfile])
     subprocess.call(command)
 

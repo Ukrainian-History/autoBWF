@@ -18,6 +18,7 @@ This code requires
 * [BWFMetaEdit](https://mediaarea.net/BWFMetaEdit/Download) CLI 
 * [lame](http://lame.sourceforge.net/) (for autolame.py)
 * [SoX](http://sox.sourceforge.net/) v14.4.2 (for autosplice.py)
+  * Some LINUX package repositories have an earlier version, which seems to have problems with time specifications.
 
 It assumes that the "bwfmetaedit" executable is in the current PATH. It has been tested on Linux using bwfmetaedit version 1.3.3. It should also run on other Unix-like systems such as MacOS. 
 
