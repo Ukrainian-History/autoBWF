@@ -1,9 +1,11 @@
 import sys
+import subprocess
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
-from tabbed import Ui_autoBWF
-import subprocess
-from BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp, set_xmp
+
+from autoBWF.tabbed import Ui_autoBWF
+from autoBWF.BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp, set_xmp
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
@@ -12,6 +14,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+        self.config = config
 
         self.gui_text_widgets = {
                                   "Description": self.descriptionLine,
@@ -144,7 +147,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
         if fname:
             # check to make sure file is legit
-            md = get_bwf_tech(config["accept-nopadding"], fname)
+            md = get_bwf_tech(self.config["accept-nopadding"], fname)
             if md["Errors"] != "":
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
@@ -164,7 +167,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         fname = str(QFileDialog.getOpenFileName(self, "Open template file", "~")[0])
         if fname:
             # check to make sure file is legit
-            md = get_bwf_tech(config["accept-nopadding"], fname)
+            md = get_bwf_tech(self.config["accept-nopadding"], fname)
             if md["Errors"] != "":
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Critical)
@@ -189,7 +192,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             .isoformat()
         [date_created, time] = date_time_created.split("T")
 
-        m = re.compile(config["filenameRegex"]).match(file)
+        m = re.compile(self.config["filenameRegex"]).match(file)
         if m:
             matches = m.groups()
             identifier = matches[0]
@@ -221,12 +224,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.set_gui_text("OriginationDate", date_from_filename)
             self.set_gui_text("OriginationTime", time)
             self.set_gui_text("OriginatorReference",
-                              config["repocode"] + " " +
+                              self.config["repocode"] + " " +
                               date_from_filename.replace("-", "") + " " +
                               time.replace(":", ""))
 
             try:
-                file_use = config["fileuse"][file_use]
+                file_use = self.config["fileuse"][file_use]
             except KeyError:
                 # TODO: make this a dialog
                 print(
@@ -249,7 +252,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.set_gui_text("OriginationDate", date_created)
             self.set_gui_text("OriginationTime", time)
             self.set_gui_text("OriginatorReference",
-                              config["repocode"] + " " +
+                              self.config["repocode"] + " " +
                               date_created.replace("-", "") + " " +
                               time.replace(":", ""))
 
@@ -259,7 +262,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # prefill defaults and insert existing values
         #
 
-        self.original_md.update(get_bwf_core(config["accept-nopadding"], file))
+        self.original_md.update(get_bwf_core(self.config["accept-nopadding"], file))
         self.original_md.update(get_xmp(file, self.base_command))
 
         fields_to_fill = ["Description", "Originator", "OriginationDate",
@@ -280,7 +283,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # replace with template values if they exist
 
         if file is not None:
-            self.template_md.update(get_bwf_core(config["accept-nopadding"], file))
+            self.template_md.update(get_bwf_core(self.config["accept-nopadding"], file))
             self.template_md.update(get_xmp(file, self.base_command))
 
             fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
@@ -289,7 +292,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.set_value_from_template(field)
 
     def copyright_activated(self, index):
-        self.set_gui_text("ICOP", config["copyright"][config["copyright"]["list"][index]])
+        self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]])
 
     def update_coding_history(self):
         deck = self.deckSelect.currentText()
@@ -300,18 +303,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         eq = self.eqSelect.currentText()
         type = self.typeSelect.currentText()
 
-        analogprops = [x for x in [config["deck"][deck], media, speed, eq, type] if x != ""]
+        analogprops = [x for x in [self.config["deck"][deck], media, speed, eq, type] if x != ""]
         channels = {"1": "mono", "2": "stereo"}
 
         history_list = [
             "A=ANALOGUE,M=stereo,T=", "; ".join(analogprops),
             "\r\nA=PCM,F=", self.original_md["SampleRate"],
             ",W=", self.original_md["BitPerSample"],
-            ",M=stereo,T=", config["adc"][adc],
+            ",M=stereo,T=", self.config["adc"][adc],
             "\r\nA=PCM,F=", self.original_md["SampleRate"],
             ",W=" + self.original_md["BitPerSample"],
             ",M=" + channels[self.original_md["Channels"]],
-            ",T=" + config["software"][software]
+            ",T=" + self.config["software"][software]
         ]
         self.set_gui_text("CodingHistory", "".join(history_list))
 
@@ -358,12 +361,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         msg.exec_()
 
 
-if __name__ == "__main__":
+def main():
     import json
     import argparse
-    import autobwfconfig
-    from appdirs import AppDirs
     from pathlib import Path
+
+    from appdirs import AppDirs
+
+    from autoBWF import autobwfconfig
 
     default_text = autobwfconfig.default_config()
 
@@ -405,3 +410,7 @@ if __name__ == "__main__":
     form.show()
 
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
