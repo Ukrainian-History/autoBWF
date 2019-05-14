@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QMessageBox, QFileDialog
 
 from autoBWF.tabbed import Ui_autoBWF
 from autoBWF.BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp, set_xmp
+from autoBWF.autobwfconfig import default_config
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
@@ -323,7 +324,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
         current_xmp = {k: current_md[k] for k in self.xmp_fields}
         changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
-                           if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
+                            if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
 
         if not changed_xmp and not changed_bwf_riff:
             msg = QMessageBox()
@@ -368,9 +369,15 @@ def main():
 
     from appdirs import AppDirs
 
-    from autoBWF import autobwfconfig
+    try:
+        subprocess.check_output("bwfmetaedit")
+    except FileNotFoundError:
+        exit((
+            "You must have the BWFMetaEdit CLI installed on your system to run autoBWF.\n"
+            "Please download and install the latest version from https://mediaarea.net/BWFMetaEdit/Download.\n"
+            "Note that you must install the 'CLI' interface."))
 
-    default_text = autobwfconfig.default_config()
+    default_text = default_config()
 
     dirs = AppDirs("autoBWF", "UHEC")
     config_file = Path(dirs.user_data_dir) / "autobwfconfig.json"

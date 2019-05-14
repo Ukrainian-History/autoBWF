@@ -1,3 +1,11 @@
+"""
+This function is used to generate the default configuration file text.
+
+Yes, it could be stored as data in the package, but that would require a dependency on setuptools, and there's
+no need for another package for something this simple.
+"""
+
+
 def default_config():
     default = """\
 {
