@@ -24,6 +24,8 @@ setup(
     entry_points={
         'console_scripts': [
             'autoBWF=autoBWF.autoBWF:main',
+            'autolame=autoBWF.autolame:main',
+            'autosplice=autoBWF.autosplice:main'
         ],
     },
     install_requires=requirements,

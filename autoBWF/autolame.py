@@ -1,16 +1,16 @@
 import sys
 import argparse
 import re
-from BWFfileIO import *
+from autoBWF.BWFfileIO import *
 
 
-def main(arguments):
+def main():
     parser = argparse.ArgumentParser(
         description='Use lame to create mp3 file from BWF, using BWF metadata to populate IDv2 tags')
     parser.add_argument('infile', help="WAV file")
     parser.add_argument('outfile', help="MP3 file")
     parser.add_argument('--vbr-level', help="MP3 VBR encoding level", type=int, default=7)
-    args = parser.parse_args(arguments)
+    args = parser.parse_args()
 
     command = ["lame", "-V", str(args.vbr_level),  "--vbr-new"]
 
@@ -43,4 +43,4 @@ def main(arguments):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    main()

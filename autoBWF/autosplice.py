@@ -64,13 +64,13 @@ def finalize(edit, edits):
     return command
 
 
-def main(arguments):
+def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('infile', help="EDL file", type=argparse.FileType('r'))
 
-    args = parser.parse_args(arguments)
+    args = parser.parse_args()
 
     edits = list()
 
@@ -105,4 +105,4 @@ def main(arguments):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    main()
