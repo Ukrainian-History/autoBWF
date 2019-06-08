@@ -65,6 +65,14 @@ def finalize(edit, edits):
 
 
 def main():
+    try:
+        subprocess.check_output("sox")
+    except FileNotFoundError:
+        exit((
+            "You must have SoX v14.4.2 or higher installed on your system to run autosplice.\n"
+            "Please download and install the latest version from http://sox.sourceforge.net\n"
+            "or using your package manager."))
+
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -75,6 +83,7 @@ def main():
     edits = list()
 
     for line in args.infile.readlines():
+        print(line)
         edit = parse_line(line)
         if not edit:
             continue

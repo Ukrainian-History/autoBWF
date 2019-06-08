@@ -9,5 +9,6 @@ bwf-qt
 notes.txt
 *.xml
 Pipfile
+Pipfile.lock
 build
 dist

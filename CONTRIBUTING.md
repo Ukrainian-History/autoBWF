@@ -24,12 +24,14 @@ wanted" is open to whoever wants to implement it.
 ### Implement Features
 
 Look through the GitHub issues for features. Anything tagged with "enhancement"
-and "help wanted" is open to whoever wants to implement it.
+and "help wanted" is open to whoever wants to implement it. Is there nothing there
+and there's a feature you'd like to have? Then create an issue, and
+let's talk about it!
 
 ### Write Documentation
 
 autoBWF could always use more documentation, whether as part of the
-official Import Mess docs, in docstrings, or even on the web in blog posts,
+official docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 ### Submit Feedback
@@ -48,27 +50,36 @@ If you are proposing a feature:
 Ready to contribute? Here's how to set up `autoBWF` for local development.
 
 1. Fork the `autoBWF` repo on GitHub.
-2. Clone your fork locally::
+2. Clone your fork locally:
 
+    ```
     $ git clone git@github.com:your_name_here/autoBWF.git
+    ```
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into a virtualenv. A
+ssuming you have pipenv installed, this is how you set up your fork for local development:
 
-    $ mkvirtualenv autoBWF
+    ```
     $ cd autoBWF/
-    $ python setup.py develop
+    $ pipenv --three install '-e .'
+    $ pipenv shell
+    ```
 
-4. Create a branch for local development::
+4. Create a branch for local development:
 
+    ```
     $ git checkout -b name-of-your-bugfix-or-feature
+    ```
 
    Now you can make your changes locally.
 
 6. Commit your changes and push your branch to GitHub::
 
+    ```
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
+    ```
 
 7. Submit a pull request through the GitHub website.
 
@@ -77,8 +88,7 @@ Pull Request Guidelines
 
 Before you submit a pull request, check that it meets these guidelines:
 
-
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
-   feature to the list in README.rst.
+   feature to the list in README.md.
 3. The pull request should work for Python 3.6. 
