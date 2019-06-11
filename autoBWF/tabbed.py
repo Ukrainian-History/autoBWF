@@ -2,11 +2,12 @@
 
 # Form implementation generated from reading ui file 'tabbed.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created by: PyQt5 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_autoBWF(object):
     def setupUi(self, autoBWF):
@@ -391,6 +392,7 @@ class Ui_autoBWF(object):
         self.toolBar.setObjectName("toolBar")
         autoBWF.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.actionUpdate_metadata = QtWidgets.QAction(autoBWF)
+        self.actionUpdate_metadata.setCheckable(False)
         self.actionUpdate_metadata.setObjectName("actionUpdate_metadata")
         self.actionOpen = QtWidgets.QAction(autoBWF)
         self.actionOpen.setObjectName("actionOpen")
@@ -439,9 +441,13 @@ class Ui_autoBWF(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.xmpTab), _translate("autoBWF", "XMP"))
         self.toolBar.setWindowTitle(_translate("autoBWF", "toolBar"))
         self.actionUpdate_metadata.setText(_translate("autoBWF", "Save metadata"))
-        self.actionOpen.setText(_translate("autoBWF", "Open..."))
+        self.actionUpdate_metadata.setShortcut(_translate("autoBWF", "S"))
+        self.actionOpen.setText(_translate("autoBWF", "Open"))
+        self.actionOpen.setShortcut(_translate("autoBWF", "O"))
         self.actionQuit.setText(_translate("autoBWF", "Quit"))
         self.actionQuit.setShortcut(_translate("autoBWF", "Q"))
         self.actionOpen_template.setText(_translate("autoBWF", "Load template..."))
         self.actionOpen_template.setToolTip(_translate("autoBWF", "Load template"))
+        self.actionOpen_template.setShortcut(_translate("autoBWF", "T"))
+
 

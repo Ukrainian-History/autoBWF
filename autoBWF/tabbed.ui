@@ -657,13 +657,22 @@
    <addaction name="actionQuit"/>
   </widget>
   <action name="actionUpdate_metadata">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save metadata</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
    </property>
   </action>
   <action name="actionOpen">
    <property name="text">
-    <string>Open...</string>
+    <string>Open</string>
+   </property>
+   <property name="shortcut">
+    <string>O</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -683,6 +692,9 @@
    </property>
    <property name="toolTip">
     <string>Load template</string>
+   </property>
+   <property name="shortcut">
+    <string>T</string>
    </property>
   </action>
  </widget>
