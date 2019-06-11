@@ -3,3 +3,5 @@ include CONTRIBUTING.md
 include HISTORY.md
 include LICENSE.txt
 include README.md
+include autosplice-example.txt
+include screenshot.png

@@ -65,14 +65,6 @@ def finalize(edit, edits):
 
 
 def main():
-    try:
-        subprocess.check_output("sox")
-    except FileNotFoundError:
-        exit((
-            "You must have SoX v14.4.2 or higher installed on your system to run autosplice.\n"
-            "Please download and install the latest version from http://sox.sourceforge.net\n"
-            "or using your package manager."))
-
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -83,7 +75,6 @@ def main():
     edits = list()
 
     for line in args.infile.readlines():
-        print(line)
         edit = parse_line(line)
         if not edit:
             continue
@@ -102,13 +93,28 @@ def main():
     with open(filename + ".cmd", 'w') as output:
         output.write(cmd)
 
-    soxout = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
+    try:
+        soxout = subprocess.run(cmd, shell=True, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError:
+        exit(
+            "You must have SoX v14.4.2 or higher installed on your system to run autosplice.\n"
+            "Please download and install the latest version from http://sox.sourceforge.net\n"
+            "or using your package manager.")
+
     with open(filename + ".out", 'wb') as output:
         output.write(soxout.stderr)
 
     subprocess.call("bwfmetaedit --specialchars --MD5-embed " + outfile, shell=True)
     subprocess.run("bwfmetaedit --specialchars --ICMT='" + cmd + "' " + outfile, shell=True)
-    version = subprocess.check_output('sox --version', shell=True).decode("utf-8")
+
+    try:
+        version = subprocess.check_output('sox --version', shell=True).decode("utf-8")
+    except subprocess.CalledProcessError:
+        exit(
+            "You must have SoX v14.4.2 or higher installed on your system to run autosplice.\n"
+            "Please download and install the latest version from http://sox.sourceforge.net\n"
+            "or using your package manager.")
+
     version = re.sub(r'^sox: +', '', version)
     subprocess.run('bwfmetaedit --specialchars --ISFT="' + version + '" ' + outfile, shell=True)
 
