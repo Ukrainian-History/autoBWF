@@ -17,7 +17,7 @@
    <layout class="QGridLayout" name="gridLayout_4">
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
-      <widget class="QWidget" name="page">
+      <widget class="QWidget" name="guiPage">
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="0">
          <widget class="QTabWidget" name="tabWidget">
@@ -638,7 +638,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page_2">
+      <widget class="QWidget" name="progressPage">
        <layout class="QGridLayout" name="gridLayout_9">
         <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -663,7 +663,7 @@
              </font>
             </property>
             <property name="text">
-             <string>Saving metadata. Please wait...</string>
+             <string>Updating metadata. Please wait...</string>
             </property>
            </widget>
           </item>
@@ -681,7 +681,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="statusLabel">
             <property name="font">
              <font>
               <pointsize>24</pointsize>

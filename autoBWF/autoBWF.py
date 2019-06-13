@@ -335,18 +335,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             msg.exec_()
             return
 
+        self.stackedWidget.setCurrentIndex(1)
+        self.statusLabel.setText("Starting")
+        self.progressBar.setMaximum(6)
+        QtWidgets.QApplication.processEvents()
+
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
-            # progress.setValue(1)
-            # progress.setText("Generating MD5 digest...")
-            # time.sleep(20)
+            self.progressBar.setValue(1)
+            self.statusLabel.setText("Generating MD5 digest")
+            QtWidgets.QApplication.processEvents()
             command = self.base_command
             command.extend(["--MD5-embed", self.filename])
             subprocess.run(command)
 
         if self.original_md["TimeReference"] != '0':
-            # progress.setValue(2)
-            # progress.setText("Saving time reference")
-            # time.sleep(20)
+            self.progressBar.setValue(2)
+            self.statusLabel.setText("Saving time reference")
+            QtWidgets.QApplication.processEvents()
             call_bwf(self.base_command, self.filename, "TimeReference", "0")
 
         # need to save coding history for last.
@@ -355,22 +360,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         coding_history = changed_bwf_riff.pop("CodingHistory", None)
 
         for key in changed_bwf_riff:
-            # progress.setValue(3)
-            # progress.setText("Saving RIFF metadata")
-            # time.sleep(2)
+            self.progressBar.setValue(3)
+            self.statusLabel.setText("Saving {}".format(key))
+            QtWidgets.QApplication.processEvents()
             call_bwf(self.base_command, self.filename, key, current_md[key])
 
         if coding_history:
-            # progress.setValue(4)
-            # progress.setText("Saving coding history")
-            # time.sleep(2)
+            self.progressBar.setValue(4)
+            self.statusLabel.setText("Saving coding history")
+            QtWidgets.QApplication.processEvents()
             call_bwf(self.base_command, self.filename, "CodingHistory", coding_history)
 
         # something has changed, therefore at minimum we need to update xmp:MetadataDate
-        # progress.setValue(5)
-        # progress.setText("Saving XMP")
-        # time.sleep(2)
+        self.progressBar.setValue(5)
+        self.statusLabel.setText("Saving XMP")
+        QtWidgets.QApplication.processEvents()
         set_xmp(current_xmp, self.filename, self.base_command)
+
+        time.sleep(0.6)  # wait at least a little to make it less visually disconserting
+        self.stackedWidget.setCurrentIndex(0)
+        QtWidgets.QApplication.processEvents()
 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
