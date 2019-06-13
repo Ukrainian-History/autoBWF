@@ -36,7 +36,7 @@ Alternatively, you can avoid the "Open" dialog by specifying the target file and
 
 The CodingHistory text is generated automatically based on the selections made in the drop-downs to the right of the text box and the values in your configuration file (see below). You can also edit the text manually, but be aware that using the drop-down menus will undo any manual edits that you have made. Similarly, the Copyright text is replaced with the boilerplate corresponding to the dropdown menu selection. The same caveat regarding manual editing holds here as well.
 
-Loading a template file (either using the "Load Template" button or using the optional `-t` command line argument) will prepopulate the contents of the Title, Technician, Source, Copyright, Coding History, and any XMP text fields with the corresponding metadata contained in *template_filename*. These can always be edited before saving the metadata to the target file.
+Loading a template file (either using the "Load Template" button or using the optional `-t` command line argument) will prepopulate the contents of the Title, Technician, Source, Copyright, Coding History, and any XMP text fields with the corresponding metadata contained in *template_filename*. These can always be edited before saving the metadata to the target file. Note that if the target file already has metadata in the same fields as the template, then this could result in the overwriting of data. [This issue](https://github.com/Ukrainian-History/autoBWF/issues/2) will be resolved in a future version.
 
 It is strongly recommended that you play around using test files and confirm (using BWFMetaEdit and/or a metadata viewer like exiftool) that autoBWF is behaving the way that you expect before working with master files.
 

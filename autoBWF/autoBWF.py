@@ -336,15 +336,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             return
 
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
-            # msg.setInformativeText("Generating MD5 digest")
-            # time.sleep(2)
+            # progress.setValue(1)
+            # progress.setText("Generating MD5 digest...")
+            # time.sleep(20)
             command = self.base_command
             command.extend(["--MD5-embed", self.filename])
             subprocess.run(command)
 
         if self.original_md["TimeReference"] != '0':
-            # msg.setInformativeText("Saving time reference")
-            # time.sleep(2)
+            # progress.setValue(2)
+            # progress.setText("Saving time reference")
+            # time.sleep(20)
             call_bwf(self.base_command, self.filename, "TimeReference", "0")
 
         # need to save coding history for last.
@@ -353,17 +355,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         coding_history = changed_bwf_riff.pop("CodingHistory", None)
 
         for key in changed_bwf_riff:
-            # msg.setInformativeText("Saving RIFF metdata")
+            # progress.setValue(3)
+            # progress.setText("Saving RIFF metadata")
             # time.sleep(2)
             call_bwf(self.base_command, self.filename, key, current_md[key])
 
         if coding_history:
-            # msg.setInformativeText("Saving coding history")
+            # progress.setValue(4)
+            # progress.setText("Saving coding history")
             # time.sleep(2)
             call_bwf(self.base_command, self.filename, "CodingHistory", coding_history)
 
         # something has changed, therefore at minimum we need to update xmp:MetadataDate
-        # msg.setInformativeText("Saving XMP")
+        # progress.setValue(5)
+        # progress.setText("Saving XMP")
         # time.sleep(2)
         set_xmp(current_xmp, self.filename, self.base_command)
 
