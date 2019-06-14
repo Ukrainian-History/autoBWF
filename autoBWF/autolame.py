@@ -8,9 +8,12 @@ def main():
     parser = argparse.ArgumentParser(
         description='Use lame to create mp3 file from BWF, using BWF metadata to populate IDv2 tags')
     parser.add_argument('infile', help="WAV file")
-    parser.add_argument('outfile', help="MP3 file")
+    parser.add_argument('outfile', nargs="?", help="MP3 file")
     parser.add_argument('--vbr-level', help="MP3 VBR encoding level", type=int, default=7)
     args = parser.parse_args()
+
+    if args.outfile is None:
+        args.outfile = args.infile.rsplit('.', 1)[0] + '.mp3'
 
     command = ["lame", "-V", str(args.vbr_level),  "--vbr-new"]
 
