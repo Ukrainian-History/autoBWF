@@ -59,9 +59,15 @@ The `--accept-nopadding` flag is sent to `bwfmetaedit` by default, but that beha
 
 ### `autolame` usage
 
-`autolame [--vbr-level n] <infile> [<outfile>]`
+`autolame [-h] [-o OUTFILE] [--vbr-level VBR_LEVEL] infile [infile ...]
+`
 
-The default VBR level is currently 7. If `<outfile>` is not supplied, then `<infile>` will be used after changing its filename extension to `mp3`.
+Each `<infile>` will be converted to mp3 and the result will be saved to the same file name with the extension changed to `mp3`. Multiple `<infile>`s can be given, or generated using a shell glob (e.g. `*.wav`) 
+
+An output file name can be specified using the `-o` option, but in that case only one input file is allowed.
+
+The default VBR level is currently 7. 
+
 
 ### `autosplice` usage
 
