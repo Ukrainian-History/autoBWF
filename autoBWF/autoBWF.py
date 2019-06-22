@@ -344,7 +344,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.progressBar.setValue(1)
             self.statusLabel.setText("Generating MD5 digest")
             QtWidgets.QApplication.processEvents()
-            command = self.base_command
+            command = self.base_command.copy()
             command.extend(["--MD5-embed", self.filename])
             subprocess.run(command)
 
