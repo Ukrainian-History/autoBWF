@@ -13,7 +13,7 @@ namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
 
 
 def get_xmp(filename, base_command):
-    command = base_command
+    command = base_command.copy()
     command.extend(["--out-XMP-xml", filename])
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outfile = filename + ".XMP.xml"
@@ -99,7 +99,7 @@ def set_xmp(md, filename, base_command):
 
     xmlfile = filename + ".XMP.xml"
     ET.ElementTree(root).write(xmlfile)
-    command = base_command
+    command = base_command.copy()
     command.extend(['--in-XMP=' + xmlfile, filename])
     subprocess.run(command)
     os.remove(xmlfile)
@@ -146,7 +146,7 @@ def call_bwf(base_command, file, mdkey, text):
     else:
         key = mdkey
 
-    command = base_command
+    command = base_command.copy()
     command.extend(['--' + key + "=" + text, file])
     subprocess.run(command)
 

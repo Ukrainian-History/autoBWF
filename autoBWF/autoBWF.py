@@ -334,7 +334,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             return
 
         if self.md5Check.isChecked() and self.md5Check.isEnabled():
-            command = self.base_command
+            command = self.base_command.copy()
             command.extend(["--MD5-embed", self.filename])
             subprocess.run(command)
 
