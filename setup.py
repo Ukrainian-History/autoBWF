@@ -37,6 +37,6 @@ setup(
     packages=find_packages(include=['autoBWF']),
     setup_requires=setup_requirements,
     url='https://github.com/Ukrainian-History/autoBWF',
-    version='3.2.1',
+    version='3.3.0',
     zip_safe=False,
 )
