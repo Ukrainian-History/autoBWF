@@ -3,23 +3,30 @@ The purpose of `autoBWF` is to provide an alternative GUI for embedding internal
 Unlike the existing BWFMetaEdit GUI, autoBWF is extremely opinionated and will automatically generate metadata content based on file naming conventions, system metadata, and pre-configured repository defaults. In addition, it can copy metadata fields from a template file to avoid having to enter the same information multiple times for several master or derivative files of the same physical instantiation.
 
 
-Also included are two command line programs to simplify the creation of derivative files. `autolame.py` is a wrapper for the `lame` MP3 encoder that automatically transfers Wave BWF, RIFF, and XMP metadata to appropriate ID3v2 and XMP. `autosplice` is a wrapper that generates `sox` commands from an EDL-like text file to splice audio from multiple input files, while also providing means to do basic fade in/out and audio level compression.
+Also included are two command line programs to simplify the creation of derivative files. `autolame.py` is a wrapper for the `lame` MP3 encoder that automatically transfers Wave internal metadata to appropriate ID3v2 tags. `autosplice` is a wrapper that generates `sox` commands from an EDL-like text file to splice audio from multiple input files, while also providing means to do basic fade in/out and audio level compression.
 
 ### Installation
-`autoBWF` is available on PyPI and can be installed using
+The latest release of `autoBWF` is available on PyPI and can be installed using
 ```
 pip3 install autoBWF
 ```
 
 You may wish to do this inside a virtual environment to avoid complicating your Python environment.
 
+The "bleeding edge" version corresponds to the master branch [on github](https://github.com/Ukrainian-History/autoBWF), and can be installed by cloning the repository and installing the local code with pip3, or by running
+```
+pip3 install git+git://github.com/Ukrainian-History/autoBWF.git#egg=autoBWF
+```
+
+Commits to the master branch should be functional - all development work that is likely to result in the code being in a broken state is done on feature branches.
+
 ### Requirements
 
-This code requires Python 3.6 and PyQt 5, the latter of which will be automatically installed if you use `pip install`.
+This code requires Python 3.6 and PyQt 5. PyQt will be automatically installed if you use `pip`.
 
-In addition, it requires non-Python software to be installed in a way that it can be found by `autoBWF`. Most importantly, you will need to install the [BWFMetaEdit](https://mediaarea.net/BWFMetaEdit) CLI (Command Line Interface). Note that simply having the BWFMetaEdit GUI installed is not sufficient. You can select your platform and download it from [here](https://mediaarea.net/BWFMetaEdit/Download), just be sure to click on the "CLI" link. This code has been tested with `bwfmetaedit` version 1.3.3.
+In addition, it requires non-Python software to be installed in a way that it can be found by `autoBWF`. Most importantly, you will need to install the [BWFMetaEdit](https://mediaarea.net/BWFMetaEdit) CLI (Command Line Interface). Note that simply having the BWFMetaEdit GUI installed is not sufficient. You can select your platform and download it from [here](https://mediaarea.net/BWFMetaEdit/Download), just be sure to click on the "CLI" link. This code has been tested with `bwfmetaedit` v1.3.3 and v1.3.8. Note that earlier versions of ``bwfmetaedit`` have a bug that introduces spurious characters at the end of the ``CodingHistory`` element. This bug has been confirmed to exist in v1.3.1.1, and it may affect other versions prior to v1.3.3.
 
-In order to run `autolame` and `autosplice`, you will also need to install [lame](http://lame.sourceforge.net/) (for `autolame`) and [SoX](http://sox.sourceforge.net/) v14.4.2 (for `autosplice`). Note that some LINUX package repositories (e.g. Ubuntu 16.04) have an earlier version of `SoX` that seems to have problems with time specifications, so you may need to install from source. If you are doing so on Ubuntu 16.04, you may need to run `sudo ldconfig` after installation if you get a `sox: error while loading shared libraries: libsox.so.3: cannot open shared object file: No such file or directory` error.
+In order to run `autolame` and `autosplice`, you will also need to install [lame](http://lame.sourceforge.net/) (for `autolame`) and [SoX](http://sox.sourceforge.net/) v14.4.2 (for `autosplice`). Note that some LINUX package repositories (e.g. Ubuntu 16.04) have an earlier version of `SoX` that seems to have problems with time specifications, so you may need to install from source. If you are doing so on Ubuntu, you may need to run `sudo ldconfig` after installation if you get a `sox: error while loading shared libraries: libsox.so.3: cannot open shared object file: No such file or directory` error.
 
 
 ### `autoBWF` usage
