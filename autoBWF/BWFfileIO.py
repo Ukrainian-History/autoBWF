@@ -21,7 +21,7 @@ def get_xmp(filename, base_command):
         tree = ET.parse(outfile)
     except FileNotFoundError:
         md = {"interviewer": "", "interviewee": "", "owner": "",
-              "metadataDate": "", "language": "", "description": ""}
+              "metadataDate": "", "language": "", "xmp_description": ""}
         return md
     root = tree.getroot()
 
@@ -39,7 +39,7 @@ def get_xmp(filename, base_command):
           "owner": check_li_child(root, './/xmpRights:Owner'),
           "metadataDate": root.find('.//xmp:MetadataDate', namespaces),
           "language": root.findall('.//dc:language//rdf:li', namespaces),
-          "description": check_li_child(root, './/dc:description')
+          "xmp_description": check_li_child(root, './/dc:description')
           }
 
     for field in md:
@@ -73,12 +73,12 @@ def set_xmp(md, filename, base_command):
     date = ET.SubElement(rdf_description, qualified_element("xmp", "MetadataDate"))
     date.text = datetime.now().isoformat()
 
-    if md["description"] != "":
+    if md["xmp_description"] != "":
         description = ET.SubElement(rdf_description, qualified_element("dc", "description"))
         alt = ET.SubElement(description, qualified_element("rdf", "Alt"))
         li = ET.SubElement(alt, qualified_element("rdf", "li"))
         li.set("xml:lang", "x-default")
-        li.text = md["description"]
+        li.text = md["xmp_description"]
     if md["owner"] != "":
         owner = ET.SubElement(rdf_description, qualified_element("xmpRights", "Owner"))
         owner_bag = ET.SubElement(owner, qualified_element("rdf", "Bag"))

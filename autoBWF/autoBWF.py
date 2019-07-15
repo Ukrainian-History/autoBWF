@@ -20,26 +20,47 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.config = config
 
         self.gui_text_widgets = {
-                                  "Description": self.descriptionLine,
-                                  "Originator": self.originatorLine,
-                                  "OriginationDate": self.originationDateLine,
-                                  "OriginationTime": self.originationTimeLine,
-                                  "OriginatorReference": self.originatorRefLine,
-                                  "CodingHistory": self.codingHistoryText,
-                                  "INAM": self.titleLine,
-                                  "ICRD": self.creationDateLine,
-                                  "ITCH": self.technicianBox,
-                                  "ISFT": self.isftSelect,
-                                  "ISRC": self.sourceSelect,
-                                  "ICMT": self.commentText,
-                                  "ICOP": self.copyrightText,
-                                  "description": self.descriptionText,  # TODO terrible choice of key...
-                                  "owner": self.rightsOwnerSelect,
-                                  "language": self.languageLine,
-                                  "interviewer": self.interviewerLine,
-                                  "interviewee": self.intervieweeLine
-                                 }
-        self.xmp_fields = ("description", "owner", "language", "interviewer", "interviewee")
+            "Description": self.descriptionLine,
+            "Originator": self.originatorLine,
+            "OriginationDate": self.originationDateLine,
+            "OriginationTime": self.originationTimeLine,
+            "OriginatorReference": self.originatorRefLine,
+            "CodingHistory": self.codingHistoryText,
+            "INAM": self.titleLine,
+            "ICRD": self.creationDateLine,
+            "ITCH": self.technicianBox,
+            "ISFT": self.isftSelect,
+            "ISRC": self.sourceSelect,
+            "ICMT": self.commentText,
+            "ICOP": self.copyrightText,
+            "xmp_description": self.XMPdescriptionText,
+            "owner": self.rightsOwnerSelect,
+            "language": self.languageLine,
+            "interviewer": self.interviewerLine,
+            "interviewee": self.intervieweeLine
+        }
+        self.xmp_fields = ("xmp_description", "owner", "language", "interviewer", "interviewee")
+
+        self.switchers = {
+            "Description": self.descriptionSwitcher,
+            "Originator": self.originatorSwitcher,
+            "OriginationDate": self.originationDateSwitcher,
+            "OriginationTime": self.originationTimeSwitcher,
+            "OriginatorReference": self.originatorRefSwitcher,
+            "CodingHistory": self.codingHistorySwitcher,
+            "INAM": self.titleSwitcher,
+            "ICRD": self.creationDateSwitcher,
+            "ITCH": self.technicianSwitcher,
+            "ISFT": self.isftSwitcher,
+            "ISRC": self.sourceSwitcher,
+            "ICMT": self.commentSwitcher,
+            "ICOP": self.copyrightSwitcher,
+            "xmp_description": self.XMPdescriptionSwitcher,
+            "owner": self.rightsOwnerSwitcher,
+            "language": self.languageSwitcher,
+            "interviewer": self.interviewerSwitcher,
+            "interviewee": self.intervieweeSwitcher
+        }
 
         self.filename = filename
         self.original_md = {}
@@ -90,6 +111,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.tabWidget.setEnabled(False)
         self.actionUpdate_metadata.setEnabled(False)
         self.actionOpen_template.setEnabled(False)
+
+        # all switchers should start out deactivated
+        for switcher in self.switchers:
+            self.switchers[switcher].setEnabled(False)
 
         if filename:
             self.tabWidget.setEnabled(True)
@@ -271,7 +296,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         fields_to_fill = ["Description", "Originator", "OriginationDate",
                           "OriginationTime", "OriginatorReference", "CodingHistory",
                           "INAM", "ICMT", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP",
-                          "description", "owner", "language", "interviewer", "interviewee"]
+                          "xmp_description", "owner", "language", "interviewer", "interviewee"]
         for field in fields_to_fill:
             self.set_existing(field)
 
@@ -290,7 +315,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.template_md.update(get_xmp(file, self.base_command))
 
             fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
-                              "description", "owner", "language", "interviewer", "interviewee"]
+                              "xmp_description", "owner", "language", "interviewer", "interviewee"]
             for field in fields_to_fill:
                 self.set_value_from_template(field)
 
