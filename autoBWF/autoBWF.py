@@ -64,7 +64,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         self.filename = filename
         self.original_md = {}
-        self.template_md = {}
+        self.template_md = None
 
         self.base_command = ["bwfmetaedit", "--specialchars"]
         if config["accept-nopadding"]:
@@ -112,9 +112,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.actionUpdate_metadata.setEnabled(False)
         self.actionOpen_template.setEnabled(False)
 
-        # all switchers should start out deactivated
         for switcher in self.switchers:
             self.switchers[switcher].setEnabled(False)
+            self.switchers[switcher].currentIndexChanged.connect(
+                lambda widget=switcher: self.activate_switcher(widget))
 
         if filename:
             self.tabWidget.setEnabled(True)
@@ -132,8 +133,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.populate_template_info(template)
 
     @staticmethod
-    def activate_changed(input_widget):
+    def text_changed(input_widget):
+        print(input_widget)
         input_widget.setStyleSheet("color: red; font: normal")
+
+    @staticmethod
+    def switcher_changed(input_widget):
+        print(input_widget)
 
     def get_gui_text(self, widget_name):
         widget = self.gui_text_widgets[widget_name]
@@ -152,7 +158,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             md[field] = self.get_gui_text(field)
         return md
 
-    def set_gui_text(self, widget_name, value, is_original_md=False):
+    def set_gui_text(self, widget_name, value):
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
         if widget_type is QtWidgets.QPlainTextEdit:
@@ -164,12 +170,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if widget_type is QtWidgets.QComboBox:
             widget.setCurrentText(value)
 
-        if is_original_md:
-            widget.setStyleSheet("color: grey; font: italic")
-            if widget_type is QtWidgets.QComboBox:
-                widget.currentTextChanged.connect(lambda: self.activate_changed(widget))
-            else:
-                widget.textChanged.connect(lambda: self.activate_changed(widget))
+    def set_text_to_original(self, widget_name):
+        text = self.original_md[widget_name]
+        if text != "":
+            self.set_gui_text(widget_name, text)
+            self.gui_text_widgets[widget_name].setStyleSheet("color: grey; font: italic")
+
+    def set_text_to_template(self, widget_name):
+        if self.template_md:
+            text = self.template_md[widget_name]
+            if text != "":
+                self.set_gui_text(widget_name, text)
+                if text == self.original_md[widget_name]:
+                    self.gui_text_widgets[widget_name].setStyleSheet("color: grey; font: italic")
+                else:
+                    self.gui_text_widgets[widget_name].setStyleSheet("color: orange; font: bold")
 
     def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
@@ -205,14 +220,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionOpen_template.setEnabled(False)
                 self.populate_template_info(fname)
 
-    def set_existing(self, name):
-        if self.original_md[name] != "" and (self.original_md[name] is not None):
-            self.set_gui_text(name, self.original_md[name], is_original_md=True)
+    # self.switchers[name].setEnabled(True)
 
     def populate_file_info(self, file):
         import re
         import os.path
         from datetime import datetime
+
+        #
+        # Generate and pre-fill defaults
+        #
 
         date_time_created = datetime \
             .fromtimestamp(os.path.getctime(file)) \
@@ -259,10 +276,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             try:
                 file_use = self.config["fileuse"][file_use]
             except KeyError:
-                # TODO: make this a dialog
-                print(
-                    file_use +
-                    " does not not have a standard translation"
+                QMessageBox.warning(
+                    self, 'Warning',
+                    file_use + " does not not have a standard translation"
                 )
                 file_use = "Unknown"
 
@@ -287,37 +303,39 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.update_coding_history()
 
         #
-        # prefill defaults and insert existing values
+        # insert existing values
         #
 
         self.original_md.update(get_bwf_core(self.config["accept-nopadding"], file))
         self.original_md.update(get_xmp(file, self.base_command))
 
-        fields_to_fill = ["Description", "Originator", "OriginationDate",
-                          "OriginationTime", "OriginatorReference", "CodingHistory",
-                          "INAM", "ICMT", "ICRD", "ITCH", "ISFT", "ISRC", "ICOP",
-                          "xmp_description", "owner", "language", "interviewer", "interviewee"]
-        for field in fields_to_fill:
-            self.set_existing(field)
+        for field in self.gui_text_widgets.keys():
+            self.set_text_to_original(field)
+            if self.original_md[field] != "":
+                widget = self.gui_text_widgets[field]
+                widget_type = type(widget)
+                # print(widget_type)
+                if widget_type is QtWidgets.QComboBox:
+                    print("dum")
+                    widget.currentTextChanged.connect(lambda value, element=widget: self.text_changed(element))
+                else:
+                    print(type(widget))
+                    widget.textChanged.connect(lambda value, element=widget: self.text_changed(element))
 
         if self.original_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
-
-    def set_value_from_template(self, name):
-        if self.template_md[name] != "":
-            self.set_gui_text(name, self.template_md[name])
 
     def populate_template_info(self, file):
         # replace with template values if they exist
 
         if file is not None:
-            self.template_md.update(get_bwf_core(self.config["accept-nopadding"], file))
+            self.template_md = get_bwf_core(self.config["accept-nopadding"], file)
             self.template_md.update(get_xmp(file, self.base_command))
 
             fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
                               "xmp_description", "owner", "language", "interviewer", "interviewee"]
             for field in fields_to_fill:
-                self.set_value_from_template(field)
+                self.set_text_to_template(field)
 
     def copyright_activated(self, index):
         self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]])
