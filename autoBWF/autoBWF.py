@@ -65,6 +65,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.filename = filename
         self.original_md = {}
         self.template_md = None
+        self.edited_md = {}
 
         self.base_command = ["bwfmetaedit", "--specialchars"]
         if config["accept-nopadding"]:
@@ -114,8 +115,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         for switcher in self.switchers:
             self.switchers[switcher].setEnabled(False)
+
+            for i in range(3):
+                self.switchers[switcher].model().item(i).setEnabled(False)
+
             self.switchers[switcher].currentIndexChanged.connect(
-                lambda widget=switcher: self.activate_switcher(widget))
+                lambda value, widget=switcher: self.switcher_changed(widget, value))
 
         if filename:
             self.tabWidget.setEnabled(True)
@@ -134,12 +139,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
     @staticmethod
     def text_changed(input_widget):
-        print(input_widget)
         input_widget.setStyleSheet("color: red; font: normal")
 
-    @staticmethod
-    def switcher_changed(input_widget):
-        print(input_widget)
+    def switcher_changed(self, input_widget, value):
+        if value == 1:
+            self.set_text_to_original(input_widget)
+        if value == 2:
+            self.set_text_to_template(input_widget)
 
     def get_gui_text(self, widget_name):
         widget = self.gui_text_widgets[widget_name]
@@ -314,12 +320,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             if self.original_md[field] != "":
                 widget = self.gui_text_widgets[field]
                 widget_type = type(widget)
-                # print(widget_type)
                 if widget_type is QtWidgets.QComboBox:
-                    print("dum")
                     widget.currentTextChanged.connect(lambda value, element=widget: self.text_changed(element))
+                elif widget_type is QtWidgets.QPlainTextEdit:
+                    widget.textChanged.connect(lambda element=widget: self.text_changed(element))
                 else:
-                    print(type(widget))
                     widget.textChanged.connect(lambda value, element=widget: self.text_changed(element))
 
         if self.original_md["MD5Stored"] != "":
@@ -334,8 +339,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
             fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
                               "xmp_description", "owner", "language", "interviewer", "interviewee"]
+
             for field in fields_to_fill:
                 self.set_text_to_template(field)
+                if self.original_md[field] != "" and self.original_md[field] != self.template_md[field]:
+                    self.switchers[field].setEnabled(True)
+                    self.switchers[field].model().item(1).setEnabled(True)
+                    self.switchers[field].model().item(2).setEnabled(True)
+                    self.switchers[field].setCurrentIndex(2)
 
     def copyright_activated(self, index):
         self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]])
