@@ -137,11 +137,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if template:
             self.populate_template_info(template)
 
-    @staticmethod
-    def text_changed(input_widget):
-        input_widget.setStyleSheet("color: red; font: normal")
+    def text_changed(self, input_widget):
+        text_now = self.get_gui_text(input_widget)
+        if self.original_md[input_widget] != text_now:
+            self.gui_text_widgets[input_widget].setStyleSheet("color: red; font: normal")
+            self.edited_md[input_widget] = text_now
+            self.switchers[input_widget].setEnabled(True)
+            self.switchers[input_widget].model().item(0).setEnabled(True)
+            self.switchers[input_widget].model().item(1).setEnabled(True)
+            self.switchers[input_widget].setCurrentIndex(0)
+        else:
+            self.gui_text_widgets[input_widget].setStyleSheet("color: grey; font: italic")
+            self.switchers[input_widget].setCurrentIndex(1)
 
     def switcher_changed(self, input_widget, value):
+        if value == 0:
+            self.set_text_to_edited(input_widget)
         if value == 1:
             self.set_text_to_original(input_widget)
         if value == 2:
@@ -167,6 +178,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def set_gui_text(self, widget_name, value):
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
+        widget.blockSignals(True)
+
         if widget_type is QtWidgets.QPlainTextEdit:
             widget.clear()
             widget.insertPlainText(value)
@@ -176,11 +189,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if widget_type is QtWidgets.QComboBox:
             widget.setCurrentText(value)
 
+        widget.blockSignals(False)
+
     def set_text_to_original(self, widget_name):
         text = self.original_md[widget_name]
         if text != "":
             self.set_gui_text(widget_name, text)
             self.gui_text_widgets[widget_name].setStyleSheet("color: grey; font: italic")
+
+    def set_text_to_edited(self, widget_name):
+        widget = self.gui_text_widgets[widget_name]
+        text = self.edited_md[widget_name]
+        self.set_gui_text(widget_name, text)
+        self.gui_text_widgets[widget_name].setStyleSheet("color: red; font: regular")
 
     def set_text_to_template(self, widget_name):
         if self.template_md:
@@ -321,11 +342,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 widget = self.gui_text_widgets[field]
                 widget_type = type(widget)
                 if widget_type is QtWidgets.QComboBox:
-                    widget.currentTextChanged.connect(lambda value, element=widget: self.text_changed(element))
+                    widget.currentTextChanged.connect(lambda value, element=field: self.text_changed(element))
                 elif widget_type is QtWidgets.QPlainTextEdit:
-                    widget.textChanged.connect(lambda element=widget: self.text_changed(element))
+                    widget.textChanged.connect(lambda element=field: self.text_changed(element))
                 else:
-                    widget.textChanged.connect(lambda value, element=widget: self.text_changed(element))
+                    widget.textEdited.connect(lambda value, element=field: self.text_changed(element))
 
         if self.original_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
