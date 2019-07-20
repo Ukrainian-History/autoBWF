@@ -149,6 +149,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         else:
             self.gui_text_widgets[input_widget].setStyleSheet("color: grey; font: italic")
             self.switchers[input_widget].setCurrentIndex(1)
+            self.switchers[input_widget].model().item(0).setEnabled(False)
+            del self.edited_md[input_widget]
 
     def switcher_changed(self, input_widget, value):
         if value == 0:
@@ -178,7 +180,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def set_gui_text(self, widget_name, value):
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
-        widget.blockSignals(True)
+        widget.blockSignals(True)  # prevent what would otherwise be an infinite recursion...
 
         if widget_type is QtWidgets.QPlainTextEdit:
             widget.clear()
@@ -211,7 +213,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 if text == self.original_md[widget_name]:
                     self.gui_text_widgets[widget_name].setStyleSheet("color: grey; font: italic")
                 else:
-                    self.gui_text_widgets[widget_name].setStyleSheet("color: orange; font: bold")
+                    self.gui_text_widgets[widget_name].setStyleSheet("color: #F5D76E; font: bold")
 
     def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
