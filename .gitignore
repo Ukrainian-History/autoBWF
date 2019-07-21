@@ -12,3 +12,6 @@ Pipfile
 Pipfile.lock
 build
 dist
+
+docs/_build/*
+coverage.xml
