@@ -27,11 +27,11 @@ those the values will be overwritten in the target file. **This cannot be undone
 
 
 The CodingHistory text is generated automatically based on the selections made in the drop-downs to the right of the
-text box and the values in the configuration file (see below). Similarly, the Copyright text is replaced
+text box and the values in the :ref:`configuration <configuration>` file. Similarly, the Copyright text is replaced
 with the boilerplate corresponding to the dropdown menu selection.
 
 .. note::
-    You can edit those text manually prior to saving, but be aware that
+    You can edit the texts manually prior to saving, but be aware that
     using the drop-down menus will destroy any manual edits that you have made.
 
 Template files

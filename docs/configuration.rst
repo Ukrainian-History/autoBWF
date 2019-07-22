@@ -1,9 +1,14 @@
+.. _configuration:
+
 Configuration
 ===============
 
 Program configuration is stored as a `JSON <https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects
 /JSON>`_ file named ``autobwfconfig.json`` in a directory appropriate to your operating system. If the file does not
-exist, then a "starter" file will be created for you.
+exist, then a "starter" file will be created for you. You can find the location of your configuration file by
+running::
+
+    autoBWF --config
 
 This file should be edited using the text editing program of your choice in order to reflect your repository's usage.
 In particular, you can customize the values in all of the dropdown menus, set the boilerplate copyright
@@ -99,7 +104,7 @@ the text field. For example, we can add a "public domain" menu choice as follows
     "copyright": {
         "list": ["Generic", "CC-BY-SA", "Public domain"],
         "Generic": "Publication and other forms of distribution (including online sharing and streaming) may be restricted. For details, contact the Apocryphal State University Archives.",
-        "CC-BY-SA": "This content is copyright by the Apocryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
+        "CC-BY-SA": "This content is copyright by the Apocryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details.",
         "Public domain": "This content has been placed into the public domain."
     }
 

@@ -428,9 +428,14 @@ def main():
     parser = argparse.ArgumentParser(description='Create internal metadata for WAV file(s).')
     parser.add_argument('filename', nargs='?', help='WAV file to be processed')
     parser.add_argument('-t', help="template file")
+    parser.add_argument('--config', action="store_true", help="show location of configuration file")
     args = parser.parse_args()
     filename = args.filename
     template = args.t
+
+    if args.config:
+        print('Your configuration file is ' + str(config_file.resolve()))
+        exit()
 
     if filename:
         # check to make sure file is legit
