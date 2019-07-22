@@ -1,5 +1,10 @@
 # History
 
+### 3.3.1 (2019-07-22)
+
+* Add "--config" argument to autoBWF
+* Create expanded documentation in Sphinx and host on readthedocs
+
 ### 3.3.0 (2019-06-24)
 
 * Add "quit" option to completion message box
