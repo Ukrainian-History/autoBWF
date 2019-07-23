@@ -19,7 +19,9 @@ GUI elements with reasonable guesses as described below.
 
 If *target_filename* already contains BWF metadata, then those values will appear in the GUI in grey italic text.
 If the user edits those fields, the text color will change to red as a warning that "Save metadata" will cause
-those the values will be overwritten in the target file. **This cannot be undone!**
+those the values will be overwritten in the target file. **This cannot be undone!** You can use the drop-down menu
+to switch between the original and edited versions.
+
 
 .. note::
     It is strongly recommended that you work with test files and confirm (using BWFMetaEdit and/or a metadata viewer
@@ -45,9 +47,9 @@ argument::
 
 This will prepopulate the contents of the Title, Technician, Source, Copyright, Coding History, and all XMP data
 fields with the corresponding metadata contained in *template_filename*. These can always be edited before saving the
-metadata to the target file. Note that if the target file already has metadata in the same fields as the template,
-then this could result in the overwriting of data. `This issue <https://github.com/Ukrainian-History/autoBWF/
-issues/2>`_ will be resolved in a future version.
+metadata to the target file. If the target file already has different metadata in the same fields as the template,
+then the text will be shown in yellow italics. The drop-down menus next to each field can be used to switch between
+the existing, template, and edited texts.
 
 How does autoBWF generate the metadata?
 ++++++++++++++++++++++++++++++++++++++++

@@ -454,11 +454,11 @@
            <attribute name="title">
             <string>RIFF</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">
              <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_19">
+               <layout class="QHBoxLayout" name="horizontalLayout_22">
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_6">
                   <item>
@@ -637,6 +637,39 @@
                     </item>
                     <item>
                      <widget class="QComboBox" name="isftSwitcher">
+                      <item>
+                       <property name="text">
+                        <string>Edited</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Original</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Template</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_19">
+                    <item>
+                     <widget class="QLabel" name="isftLabel_2">
+                      <property name="text">
+                       <string>Archival location (IARL)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="iarlLine"/>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="iarlSwitcher">
                       <item>
                        <property name="text">
                         <string>Edited</string>

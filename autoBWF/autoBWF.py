@@ -33,6 +33,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "ISRC": self.sourceSelect,
             "ICMT": self.commentText,
             "ICOP": self.copyrightText,
+            "IARL": self.iarlLine,
             "xmp_description": self.XMPdescriptionText,
             "owner": self.rightsOwnerSelect,
             "language": self.languageLine,
@@ -55,6 +56,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "ISRC": self.sourceSwitcher,
             "ICMT": self.commentSwitcher,
             "ICOP": self.copyrightSwitcher,
+            "IARL": self.iarlSwitcher,
             "xmp_description": self.XMPdescriptionSwitcher,
             "owner": self.rightsOwnerSwitcher,
             "language": self.languageSwitcher,
@@ -82,6 +84,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.typeSelect.addItems(config["type"])
         self.technicianBox.addItems(config["technician"])
         self.isftSelect.addItems(config["isft"])
+        self.iarlLine.insert(config["iarl"])
         self.sourceSelect.addItems(config["source"])
         self.rightsOwnerSelect.addItems(config["owner"])
         self.deckSelect.addItems(config["deck"]["list"])
@@ -333,6 +336,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                               self.config["repocode"] + " " +
                               date_created.replace("-", "") + " " +
                               time.replace(":", ""))
+            description = ""
 
         self.update_coding_history()
 
@@ -342,6 +346,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         self.original_md.update(get_bwf_core(self.config["accept-nopadding"], file))
         self.original_md.update(get_xmp(file, self.base_command))
+
+        if description != self.original_md["Description"]:
+            QMessageBox.warning(
+                self, 'Warning',
+                "BWF Description seems to be inconsistent with filename"
+            )
 
         for field in self.gui_text_widgets.keys():
             self.set_text_to_original(field)
