@@ -9,23 +9,24 @@ Simply type ::
 
 on the command line, and use the GUI "Open" menu item to load your WAVE file.
 
-Alternatively, you can avoid the "Open" dialog by specifying the target file and (optional) template file
-on the command line::
+Alternatively, you can avoid the "Open" dialog by specifying the target file on the command line::
 
-    autoBWF <target_filename> [-t <template_filename>]
+    autoBWF <target_filename>
 
-``autoBWF`` will prepopulate the Description, Originator, OriginationDate, OriginationTime, and OriginatorRef
+autoBWF will prepopulate the Description, Originator, OriginationDate, OriginationTime, and OriginatorRef
 GUI elements with reasonable guesses as described below.
 
-If *target_filename* already contains BWF metadata, then those values will appear in the GUI in grey italic text.
-If the user edits those fields, the text color will change to red as a warning that "Save metadata" will cause
-those the values will be overwritten in the target file. **This cannot be undone!** You can use the drop-down menu
-to switch between the original and edited versions.
+If *<target_filename>* already contains embedded metadata, then those values will appear in the GUI as grey italic text.
+If the user edits those fields, the text color will change to red as a warning that the original values
+will be overwritten in the target file. **This cannot be undone!** You can use the drop-down menu
+to the right of or below each text element to switch between the original and edited versions prior to saving.
 
+When you have entered or reviewed the metadata, you can save those values to the target file by clicking on "Save
+metadata" in the top menu bar.
 
 .. note::
     It is strongly recommended that you work with test files and confirm (using BWFMetaEdit and/or a metadata viewer
-    like ``exiftool``) that ``autoBWF`` is behaving the way that you expect before working with master files.
+    like exiftool) that autoBWF is behaving the way that you expect before working with master files.
 
 
 The CodingHistory text is generated automatically based on the selections made in the drop-downs to the right of the
@@ -33,7 +34,7 @@ text box and the values in the :ref:`configuration <configuration>` file. Simila
 with the boilerplate corresponding to the dropdown menu selection.
 
 .. note::
-    You can edit the texts manually prior to saving, but be aware that
+    You can edit the Copyright and Coding History texts manually prior to saving, but be aware that
     using the drop-down menus will destroy any manual edits that you have made.
 
 Template files
@@ -45,11 +46,11 @@ argument::
 
     autoBWF <target_filename> -t <template_filename>
 
-This will prepopulate the contents of the Title, Technician, Source, Copyright, Coding History, and all XMP data
-fields with the corresponding metadata contained in *template_filename*. These can always be edited before saving the
-metadata to the target file. If the target file already has different metadata in the same fields as the template,
-then the text will be shown in yellow italics. The drop-down menus next to each field can be used to switch between
-the existing, template, and edited texts.
+This will prepopulate the contents of the Title, Technician, Source, Copyright, Coding History, Archival Location,
+and all XMP data fields with the corresponding metadata contained in *template_filename*. These can always be edited
+before saving the metadata to the target file. If the target file has existing metadata that conflicts with
+the template, then the template value text will be shown in yellow italics. The drop-down menus next to each field
+can be used to switch between the existing, template, and edited texts.
 
 How does autoBWF generate the metadata?
 ++++++++++++++++++++++++++++++++++++++++
@@ -58,8 +59,9 @@ From filenames
 -----------------
 autoBWF was designed assuming that filenames follow a convention similar to that used by the Indiana University
 Archives of Traditional Music as described in the `"Sound Directions" report
-<http://www.dlib.indiana.edu/projects/sounddirections/papersPresent/index.shtml>`_. It uses a regular expression
-("regex") to parse the filename and extract components (called "capture groups") for use in generating the
+<http://www.dlib.indiana.edu/projects/sounddirections/papersPresent/index.shtml>`_. It uses a `regular expression
+("regex") <https://www.regular-expressions.info/>`_ to parse the filename and extract components (called
+`"capture groups" <https://www.regular-expressions.info/brackets.html>`_) for use in generating the
 Description and OriginationDate BWF fields. This regex is specified in the configuration JSON file,
 see :ref:`program_behavior`.
 
@@ -77,9 +79,12 @@ time to generate OriginationDate, OriginationTime, and OriginatorRef, and will l
 
 If the naming convention at your archives is different enough from the above that it cannot be accomodated by
 modification of the regex, then that will require modifications to the Python codebase. If the modifications can be
-made without significant rewriting, then you may be able to talk the maintainer of the project into making
-the changes. Please create an "issue" on GitHub describing your needs, and let's talk about it! If you want to
-make substantial local modifications, feel free to fork the project.
+made without significant rewriting, then you may be able to convince the maintainer of the project into making
+changes to accomodate your needs. Please create an "issue" `on GitHub <https://github.com/Ukrainian-History/
+autoBWF/issues>`_ that describes your needs (click on the green "New issue" button), and let's talk about it! (Please
+note that anything you write in a GitHub issue is visible to the entire Internet, so don't include anything
+that you don't want to reveal publically.) If you want to make substantial local modifications, feel free to fork
+the project.
 
 
 From operating system metadata

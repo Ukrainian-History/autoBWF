@@ -88,7 +88,7 @@ make the first element of the list an empty string::
 Copyright boilerplate
 ----------------------
 
-The copyright dropdown menu and associated texts are controled by the ``copyright`` key::
+The copyright dropdown menu and associated texts are controled by the "copyright" key::
 
     "copyright": {
         "list": ["Generic", "CC-BY-SA"],
@@ -96,7 +96,7 @@ The copyright dropdown menu and associated texts are controled by the ``copyrigh
         "CC-BY-SA": "This content is copyright by the Apocryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details."
     }
 
-Within it is the ``list`` key, the corresponding value of which is a list of user-friendly names for the various
+Within it is the "list" key, the corresponding value of which is a list of user-friendly names for the various
 copyright choices in the form that they should appear in the dropdown menu. That should be followed by key-value pairs
 corresponding to each of those user-friendly names and the corresponding boilerplate text that should be filled in
 the text field. For example, we can add a "public domain" menu choice as follows::

@@ -5,7 +5,7 @@
 
 autoBWF
 ===================================
-The purpose of ``autoBWF`` is to provide an Python/PyQt5 GUI for embedding internal metadata in WAVE audio files
+autoBWF is a Python/PyQt5 GUI for embedding internal metadata in WAVE audio files
 using the `Broadcast Wave  <https://en.wikipedia.org/wiki/Broadcast_Wave_Format>`_ standard, FADGI
 `BWFMetaEdit <https://mediaarea.net/BWFMetaEdit>`_, and
 `XMP <https://en.wikipedia.org/wiki/Extensible_Metadata_Platform>`_.

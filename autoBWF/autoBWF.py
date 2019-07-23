@@ -375,7 +375,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.template_md = get_bwf_core(self.config["accept-nopadding"], file)
             self.template_md.update(get_xmp(file, self.base_command))
 
-            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP"]
+            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP", "IARL"]
             fields_to_fill.extend(self.xmp_fields)
 
             for field in fields_to_fill:
