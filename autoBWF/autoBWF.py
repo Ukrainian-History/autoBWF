@@ -39,7 +39,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "interviewer": self.interviewerLine,
             "interviewee": self.intervieweeLine
         }
-        self.xmp_fields = ("xmp_description", "owner", "language", "interviewer", "interviewee")
+        self.xmp_fields = ["xmp_description", "owner", "language", "interviewer", "interviewee"]
 
         self.switchers = {
             "Description": self.descriptionSwitcher,
@@ -120,7 +120,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.switchers[switcher].model().item(i).setEnabled(False)
 
             self.switchers[switcher].currentIndexChanged.connect(
-                lambda value, widget=switcher: self.switcher_changed(widget, value))
+                lambda value, widget=switcher: self.switcher_changed(widget, value)
+            )
 
         if filename:
             self.tabWidget.setEnabled(True)
@@ -177,10 +178,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             md[field] = self.get_gui_text(field)
         return md
 
-    def set_gui_text(self, widget_name, value):
+    def set_gui_text(self, widget_name, value, block=True):
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
-        widget.blockSignals(True)  # prevent what would otherwise be an infinite recursion...
+        if block:
+            widget.blockSignals(True)  # prevent what would otherwise be an infinite recursion...
 
         if widget_type is QtWidgets.QPlainTextEdit:
             widget.clear()
@@ -191,7 +193,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if widget_type is QtWidgets.QComboBox:
             widget.setCurrentText(value)
 
-        widget.blockSignals(False)
+        if block:
+            widget.blockSignals(False)
 
     def set_text_to_original(self, widget_name):
         text = self.original_md[widget_name]
@@ -212,8 +215,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.set_gui_text(widget_name, text)
                 if text == self.original_md[widget_name]:
                     self.gui_text_widgets[widget_name].setStyleSheet("color: grey; font: italic")
+                elif self.original_md[widget_name] == "":
+                    self.gui_text_widgets[widget_name].setStyleSheet("color: black; font: normal")
                 else:
-                    self.gui_text_widgets[widget_name].setStyleSheet("color: #F5D76E; font: bold")
+                    self.gui_text_widgets[widget_name].setStyleSheet("color: #F5D76E; font: italic")
 
     def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
@@ -360,8 +365,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.template_md = get_bwf_core(self.config["accept-nopadding"], file)
             self.template_md.update(get_xmp(file, self.base_command))
 
-            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP",
-                              "xmp_description", "owner", "language", "interviewer", "interviewee"]
+            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP"]
+            fields_to_fill.extend(self.xmp_fields)
 
             for field in fields_to_fill:
                 self.set_text_to_template(field)
@@ -372,7 +377,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                     self.switchers[field].setCurrentIndex(2)
 
     def copyright_activated(self, index):
-        self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]])
+        self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]],
+                          block=False)
 
     def update_coding_history(self):
         deck = self.deckSelect.currentText()
@@ -396,7 +402,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             ",M=" + channels[self.original_md["Channels"]],
             ",T=" + self.config["software"][software]
         ]
-        self.set_gui_text("CodingHistory", "".join(history_list))
+        self.set_gui_text("CodingHistory", "".join(history_list), block=False)
 
     def save_metadata(self):
         current_md = self.get_all_gui_texts()
