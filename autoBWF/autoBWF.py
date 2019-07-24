@@ -378,13 +378,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             fields_to_fill.extend(self.xmp_fields)
 
             for field in fields_to_fill:
-                if self.original_md[field] is not None and self.original_md[field] != "" and \
-                        self.original_md[field] != self.template_md[field]:
+                if self.template_md[field] is not None and self.template_md[field] != "":
                     self.set_text_to_template(field)
-                    self.switchers[field].setEnabled(True)
-                    self.switchers[field].model().item(1).setEnabled(True)
-                    self.switchers[field].model().item(2).setEnabled(True)
-                    self.switchers[field].setCurrentIndex(2)
+                    if self.original_md[field] is not None and self.original_md[field] != "" and \
+                            self.original_md[field] != self.template_md[field]:
+                        self.switchers[field].setEnabled(True)
+                        self.switchers[field].model().item(1).setEnabled(True)
+                        self.switchers[field].model().item(2).setEnabled(True)
+                        self.switchers[field].setCurrentIndex(2)
 
     def copyright_activated(self, index):
         self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]],
