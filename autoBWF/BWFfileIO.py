@@ -134,6 +134,9 @@ def get_bwf_core(allow_padding, file):
     f = io.StringIO(core_csv)
     reader = csv.DictReader(f, delimiter=',')
     core = next(reader)
+    for key in core.keys():
+        if core[key] is None:
+            core[key] = ""
     return core
 
 

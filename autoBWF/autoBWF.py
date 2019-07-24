@@ -353,7 +353,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             )
 
         for field in self.gui_text_widgets.keys():
-            if self.original_md[field] is not None and self.original_md[field] != "":
+            if self.original_md[field] != "":
                 self.set_text_to_original(field)
                 widget = self.gui_text_widgets[field]
                 widget_type = type(widget)
@@ -378,10 +378,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             fields_to_fill.extend(self.xmp_fields)
 
             for field in fields_to_fill:
-                if self.template_md[field] is not None and self.template_md[field] != "":
+                if self.template_md[field] != "":
                     self.set_text_to_template(field)
-                    if self.original_md[field] is not None and self.original_md[field] != "" and \
-                            self.original_md[field] != self.template_md[field]:
+                    if self.original_md[field] != "" and self.original_md[field] != self.template_md[field]:
                         self.switchers[field].setEnabled(True)
                         self.switchers[field].model().item(1).setEnabled(True)
                         self.switchers[field].model().item(2).setEnabled(True)
