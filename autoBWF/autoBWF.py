@@ -257,8 +257,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionOpen_template.setEnabled(False)
                 self.populate_template_info(fname)
 
-    # self.switchers[name].setEnabled(True)
-
     def populate_file_info(self, file):
         import re
         import os.path
@@ -347,15 +345,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.original_md.update(get_bwf_core(self.config["accept-nopadding"], file))
         self.original_md.update(get_xmp(file, self.base_command))
 
-        if description != self.original_md["Description"]:
+        # check sanity of existing description
+        if description != self.original_md["Description"] and self.original_md["Description"] != "":
             QMessageBox.warning(
                 self, 'Warning',
                 "BWF Description seems to be inconsistent with filename"
             )
 
         for field in self.gui_text_widgets.keys():
-            self.set_text_to_original(field)
-            if self.original_md[field] != "":
+            if self.original_md[field] is not None and self.original_md[field] != "":
+                self.set_text_to_original(field)
                 widget = self.gui_text_widgets[field]
                 widget_type = type(widget)
                 if widget_type is QtWidgets.QComboBox:
@@ -379,8 +378,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             fields_to_fill.extend(self.xmp_fields)
 
             for field in fields_to_fill:
-                self.set_text_to_template(field)
-                if self.original_md[field] != "" and self.original_md[field] != self.template_md[field]:
+                if self.original_md[field] is not None and self.original_md[field] != "" and \
+                        self.original_md[field] != self.template_md[field]:
+                    self.set_text_to_template(field)
                     self.switchers[field].setEnabled(True)
                     self.switchers[field].model().item(1).setEnabled(True)
                     self.switchers[field].model().item(2).setEnabled(True)
