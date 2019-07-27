@@ -21,7 +21,10 @@ def get_xmp(filename, base_command):
         tree = ET.parse(outfile)
     except FileNotFoundError:
         md = {"interviewer": "", "interviewee": "", "owner": "",
-              "metadataDate": "", "language": "", "xmp_description": ""}
+              "metadataDate": "", "language": "", "xmp_description": "",
+              "form": "", "host": "", "speaker": "", "performer": "",
+              "topics": "", "names": "", "events": "", "places": ""
+              }
         return md
     root = tree.getroot()
 
@@ -34,13 +37,22 @@ def get_xmp(filename, base_command):
         else:
             return element.find(xpath, namespaces)
 
-    md = {"interviewer": check_li_child(root, './/autoBWF:Interviewer'),
-          "interviewee": check_li_child(root, './/autoBWF:Interviewee'),
-          "owner": check_li_child(root, './/xmpRights:Owner'),
-          "metadataDate": root.find('.//xmp:MetadataDate', namespaces),
-          "language": root.findall('.//dc:language//rdf:li', namespaces),
-          "xmp_description": check_li_child(root, './/dc:description')
-          }
+    md = {
+        "owner": check_li_child(root, './/xmpRights:Owner'),
+        "metadataDate": root.find('.//xmp:MetadataDate', namespaces),
+        "language": root.findall('.//dc:language//rdf:li', namespaces),
+        "xmp_description": check_li_child(root, './/dc:description'),
+        "interviewer": check_li_child(root, './/autoBWF:Interviewer'),
+        "interviewee": check_li_child(root, './/autoBWF:Interviewee'),
+        "form": check_li_child(root, './/autoBWF:Form'),
+        "host": check_li_child(root, './/autoBWF:Host'),
+        "speaker": check_li_child(root, './/autoBWF:Speaker'),
+        "performer": check_li_child(root, './/autoBWF:Performer'),
+        "topics": check_li_child(root, './/autoBWF:Topics'),
+        "names": check_li_child(root, './/autoBWF:Names'),
+        "events": check_li_child(root, './/autoBWF:Events'),
+        "places": check_li_child(root, './/autoBWF:Places')
+    }
 
     for field in md:
         if md[field] is not None:
@@ -84,12 +96,38 @@ def set_xmp(md, filename, base_command):
         owner_bag = ET.SubElement(owner, qualified_element("rdf", "Bag"))
         owner_item = ET.SubElement(owner_bag, qualified_element("rdf", "li"))
         owner_item.text = md["owner"]
+
     if md["interviewer"] != "":
         interviewer = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewer"))
         interviewer.text = md["interviewer"]
     if md["interviewee"] != "":
         interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewee"))
         interviewee.text = md["interviewee"]
+    if md["form"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Form"))
+        interviewee.text = md["form"]
+    if md["host"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Host"))
+        interviewee.text = md["host"]
+    if md["speaker"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Speaker"))
+        interviewee.text = md["speaker"]
+    if md["performer"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Performer"))
+        interviewee.text = md["performer"]
+    if md["topics"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Topics"))
+        interviewee.text = md["topics"]
+    if md["names"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Names"))
+        interviewee.text = md["names"]
+    if md["events"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Events"))
+        interviewee.text = md["events"]
+    if md["places"] != "":
+        interviewee = ET.SubElement(rdf_description, qualified_element("autoBWF", "Places"))
+        interviewee.text = md["places"]
+
     if md["language"] != "":
         language = ET.SubElement(rdf_description, qualified_element("dc", "language"))
         language_bag = ET.SubElement(language, qualified_element("rdf", "Bag"))

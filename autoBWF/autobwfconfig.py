@@ -89,6 +89,16 @@ def default_config():
     "owner": [
         "Apocryphal State University",
         "Big Donor"
+    ],
+    
+    "form": [
+        "Live sound recordings", 
+        "Interviews", 
+        "Radio programs", 
+        "Oral histories", 
+        "Personal recordings", 
+        "Field recordings",
+        "Poetry readings (Sound recordings)"
     ]
 }
 """

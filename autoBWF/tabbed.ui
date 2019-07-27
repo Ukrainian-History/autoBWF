@@ -1198,10 +1198,10 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="topicLine"/>
+                   <widget class="QLineEdit" name="topicsLine"/>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="topicSwitcher">
+                   <widget class="QComboBox" name="topicsSwitcher">
                     <item>
                      <property name="text">
                       <string>Edited</string>

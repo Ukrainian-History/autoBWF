@@ -38,9 +38,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "owner": self.rightsOwnerSelect,
             "language": self.languageLine,
             "interviewer": self.interviewerLine,
-            "interviewee": self.intervieweeLine
+            "interviewee": self.intervieweeLine,
+            "form": self.formSelect,
+            "host": self.hostLine,
+            "speaker": self.speakerLine,
+            "performer": self.performerLine,
+            "topics": self.topicsLine,
+            "names": self.namesLine,
+            "events": self.eventsLine,
+            "places": self.placesLine
         }
-        self.xmp_fields = ["xmp_description", "owner", "language", "interviewer", "interviewee"]
+        self.xmp_fields = ["xmp_description", "owner", "language", "interviewer", "interviewee",
+                           "form", "host", "speaker", "performer", "topics", "names", "events", "places"]
 
         self.switchers = {
             "Description": self.descriptionSwitcher,
@@ -61,7 +70,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "owner": self.rightsOwnerSwitcher,
             "language": self.languageSwitcher,
             "interviewer": self.interviewerSwitcher,
-            "interviewee": self.intervieweeSwitcher
+            "interviewee": self.intervieweeSwitcher,
+            "form": self.formSwitcher,
+            "host": self.hostSwitcher,
+            "speaker": self.speakerSwitcher,
+            "performer": self.performerSwitcher,
+            "topics": self.topicsSwitcher,
+            "names": self.namesSwitcher,
+            "events": self.eventsSwitcher,
+            "places": self.placesSwitcher
+
         }
 
         self.filename = filename
@@ -91,6 +109,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.adcSelect.addItems(config["adc"]["list"])
         self.softwareSelect.addItems(config["software"]["list"])
         self.copyrightSelect.addItems(config["copyright"]["list"])
+        self.formSelect.addItems(config["form"])
         self.copyrightText.insertPlainText(
             config["copyright"][config["copyright"]["list"][0]]
         )
