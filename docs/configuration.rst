@@ -55,8 +55,8 @@ Program behavior
 Combo box elements
 ---------------------
 
-The prefilled values of the autoBWF combo box GUI elements (ISFT, ITCH, ISRC, Copyright owner) are controlled by list
-value associated with the appropriate key::
+The prefilled values of the autoBWF combo box GUI elements (ISFT, ITCH, ISRC, Copyright owner, Form) are controlled by
+list value associated with the appropriate key::
 
     "isft": [
         "Audacity 2.0.3.0",
@@ -73,6 +73,15 @@ value associated with the appropriate key::
     "owner": [
         "Apocryphal State University",
         "Big Donor"
+    ],
+    "form": [
+        "Live sound recordings",
+        "Interviews",
+        "Radio programs",
+        "Oral histories",
+        "Personal recordings",
+        "Field recordings",
+        "Poetry readings (Sound recordings)"
     ]
 
 If you want a combo box to be empty be default but still have a set of preconfigured choices in the dropdown, then
