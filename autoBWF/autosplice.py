@@ -6,6 +6,7 @@ import datetime
 
 
 def parse_line(line):
+    edit = None
     fn = re.match(r'\S+\.wav', line, re.I)
     if fn:
         filename = fn[0]
@@ -37,9 +38,7 @@ def parse_line(line):
         if re.search(r'\S+', line):
             sys.exit("syntax error in EDL file")
 
-        return edit
-
-    return None
+    return edit
 
 
 def construct_edit(edit):

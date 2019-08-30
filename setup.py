@@ -25,7 +25,8 @@ setup(
         'console_scripts': [
             'autoBWF=autoBWF.autoBWF:main',
             'autolame=autoBWF.autolame:main',
-            'autosplice=autoBWF.autosplice:main'
+            'autosplice=autoBWF.autosplice:main',
+            'bwf2pbcore=autoBWF.bwf2pbcore:main'
         ],
     },
     install_requires=requirements,
