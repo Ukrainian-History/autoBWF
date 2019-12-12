@@ -26,7 +26,8 @@ setup(
             'autoBWF=autoBWF.autoBWF:main',
             'autolame=autoBWF.autolame:main',
             'autosplice=autoBWF.autosplice:main',
-            'bwf2pbcore=autoBWF.bwf2pbcore:main'
+            'bwf2pbcore=autoBWF.bwf2pbcore:main',
+            'bwf2csv=autoBWF.bwf2csv:main'
         ],
     },
     install_requires=requirements,

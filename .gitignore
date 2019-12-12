@@ -12,6 +12,7 @@ Pipfile
 Pipfile.lock
 build
 dist
+*.csv
 
 docs/_build/*
 coverage.xml
