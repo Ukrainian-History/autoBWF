@@ -180,9 +180,9 @@ def get_bwf_core(allow_padding, file):
     m = re.compile(r'File content: (.+); File use: (.+); Original filename: (.+)').match(core["Description"])
     if m:
         matches = m.groups()
-        core["FileContent"] = matches[1]
-        core["FileUse"] = matches[2]
-        core["OriginalFilename"] = matches[3]
+        core["FileContent"] = matches[0]
+        core["FileUse"] = matches[1]
+        core["OriginalFilename"] = matches[2]
     else:
         core["FileContent"] = ""
         core["FileUse"] = ""

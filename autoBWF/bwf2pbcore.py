@@ -30,9 +30,6 @@ def main():
     def add_multivalue_child(parent, element_name, element_value, attributes=None, namespace="pbcore"):
         wikidata_regex = re.compile(r'(.+)\s+\{(Q\d+)\}')
 
-        # if namespace is not None:
-        #     element_name = qualified_element(namespace, element_name)
-
         if element_value != "":
             items = element_value.split(';')
             for item in items:
@@ -94,7 +91,7 @@ def main():
 
     add_child(pbcore_root, "pbcoreAssetType", metadata["form"])
     add_child(pbcore_root, "pbcoreAssetDate", metadata["ICRD"])
-    add_child(pbcore_root, "pbcoreIdentifier", "temporary placeholder", {"source": "huh?"})
+    add_child(pbcore_root, "pbcoreIdentifier", metadata["FileContent"], {"source": "local"})
     add_child(pbcore_root, "pbcoreTitle", metadata["INAM"])
 
     add_multivalue_child(pbcore_root, "pbcoreSubject", metadata["topics"], {"subjectType": "topic"})
@@ -124,8 +121,8 @@ def main():
     add_child(rights, "rightsSummary", metadata["ICOP"])
 
     instantiation = ET.SubElement(pbcore_root, qualified_element("pbcore", "pbcoreInstantiation"))
-    add_child(instantiation, "instantiationIdentifier", "dummy identifier", attributes={"source": "nowhere"})
-    add_child(instantiation, "instantiationLocation", "Here!")
+    add_child(instantiation, "instantiationIdentifier", metadata["OriginatorReference"], attributes={"source": "local"})
+    add_child(instantiation, "instantiationLocation", infile)
     add_child(instantiation, "instantiationDuration", metadata["Duration"].split('.')[0])
     add_child(instantiation, "instantiationLanguage", "".join(metadata["language"].split()))  # eliminate whitespace
 
