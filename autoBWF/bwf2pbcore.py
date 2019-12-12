@@ -76,7 +76,7 @@ def main():
                 add_child(element, role_name, role_value)
 
     parser = argparse.ArgumentParser(
-        description='Extract metadata from BWF and create PBCore XML, possibly incorporating into existing OHMS XML')
+        description='Extract metadata from BWF and create PBCore XML, incorporating existing OHMS XML as an extension')
     parser.add_argument('infile', help="WAV file")
     args = parser.parse_args()
 
@@ -134,7 +134,8 @@ def main():
     if path.isfile(ohmsfile):
         ohms_root = ET.parse(ohmsfile).getroot()
         extension = add_child(instantiation, "instantiationExtension", "", allow_empty=True)
-        extension.append(ohms_root)
+        embedded = add_child(extension, "extensionEmbedded", "", allow_empty=True)
+        embedded.append(ohms_root)
 
     ET.ElementTree(pbcore_root).write(outfile, xml_declaration=True, encoding='utf-8')
 
