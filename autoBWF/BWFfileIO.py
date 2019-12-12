@@ -162,6 +162,7 @@ def get_bwf_tech(allow_padding, file):
 def get_bwf_core(allow_padding, file):
     import io
     import csv
+    import re
 
     if allow_padding:
         command = ["bwfmetaedit", "--accept-nopadding", "--out-core", file]
@@ -175,6 +176,18 @@ def get_bwf_core(allow_padding, file):
     for key in core.keys():
         if core[key] is None:
             core[key] = ""
+
+    m = re.compile(r'File content: (.+); File use: (.+); Original filename: (.+)').match(core["Description"])
+    if m:
+        matches = m.groups()
+        core["FileContent"] = matches[1]
+        core["FileUse"] = matches[2]
+        core["OriginalFilename"] = matches[3]
+    else:
+        core["FileContent"] = ""
+        core["FileUse"] = ""
+        core["OriginalFilename"] = ""
+
     return core
 
 
