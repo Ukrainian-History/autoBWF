@@ -1,4 +1,4 @@
-Autosplice and autolame
+Auxilliary tools
 ===========================
 
 autosplice
@@ -45,7 +45,7 @@ Security note
 ``subprocess.call()`` function with the ``shell=True`` argument. This is a
 theorectical security risk, as a maliciously-crafted EDL file obtained from an
 untrusted source could result in a shell injection attack. It is mitigated by the
-fact that such a malicious file should be easily recognizable by simple visual
+fact that such a malicious file would be easily detectable by simple visual
 inspection.
 
 autolame
@@ -57,9 +57,38 @@ Usage::
 
 Each `<infile>` will be converted to mp3 and the result will be saved to the same
 file name with the extension changed to mp3. Multiple <infile>s can be given, or
-generated using a shell glob (e.g. `*.wav`)
+generated using a shell glob (e.g. `*.wav`). Selected embedded metadata values from the BWF
+files are migrated to ID3v2 tags in the resulting mp3 files.
 
 An output file name can be specified using the ``-o`` option, but in that case
 only one input file is allowed.
 
 The default VBR level is currently 7.
+
+bwf2pbcore
+------------------
+
+Usage::
+
+    bwf2pbcore [-h] infile [infile ...]
+
+Embeded Wave metadata in each `<infile>` will be extracted and saved as a PBCore XML sidecar file.
+The filename of the generated sidecar file will be the same as that of `<infile>` with
+"_pbcore" inserted just before the ".xml" extension (i.e. the input file "foobar.wav" will
+result in a sidecar file with the name "foobar_pbcore.xml")
+
+`bwf2pbcore` checks for the presence of a file with the same name as the `<infile>`, but with
+"_ohms.xml" as a suffix and extension (i.e. for the input file "foobar.wav", it will look for the
+file "foobar_ohms.xml"). If such a file is found, it will assume that it contains XML metadata exported from
+the Oral History Metadata Synchronizer, and the contents will be inserted into the PBCore XML
+within an instantiation-level `<extensionEmbedded>` element.
+
+bwf2csv
+------------------
+
+Usage::
+
+    bwf2csv [-h] infile [infile ...]
+
+Selected elements of embeded Wave metadata in each `<infile>` will be extracted and output to `stdout` in CSV format (one line
+per Wave file).

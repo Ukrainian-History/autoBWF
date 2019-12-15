@@ -1,5 +1,13 @@
 # History
 
+### 3.4.0 (2019-12-14)
+
+* Add capability to toggle between existing, tempate, and edited metadata
+* Add IARL
+* Add additional XMP MD fields
+* Add bwf2pbcore and bwf2csv tools
+
+
 ### 3.3.1 (2019-07-22)
 
 * Add "--config" argument to autoBWF

@@ -8,8 +8,8 @@ Python 3
 ------------
 
 This code requires Python 3.6 or later. If you are running on Linux or Mac OS,
-then it is almost certainly already installled. If you are running on Widows,
-you can install Python using instructions that can be found on any number of web
+then it is almost certainly already installed. If you are running on Widows,
+you can install Python using instructions on any number of web
 sites (such as `this one
 <https://www.digitalocean.com/community/tutorials/how-to-install-
 python-3-and-set-up-a-local-programming-environment-on-windows-10>`_).
@@ -20,10 +20,10 @@ run ``autoBWF``.
 
 bwfmetaedit
 ----------------------------
-Download the and run the installer for the `BWFMetaEdit
+If needed, download and run the installer for the `BWFMetaEdit
 <https://mediaarea.net/BWFMetaEdit>`_ CLI (Command Line Interface) appropriate
 to your operating system from `mediaarea.net <https://mediaarea
-.net/BWFMetaEdit/Download>`_. Note that simply having the BWFMetaEdit GUI
+.net/BWFMetaEdit/Download>`_. Note that having the BWFMetaEdit GUI
 installed is not sufficient.
 
 ``autoBWF`` has been tested with ``bwfmetaedit`` v1.3.3 and v1.3.8. Note that
@@ -58,5 +58,5 @@ and installing the local code with ``pip3``, or by running ::
 
     pip3 install git+git://github.com/Ukrainian-History/autoBWF.git#egg=autoBWF
 
-The master branch contains functional code - all development work that is likely
+The master branch *should* contain functional code — development work that is likely
 to result in a broken state is done on feature branches.
