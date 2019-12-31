@@ -1,5 +1,4 @@
 import argparse
-import re
 import csv
 import sys
 from os import path

@@ -126,7 +126,8 @@ def main():
                   attributes={"source": "local"})
         add_child(instantiation, "instantiationLocation", infile)
         add_child(instantiation, "instantiationDuration", metadata["Duration"].split('.')[0])
-        add_child(instantiation, "instantiationLanguage", "".join(metadata["language"].split()))  # eliminate whitespace
+        for language in metadata["language"].split(';'):
+            add_child(instantiation, "instantiationLanguage", language.strip())
 
         add_child(pbcore_root, "pbcoreAnnotation", metadata["ISRC"], {"annotationType": "source collection"})
 
