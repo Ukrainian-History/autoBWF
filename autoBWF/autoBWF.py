@@ -364,13 +364,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.original_md.update(get_bwf_core(self.config["accept-nopadding"], file))
         self.original_md.update(get_xmp(file, self.base_command))
 
-        # check sanity of existing description
-        if description != self.original_md["Description"] and self.original_md["Description"] != "":
-            QMessageBox.warning(
-                self, 'Warning',
-                "BWF Description seems to be inconsistent with filename"
-            )
-
         for field in self.gui_text_widgets.keys():
             if self.original_md[field] != "":
                 self.set_text_to_original(field)
@@ -382,6 +375,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                     widget.textChanged.connect(lambda element=field: self.text_changed(element))
                 else:
                     widget.textEdited.connect(lambda value, element=field: self.text_changed(element))
+
+        # check sanity of existing BWF description field
+        if self.original_md["Description"] != "" and description != self.original_md["Description"]:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("BWF Description is inconsistent with filename")
+            msg.setInformativeText(
+                              "Field will be regenerated. " +
+                              "The original can be restored using the drop-down menu next to the text field."
+                        )
+            msg.exec_()
+
+            self.set_gui_text("Description", description, block=False)
 
         if self.original_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
