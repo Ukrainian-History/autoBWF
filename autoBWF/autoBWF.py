@@ -383,7 +383,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             msg.setText("BWF Description is inconsistent with filename")
             msg.setInformativeText(
                               "Field will be regenerated. " +
-                              "The original can be restored using the drop-down menu next to the text field."
+                              "The original can be restored using the drop-down menu next to the text box."
                         )
             msg.exec_()
 

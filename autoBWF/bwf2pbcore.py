@@ -1,3 +1,4 @@
+import sys
 import argparse
 import re
 import xml.etree.ElementTree as ET
@@ -74,11 +75,18 @@ def main():
 
     parser = argparse.ArgumentParser(
         description='Extract metadata from BWF and create PBCore XML, incorporating existing OHMS XML as an extension')
+    parser.add_argument('--ohms', dest='ohmsfile', help='OHMS XML file')
     parser.add_argument('infile', nargs="+", help="WAV file(s)")
     args = parser.parse_args()
 
+    if args.ohmsfile is not None and len(args.infile) > 1:
+        sys.exit("Can only have one input file if OHMS file is specified.")
+
     for infile in args.infile:
-        ohmsfile = infile.rsplit('.', 1)[0] + '_ohms.xml'
+        if args.ohmsfile is not None:
+            ohmsfile = args.ohmsfile
+        else:
+            ohmsfile = infile.rsplit('.', 1)[0] + '_ohms.xml'
         outfile = infile.rsplit('.', 1)[0] + '_pbcore.xml'
 
         metadata = get_bwf_core(True, infile)
