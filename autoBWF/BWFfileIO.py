@@ -143,14 +143,19 @@ def set_xmp(md, filename, base_command):
     os.remove(xmlfile)
 
 
-def get_bwf_tech(allow_padding, file):
+def get_bwf_tech(allow_padding, file, verify_digest=False):
     import io
     import csv
 
     if allow_padding:
-        command = ["bwfmetaedit", "--accept-nopadding", "--out-tech", file]
+        command = ["bwfmetaedit", "--accept-nopadding", "--out-tech"]
     else:
-        command = ["bwfmetaedit", "--out-tech", file]
+        command = ["bwfmetaedit", "--out-tech"]
+
+    if verify_digest:
+        command.extend(["--MD5-verify", file])
+    else:
+        command.append(file)
 
     tech_csv = subprocess.check_output(command, universal_newlines=True)
     f = io.StringIO(tech_csv)

@@ -7,7 +7,8 @@ from autoBWF.BWFfileIO import *
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Extract metadata from BWF and create PBCore XML, possibly incorporating into existing OHMS XML')
+        description='Extract metadata from BWF into a CSV file')
+    parser.add_argument('--digest', help="Verify MD5 digest of data chunk", action="store_true")
     parser.add_argument('-o', dest="outfile", help="CSV output file")
     parser.add_argument('infile', nargs="+", help="WAV file(s)")
     args = parser.parse_args()
@@ -15,6 +16,9 @@ def main():
     output_fields = ["OriginalFilename", "FileContent", "FileUse", "INAM", "ICRD", "form", "Duration", "language",
                      "ISRC", "xmp_description", "interviewer", "interviewee", "host", "speaker",
                      "performer", "topics", "names", "events", "places", "owner", "ICOP"]
+
+    if args.digest:
+        output_fields.extend(["MD5Stored", "MD5Generated", "Errors"])
 
     if args.outfile is not None:
         if os.path.isfile(args.outfile):
@@ -30,7 +34,10 @@ def main():
 
     for infile in args.infile:
         metadata = get_bwf_core(True, infile)
-        metadata.update(get_bwf_tech(True, infile))
+        if args.digest:
+            metadata.update(get_bwf_tech(True, infile, verify_digest=True))
+        else:
+            metadata.update(get_bwf_tech(True, infile))
         metadata.update(get_xmp(infile, ["bwfmetaedit", "--specialchars", "--accept-nopadding"]))
         output.writerow({k: metadata[k] for k in output_fields})
 
