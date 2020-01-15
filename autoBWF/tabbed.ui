@@ -1432,8 +1432,20 @@
    <addaction name="actionOpen"/>
    <addaction name="actionOpen_template"/>
    <addaction name="actionUpdate_metadata"/>
+   <addaction name="actionExport_metadata"/>
    <addaction name="actionQuit"/>
   </widget>
+  <action name="actionExport_metadata">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Export metadata</string>
+   </property>
+   <property name="shortcut">
+    <string>E</string>
+   </property>
+  </action>
   <action name="actionUpdate_metadata">
    <property name="checkable">
     <bool>false</bool>

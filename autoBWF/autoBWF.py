@@ -130,10 +130,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.actionQuit.triggered.connect(self.close)
         self.actionOpen.triggered.connect(self.open_file)
         self.actionOpen_template.triggered.connect(self.open_template)
+        self.actionExport_metadata.triggered.connect(self.export_metadata)
 
         self.tabWidget.setEnabled(False)
         self.actionUpdate_metadata.setEnabled(False)
         self.actionOpen_template.setEnabled(False)
+        self.actionExport_metadata.setEnabled(False)
 
         for switcher in self.switchers:
             self.switchers[switcher].setEnabled(False)
@@ -260,6 +262,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionUpdate_metadata.setEnabled(True)
                 self.actionOpen_template.setEnabled(True)
                 self.actionOpen.setEnabled(False)
+                # self.actionExport_metadata.setEnabled(True)
                 self.populate_file_info(fname)
 
     def open_template(self):
@@ -512,6 +515,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             QtCore.QCoreApplication.quit()
 
         # TODO what if it wasn't successful???
+
+    def export_metadata(self):
+        pass
 
 
 def main():
