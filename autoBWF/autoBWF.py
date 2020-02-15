@@ -1,12 +1,14 @@
 import sys
 import subprocess
 import time
+from pathlib import Path
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5 import QtCore
 
 from autoBWF.tabbed import Ui_autoBWF
+from autoBWF.export import Ui_Export
 from autoBWF.BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp, set_xmp
 from autoBWF.autobwfconfig import default_config
 
@@ -17,7 +19,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
+
         self.config = config
+        self.filename = filename
+        if filename:
+            self.filepath = str(Path(filename).resolve())
 
         self.gui_text_widgets = {
             "Description": self.descriptionLine,
@@ -82,7 +88,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         }
 
-        self.filename = filename
         self.original_md = {}
         self.template_md = None
         self.edited_md = {}
@@ -119,6 +124,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         #
 
         self.copyrightSelect.activated.connect(self.copyright_activated)
+
         self.deckSelect.currentIndexChanged.connect(self.update_coding_history)
         self.adcSelect.currentIndexChanged.connect(self.update_coding_history)
         self.softwareSelect.currentIndexChanged.connect(self.update_coding_history)
@@ -126,6 +132,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.speedSelect.currentIndexChanged.connect(self.update_coding_history)
         self.eqSelect.currentIndexChanged.connect(self.update_coding_history)
         self.typeSelect.currentIndexChanged.connect(self.update_coding_history)
+
         self.actionUpdate_metadata.triggered.connect(self.save_metadata)
         self.actionQuit.triggered.connect(self.close)
         self.actionOpen.triggered.connect(self.open_file)
@@ -150,6 +157,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if filename:
             self.tabWidget.setEnabled(True)
             self.actionUpdate_metadata.setEnabled(True)
+            self.actionExport_metadata.setEnabled(True)
             self.actionOpen.setEnabled(False)
 
             md = get_bwf_tech(config["accept-nopadding"], filename)
@@ -262,7 +270,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionUpdate_metadata.setEnabled(True)
                 self.actionOpen_template.setEnabled(True)
                 self.actionOpen.setEnabled(False)
-                # self.actionExport_metadata.setEnabled(True)
+                self.actionExport_metadata.setEnabled(True)
                 self.populate_file_info(fname)
 
     def open_template(self):
@@ -475,9 +483,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             QtWidgets.QApplication.processEvents()
             call_bwf(self.base_command, self.filename, "TimeReference", "0")
 
-        # need to save coding history for last.
-        # If we don't, then for some bizarre reason
-        # there's duplication of the last two characters of the history string...
+        # Need to save coding history for last. If we don't, then for some bizarre reason there's duplication
+        # of the last two characters of the history string...
         coding_history = changed_bwf_riff.pop("CodingHistory", None)
 
         for key in changed_bwf_riff:
@@ -517,13 +524,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # TODO what if it wasn't successful???
 
     def export_metadata(self):
-        pass
+        dialog = QtWidgets.QDialog()
+        dialog.ui = Ui_Export()
+        dialog.ui.setupUi(dialog)
+
+        dialog.ui.lineEdit.insert(self.filepath)
+        dialog.exec_()
 
 
 def main():
     import json
     import argparse
-    from pathlib import Path
 
     from appdirs import AppDirs
 
