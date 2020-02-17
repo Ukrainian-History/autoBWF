@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5 import QtCore
 
 from autoBWF.tabbed import Ui_autoBWF
-from autoBWF.export import Ui_Export
+from autoBWF.export_dialog import Ui_Export
 from autoBWF.BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp, set_xmp
 from autoBWF.autobwfconfig import default_config
 
@@ -25,6 +25,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if filename:
             self.filepath = str(Path(filename).resolve())
 
+        # dict of all text elements in the UI, indexed by metadata term
         self.gui_text_widgets = {
             "Description": self.descriptionLine,
             "Originator": self.originatorLine,
@@ -57,6 +58,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.xmp_fields = ["xmp_description", "owner", "language", "interviewer", "interviewee",
                            "form", "host", "speaker", "performer", "topics", "names", "events", "places"]
 
+        # dict of all edited/template/original toggle menus, indexed by metadata term
         self.switchers = {
             "Description": self.descriptionSwitcher,
             "Originator": self.originatorSwitcher,
@@ -235,7 +237,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.gui_text_widgets[widget_name].setStyleSheet("color: grey; font: italic")
 
     def set_text_to_edited(self, widget_name):
-        widget = self.gui_text_widgets[widget_name]
         text = self.edited_md[widget_name]
         self.set_gui_text(widget_name, text)
         self.gui_text_widgets[widget_name].setStyleSheet("color: red; font: regular")
@@ -524,12 +525,55 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # TODO what if it wasn't successful???
 
     def export_metadata(self):
-        dialog = QtWidgets.QDialog()
-        dialog.ui = Ui_Export()
-        dialog.ui.setupUi(dialog)
+        dialog = Export(self.filepath)
+        result = dialog.exec_()
+        if result:
+            vals = dialog.get_values()
+            # TODO do the export
 
-        dialog.ui.lineEdit.insert(self.filepath)
-        dialog.exec_()
+
+class Export(QtWidgets.QDialog, Ui_Export):
+    def __init__(self, path):
+        super(self.__class__, self).__init__()
+        self.setupUi(self)
+
+        self.outfileButton.clicked.connect(self.get_outfile)
+        self.ohmsfileButton.clicked.connect(self.get_ohmsfile)
+        self.mp3fileButton.clicked.connect(self.get_mp3file)
+
+        pbcore_path = path.replace(".wav", "_pbcore.xml")
+        self.outFile.insert(pbcore_path)
+        mp3_path = path.replace(".wav", ".mp3")
+        self.mp3File.insert(path)
+
+    def get_outfile(self):
+        filename = QFileDialog.getOpenFileName(self, "Select PBCore output file", "~")[0]
+        if filename:
+            self.outFile.clear()
+            self.outFile.insert(str(filename))
+
+    def get_ohmsfile(self):
+        filename = QFileDialog.getOpenFileName(self, "Select OHMS file", "~")[0]
+        if filename:
+            self.ohmsFile.clear()
+            self.ohmsFile.insert(str(filename))
+            self.ohmsCheck.setChecked(True)
+
+    def get_mp3file(self):
+        filename = QFileDialog.getOpenFileName(self, "Select MP3 output file", "~")[0]
+        if filename:
+            self.ohmsFile.clear()
+            self.mp3File.insert(str(filename))
+
+    def get_values(self):
+        vals = {"outfile": self.outFile.text(),
+                "ohmsfile": self.ohmsFile.text(),
+                "mp3file": self.mp3File.text(),
+                "include_ohms": self.ohmsCheck.isChecked(),
+                "do_lame": self.lameCheck.isChecked(),
+                "vbr": int(self.vbrLevel.text())
+                }
+        return vals
 
 
 def main():

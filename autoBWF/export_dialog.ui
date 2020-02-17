@@ -21,51 +21,68 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEdit"/>
+   <item row="0" column="1" colspan="3">
+    <widget class="QLineEdit" name="outFile"/>
    </item>
-   <item row="0" column="2">
-    <widget class="QPushButton" name="pushButton">
+   <item row="0" column="4">
+    <widget class="QPushButton" name="outfileButton">
      <property name="text">
       <string>Select</string>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="QCheckBox" name="ohmsCheck">
      <property name="text">
       <string>Include OHMS file</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="lineEdit_2"/>
+   <item row="1" column="1" colspan="3">
+    <widget class="QLineEdit" name="ohmsFile"/>
    </item>
-   <item row="1" column="2">
-    <widget class="QPushButton" name="pushButton_2">
+   <item row="1" column="4">
+    <widget class="QPushButton" name="ohmsfileButton">
      <property name="text">
       <string>Select</string>
      </property>
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QCheckBox" name="checkBox_2">
+    <widget class="QCheckBox" name="lameCheck">
      <property name="text">
       <string>Generate MP3</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QLineEdit" name="lineEdit_3"/>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>VBR level</string>
+     </property>
+    </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QSpinBox" name="vbrLevel">
+     <property name="maximum">
+      <number>9</number>
+     </property>
+     <property name="value">
+      <number>6</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QLineEdit" name="mp3File"/>
+   </item>
+   <item row="2" column="4">
+    <widget class="QPushButton" name="mp3fileButton">
      <property name="text">
       <string>Select</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1" colspan="2">
+   <item row="3" column="3" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
