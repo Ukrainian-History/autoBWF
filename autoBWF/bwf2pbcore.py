@@ -10,6 +10,10 @@ namespaces = {"xml": "http://www.w3.org/XML/1998/namespace",
               "ohms": "https://www.weareavp.com/nunncenter/ohms"}
 
 
+class IllFormedXML(Exception):
+    pass
+
+
 def initialize_tree():
     for ns in namespaces.keys():
         ET.register_namespace(ns, namespaces[ns])
@@ -133,6 +137,19 @@ def generate_pbcore(infile, metadata, ohms_tree=None):
     return pbcore_root
 
 
+def write_pbcore(outfile, metadata, bwf_filename, ohms_filename=None):
+    if path.isfile(ohms_filename):
+        try:
+            ohms_root = ET.parse(ohms_filename).getroot()
+        except ET.ParseError:
+            raise IllFormedXML
+    else:
+        ohms_root = None
+
+    pbcore = generate_pbcore(bwf_filename, metadata, ohms_root)
+    ET.ElementTree(pbcore).write(outfile, xml_declaration=True, encoding='utf-8')
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Extract metadata from BWF and create PBCore XML, incorporating existing OHMS XML as an extension')
@@ -154,14 +171,7 @@ def main():
         metadata.update(get_bwf_tech(True, infile))
         metadata.update(get_xmp(infile, ["bwfmetaedit", "--specialchars", "--accept-nopadding"]))
 
-        if path.isfile(ohmsfile):
-            ohms_root = ET.parse(ohmsfile).getroot()
-        else:
-            ohms_root = None
-
-        pbcore = generate_pbcore(infile, metadata, ohms_root)
-
-        ET.ElementTree(pbcore).write(outfile, xml_declaration=True, encoding='utf-8')
+        write_pbcore(outfile, metadata, infile, ohmsfile)
 
 
 if __name__ == '__main__':
