@@ -164,6 +164,25 @@ def get_bwf_tech(allow_padding, file, verify_digest=False):
     return tech
 
 
+def parse_bwf_description(description):
+    import re
+
+    md = {}
+
+    m = re.compile(r'File content: (.+); File use: (.+); Original filename: (.+)').match(description)
+    if m:
+        matches = m.groups()
+        md["FileContent"] = matches[0]
+        md["FileUse"] = matches[1]
+        md["OriginalFilename"] = matches[2]
+    else:
+        md["FileContent"] = ""
+        md["FileUse"] = ""
+        md["OriginalFilename"] = ""
+
+    return md
+
+
 def get_bwf_core(allow_padding, file):
     import io
     import csv
@@ -182,17 +201,7 @@ def get_bwf_core(allow_padding, file):
         if core[key] is None:
             core[key] = ""
 
-    m = re.compile(r'File content: (.+); File use: (.+); Original filename: (.+)').match(core["Description"])
-    if m:
-        matches = m.groups()
-        core["FileContent"] = matches[0]
-        core["FileUse"] = matches[1]
-        core["OriginalFilename"] = matches[2]
-    else:
-        core["FileContent"] = ""
-        core["FileUse"] = ""
-        core["OriginalFilename"] = ""
-
+    core.update(parse_bwf_description(core["Description"]))
     return core
 
 
