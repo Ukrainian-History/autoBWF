@@ -9,7 +9,7 @@ from PyQt5 import QtCore
 
 from autoBWF.tabbed import Ui_autoBWF
 from autoBWF.export_dialog import Ui_Export
-from autoBWF.BWFfileIO import call_bwf, get_bwf_core, get_bwf_tech, get_xmp, set_xmp
+from autoBWF.BWFfileIO import *
 from autoBWF.autobwfconfig import default_config
 
 
@@ -525,11 +525,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # TODO what if it wasn't successful???
 
     def export_metadata(self):
+        from autoBWF.bwf2pbcore import write_pbcore
+        import autoBWF.autolame as autolame
+
+        # TODO check if there are modified fields and force save
+
         dialog = Export(self.filepath)
-        result = dialog.exec_()
-        if result:
+        accepted = dialog.exec_()
+        if accepted:
             vals = dialog.get_values()
-            # TODO do the export
+            if vals["include_ohms"]:
+                ohms_file = vals["ohmsfile"]
+            else:
+                ohms_file = None
+
+            md = self.get_all_gui_texts()
+            md.update(parse_bwf_description(md["Description"]))
+            md["Duration"] = self.original_md["Duration"]
+
+            if vals["outfile"]:
+                write_pbcore(vals["outfile"], md, self.filename, ohms_file)
+
+            if vals["do_lame"] and vals["mp3file"] != "":
+                subprocess.call(autolame.construct_command(self.filename, vals["mp3file"], md, str(vals["vbr"])))
 
 
 class Export(QtWidgets.QDialog, Ui_Export):
@@ -544,7 +562,7 @@ class Export(QtWidgets.QDialog, Ui_Export):
         pbcore_path = path.replace(".wav", "_pbcore.xml")
         self.outFile.insert(pbcore_path)
         mp3_path = path.replace(".wav", ".mp3")
-        self.mp3File.insert(path)
+        self.mp3File.insert(mp3_path)
 
     def get_outfile(self):
         filename = QFileDialog.getOpenFileName(self, "Select PBCore output file", "~")[0]
@@ -564,6 +582,7 @@ class Export(QtWidgets.QDialog, Ui_Export):
         if filename:
             self.ohmsFile.clear()
             self.mp3File.insert(str(filename))
+            self.lameCheck.setChecked(True)
 
     def get_values(self):
         vals = {"outfile": self.outFile.text(),
