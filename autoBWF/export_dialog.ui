@@ -34,7 +34,7 @@
    <item row="1" column="0">
     <widget class="QCheckBox" name="ohmsCheck">
      <property name="text">
-      <string>Include OHMS file</string>
+      <string>Embed XML</string>
      </property>
     </widget>
    </item>
@@ -68,7 +68,7 @@
       <number>9</number>
      </property>
      <property name="value">
-      <number>6</number>
+      <number>7</number>
      </property>
     </widget>
    </item>

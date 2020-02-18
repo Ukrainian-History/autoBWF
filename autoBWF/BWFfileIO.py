@@ -186,7 +186,6 @@ def parse_bwf_description(description):
 def get_bwf_core(allow_padding, file):
     import io
     import csv
-    import re
 
     if allow_padding:
         command = ["bwfmetaedit", "--accept-nopadding", "--out-core", file]

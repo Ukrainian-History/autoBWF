@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'export.ui'
+# Form implementation generated from reading ui file 'export_dialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.12.2
 #
@@ -41,7 +41,7 @@ class Ui_Export(object):
         self.gridLayout.addWidget(self.label_2, 2, 1, 1, 1)
         self.vbrLevel = QtWidgets.QSpinBox(Export)
         self.vbrLevel.setMaximum(9)
-        self.vbrLevel.setProperty("value", 6)
+        self.vbrLevel.setProperty("value", 7)
         self.vbrLevel.setObjectName("vbrLevel")
         self.gridLayout.addWidget(self.vbrLevel, 2, 2, 1, 1)
         self.mp3File = QtWidgets.QLineEdit(Export)
@@ -66,7 +66,7 @@ class Ui_Export(object):
         Export.setWindowTitle(_translate("Export", "Dialog"))
         self.label.setText(_translate("Export", "Destination PBCore"))
         self.outfileButton.setText(_translate("Export", "Select"))
-        self.ohmsCheck.setText(_translate("Export", "Include OHMS file"))
+        self.ohmsCheck.setText(_translate("Export", "Embed XML"))
         self.ohmsfileButton.setText(_translate("Export", "Select"))
         self.lameCheck.setText(_translate("Export", "Generate MP3"))
         self.label_2.setText(_translate("Export", "VBR level"))
