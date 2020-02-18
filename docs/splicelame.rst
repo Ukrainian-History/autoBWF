@@ -1,6 +1,8 @@
 Auxilliary tools
 ===========================
 
+The autoBWF package also provides scriptable command line tools to facilitate audio file and metadata management.
+
 autosplice
 ------------
 
@@ -48,6 +50,40 @@ untrusted source could result in a shell injection attack. It is mitigated by th
 fact that such a malicious file would be easily detectable by simple visual
 inspection.
 
+bwf2pbcore
+------------------
+
+Usage::
+
+    bwf2pbcore [-h] [--ohms OHMSFILE] infile [infile ...]
+
+This is a CLI version of the PBCore export functionality provided by the "Export metadata" button of the autoBWF GUI.
+bwf2pbdore extracts the embeded BWF metadata in each `<infile>` and saves it as a PBCore XML sidecar file.
+The filename of the generated sidecar file will be the same as that of `<infile>` with
+"_pbcore" inserted just before the ".xml" extension (i.e. the input file "foobar.wav" will
+result in a sidecar file with the name "foobar_pbcore.xml")
+
+`bwf2pbcore` checks for the presence of a file with the same name as the `<infile>`, but with
+"_ohms.xml" as a suffix and extension (i.e. for the input file "foobar.wav", it will look for the
+file "foobar_ohms.xml"). If such a file is found, it is assumed that it contains XML metadata exported from
+the Oral History Metadata Synchronizer, and the contents will be inserted into the PBCore XML
+within an instantiation-level `<extensionEmbedded>` element. Alternatively, the OHMS file can be specified using the
+``--ohms`` option.
+
+bwf2csv
+------------------
+
+Usage::
+
+    bwf2csv [-h] [-h] [--digest] [-o OUTFILE] infile [infile ...]
+
+Selected elements of embeded BWF metadata in each `<infile>` will be extracted and output to `stdout` in CSV format
+(one line per BWF file). Multiple <infile>s can be given, or
+generated using a shell glob (e.g. `*.wav`).
+The ``-o`` option can be used to specify the output CSV file, which is particularly useful
+when running bwf2csv through ``find -exec`` in UNIX-like environments. The ``--digest`` option can be used to verify
+the MD5 data chunk digests of the BWF file(s). Note that this will be slow if the Wave files are large.
+
 autolame
 --------------
 
@@ -55,7 +91,8 @@ Usage::
 
     autolame [-h] [-o OUTFILE] [--vbr-level VBR_LEVEL] infile [infile ...]
 
-Each `<infile>` will be converted to mp3 and the result will be saved to the same
+This is a CLI version of the PBCore "Generate MP3" functionality provided by the "Export metadata" button of the
+autoBWF GUI.Each `<infile>` will be converted to mp3 and the result will be saved to the same
 file name with the extension changed to mp3. Multiple <infile>s can be given, or
 generated using a shell glob (e.g. `*.wav`). Selected embedded metadata values from the BWF
 files are migrated to ID3v2 tags in the resulting mp3 files.
@@ -64,31 +101,3 @@ An output file name can be specified using the ``-o`` option, but in that case
 only one input file is allowed.
 
 The default VBR level is currently 7.
-
-bwf2pbcore
-------------------
-
-Usage::
-
-    bwf2pbcore [-h] infile [infile ...]
-
-Embeded Wave metadata in each `<infile>` will be extracted and saved as a PBCore XML sidecar file.
-The filename of the generated sidecar file will be the same as that of `<infile>` with
-"_pbcore" inserted just before the ".xml" extension (i.e. the input file "foobar.wav" will
-result in a sidecar file with the name "foobar_pbcore.xml")
-
-`bwf2pbcore` checks for the presence of a file with the same name as the `<infile>`, but with
-"_ohms.xml" as a suffix and extension (i.e. for the input file "foobar.wav", it will look for the
-file "foobar_ohms.xml"). If such a file is found, it will assume that it contains XML metadata exported from
-the Oral History Metadata Synchronizer, and the contents will be inserted into the PBCore XML
-within an instantiation-level `<extensionEmbedded>` element.
-
-bwf2csv
-------------------
-
-Usage::
-
-    bwf2csv [-h] infile [infile ...]
-
-Selected elements of embeded Wave metadata in each `<infile>` will be extracted and output to `stdout` in CSV format (one line
-per Wave file).

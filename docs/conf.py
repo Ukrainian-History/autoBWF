@@ -18,7 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'autoBWF'
-copyright = '2019, Michael Andrec/UHEC'
+copyright = '2020, Michael Andrec/UHEC'
+copyright = '2020, Michael Andrec/UHEC'
 author = 'Michael Andrec/UHEC'
 
 # The full version, including alpha/beta/rc tags
