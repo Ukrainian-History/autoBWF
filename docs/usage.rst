@@ -19,7 +19,7 @@ GUI elements with reasonable guesses as described below.
 
 If *<target_filename>* already contains embedded metadata, then those values will appear in the GUI as grey italic text.
 If the user edits those fields, the text color will change to red as a warning that the original values
-will be overwritten in the target file. **This cannot be undone!** You can use the drop-down menu
+will be overwritten in the target file if saved. **Once saved, this cannot be undone!** You can use the drop-down menu
 to the right of or below each text element to switch between the original and edited versions prior to saving.
 
 The CodingHistory text is generated automatically based on the selections made in the drop-downs to the right of the
