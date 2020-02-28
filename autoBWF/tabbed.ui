@@ -14,7 +14,7 @@
    <string>autoBWF</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_4">
+   <layout class="QGridLayout" name="gridLayout_5">
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <widget class="QWidget" name="guiPage">
@@ -822,503 +822,535 @@
            <attribute name="title">
             <string>XMP</string>
            </attribute>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
-             <layout class="QVBoxLayout" name="verticalLayout_12">
+             <layout class="QVBoxLayout" name="verticalLayout_2">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_26">
+               <layout class="QHBoxLayout" name="horizontalLayout_25">
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_2">
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_25">
-                    <item>
-                     <widget class="QLabel" name="sourceLabel_3">
-                      <property name="text">
-                       <string>Form</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="formSelect">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="editable">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="formSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_8">
-                    <item>
-                     <widget class="QLabel" name="creationDateLabel_2">
-                      <property name="text">
-                       <string>Language</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="languageLine"/>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="languageSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_10">
-                    <item>
-                     <widget class="QLabel" name="sourceLabel_2">
-                      <property name="text">
-                       <string>Copyright holder</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="rightsOwnerSelect">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="editable">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="rightsOwnerSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_13">
-                    <item>
-                     <widget class="QLabel" name="creationDateLabel_4">
-                      <property name="text">
-                       <string>Interviewer</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="interviewerLine"/>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="interviewerSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_14">
-                    <item>
-                     <widget class="QLabel" name="creationDateLabel_5">
-                      <property name="text">
-                       <string>Interviewee</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="intervieweeLine"/>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="intervieweeSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_15">
-                    <item>
-                     <widget class="QLabel" name="creationDateLabel_6">
-                      <property name="text">
-                       <string>Host</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="hostLine"/>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="hostSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_23">
-                    <item>
-                     <widget class="QLabel" name="creationDateLabel_7">
-                      <property name="text">
-                       <string>Speaker</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="speakerLine"/>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="speakerSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_24">
-                    <item>
-                     <widget class="QLabel" name="creationDateLabel_8">
-                      <property name="text">
-                       <string>Performer</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLineEdit" name="performerLine"/>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="performerSwitcher">
-                      <item>
-                       <property name="text">
-                        <string>Edited</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Original</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Template</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
+                 <widget class="QLabel" name="sourceLabel_3">
+                  <property name="text">
+                   <string>Form</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QFormLayout" name="formLayout_9">
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="commentLabel_2">
-                    <property name="text">
-                     <string>Description</string>
-                    </property>
+                 <widget class="QComboBox" name="formSelect">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="formSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_2">
+                  <property name="text">
+                   <string>Language</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="languageLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="languageSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_10">
+                <item>
+                 <widget class="QLabel" name="sourceLabel_2">
+                  <property name="text">
+                   <string>Copyright holder</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="rightsOwnerSelect">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="rightsOwnerSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_13">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_4">
+                  <property name="text">
+                   <string>Interviewer</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="interviewerLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="interviewerSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_14">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_5">
+                  <property name="text">
+                   <string>Interviewee</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="intervieweeLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="intervieweeSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_6">
+                  <property name="text">
+                   <string>Host</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="hostLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="hostSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_23">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_7">
+                  <property name="text">
+                   <string>Speaker</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="speakerLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="speakerSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_24">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_8">
+                  <property name="text">
+                   <string>Performer</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="performerLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="performerSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QLabel" name="commentLabel_2">
+                  <property name="text">
+                   <string>Description</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="XMPdescriptionText"/>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_12">
+                  <item>
+                   <widget class="QComboBox" name="XMPdescriptionSwitcher">
+                    <item>
+                     <property name="text">
+                      <string>Edited</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Original</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Template</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <layout class="QVBoxLayout" name="verticalLayout_4">
-                    <property name="sizeConstraint">
-                     <enum>QLayout::SetMaximumSize</enum>
+                  <item>
+                   <spacer name="horizontalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
                     </property>
-                    <item>
-                     <widget class="QPlainTextEdit" name="XMPdescriptionText"/>
-                    </item>
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_12">
-                      <item>
-                       <widget class="QComboBox" name="XMPdescriptionSwitcher">
-                        <item>
-                         <property name="text">
-                          <string>Edited</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Original</string>
-                         </property>
-                        </item>
-                        <item>
-                         <property name="text">
-                          <string>Template</string>
-                         </property>
-                        </item>
-                       </widget>
-                      </item>
-                      <item>
-                       <spacer name="horizontalSpacer">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>40</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                     </layout>
-                    </item>
-                   </layout>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
                   </item>
                  </layout>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_11">
+               <layout class="QHBoxLayout" name="horizontalLayout_26">
                 <item>
-                 <widget class="QLabel" name="label">
-                  <property name="font">
-                   <font>
-                    <pointsize>14</pointsize>
-                   </font>
-                  </property>
+                 <widget class="QLabel" name="sourceLabel_4">
                   <property name="text">
-                   <string>Subject headings</string>
+                   <string>Creator</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_27">
-                  <item>
-                   <widget class="QLabel" name="creationDateLabel_3">
-                    <property name="text">
-                     <string>Topics</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLineEdit" name="topicsLine"/>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="topicsSwitcher">
-                    <item>
-                     <property name="text">
-                      <string>Edited</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Original</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Template</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
+                 <widget class="QComboBox" name="creatorSelect">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="editable">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_29">
+                 <widget class="QComboBox" name="creatorSwitcher">
                   <item>
-                   <widget class="QLabel" name="creationDateLabel_10">
-                    <property name="text">
-                     <string>Names</string>
-                    </property>
-                   </widget>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="namesLine"/>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="namesSwitcher">
-                    <item>
-                     <property name="text">
-                      <string>Edited</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Original</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Template</string>
-                     </property>
-                    </item>
-                   </widget>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
                   </item>
-                 </layout>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <layout class="QVBoxLayout" name="verticalLayout_11">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="font">
+                 <font>
+                  <pointsize>14</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Subject headings</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_27">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_3">
+                  <property name="text">
+                   <string>Topics</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_30">
-                  <item>
-                   <widget class="QLabel" name="creationDateLabel_11">
-                    <property name="text">
-                     <string>Events</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QLineEdit" name="eventsLine"/>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="eventsSwitcher">
-                    <item>
-                     <property name="text">
-                      <string>Edited</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Original</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Template</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
+                 <widget class="QLineEdit" name="topicsLine"/>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_31">
+                 <widget class="QComboBox" name="topicsSwitcher">
                   <item>
-                   <widget class="QLabel" name="creationDateLabel_12">
-                    <property name="text">
-                     <string>Places</string>
-                    </property>
-                   </widget>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="placesLine"/>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="placesSwitcher">
-                    <item>
-                     <property name="text">
-                      <string>Edited</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Original</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Template</string>
-                     </property>
-                    </item>
-                   </widget>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
                   </item>
-                 </layout>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_29">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_10">
+                  <property name="text">
+                   <string>Names</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="namesLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="namesSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_30">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_11">
+                  <property name="text">
+                   <string>Events</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="eventsLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="eventsSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_31">
+                <item>
+                 <widget class="QLabel" name="creationDateLabel_12">
+                  <property name="text">
+                   <string>Places</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="placesLine"/>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="placesSwitcher">
+                  <item>
+                   <property name="text">
+                    <string>Edited</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Original</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Template</string>
+                   </property>
+                  </item>
+                 </widget>
                 </item>
                </layout>
               </item>
