@@ -99,6 +99,12 @@ def default_config():
         "Personal recordings", 
         "Field recordings",
         "Poetry readings (Sound recordings)"
+    ],
+    
+    "creator": [
+        "",
+        "Apocryphal State University",
+        "Billy Bob Apocryphal"
     ]
 }
 """

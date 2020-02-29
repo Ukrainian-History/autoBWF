@@ -1,3 +1,12 @@
+"""BWF File IO.
+
+This module provides convenience functions for reading from and writing to BWF files using bwfmetaedit calls.
+
+Todo:
+    * Refactor autoBWF.py to move remaining BWF writing code to this module
+"""
+
+
 import subprocess
 import os
 import xml.etree.ElementTree as ET
@@ -13,6 +22,18 @@ namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
 
 
 def get_xmp(filename, base_command):
+    """Runs bwfmetaedit to extract XMP metadata from a BWF file.
+
+    Args:
+        filename (str): The name of the target BWF file.
+        base_command (list): List of strings corresponding to the first part of the bwfmetaedit command line call.
+            Typically something like ["bwfmetaedit", "--specialchars"]
+            or ["bwfmetaedit", "--specialchars","--accept-nopadding"]
+
+    Returns:
+        dict:  Dict of metadata values indexed by the field name. If field is empty, the value is an empty string.
+    """
+
     command = base_command.copy()
     command.extend(["--out-XMP-xml", filename])
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -23,14 +44,13 @@ def get_xmp(filename, base_command):
         md = {"interviewer": "", "interviewee": "", "owner": "",
               "metadataDate": "", "language": "", "xmp_description": "",
               "form": "", "host": "", "speaker": "", "performer": "",
-              "topics": "", "names": "", "events": "", "places": ""
+              "topics": "", "names": "", "events": "", "places": "", "creator": ""
               }
         return md
     root = tree.getroot()
 
     def check_li_child(element, xpath):
-        # provide backwards compatibility for XMP
-        # saved using exempi and python-metadata-toolkit
+        """Provides backwards compatibility for XMP saved using exempi and python-metadata-toolkit"""
         node = element.find(xpath + "//rdf:li", namespaces)
         if node is not None:
             return node
@@ -51,7 +71,8 @@ def get_xmp(filename, base_command):
         "topics": check_li_child(root, './/autoBWF:Topics'),
         "names": check_li_child(root, './/autoBWF:Names'),
         "events": check_li_child(root, './/autoBWF:Events'),
-        "places": check_li_child(root, './/autoBWF:Places')
+        "places": check_li_child(root, './/autoBWF:Places'),
+        "creator": check_li_child(root, './/dc:creator'),
     }
 
     for field in md:
@@ -68,6 +89,17 @@ def get_xmp(filename, base_command):
 
 
 def set_xmp(md, filename, base_command):
+    """Runs bwfmetaedit to extract XMP metadata from a BWF file.
+
+    Args:
+        md (dict): Dict of metadata values indexed by the field name.
+            If field is empty, the value should be an empty string.
+        filename (str): The name of the target BWF file.
+        base_command (list): List of strings corresponding to the first part of the bwfmetaedit command line call.
+            Typically something like ["bwfmetaedit", "--specialchars"]
+            or ["bwfmetaedit", "--specialchars","--accept-nopadding"]
+    """
+
     from datetime import datetime
 
     def qualified_element(ns, element):
@@ -96,6 +128,11 @@ def set_xmp(md, filename, base_command):
         owner_bag = ET.SubElement(owner, qualified_element("rdf", "Bag"))
         owner_item = ET.SubElement(owner_bag, qualified_element("rdf", "li"))
         owner_item.text = md["owner"]
+    if md["creator"] != "":
+        creator = ET.SubElement(rdf_description, qualified_element("dc", "creator"))
+        creator_seq = ET.SubElement(creator, qualified_element("rdf", "Seq"))
+        creator_item = ET.SubElement(creator_seq, qualified_element("rdf", "li"))
+        creator_item.text = md["creator"]
 
     if md["interviewer"] != "":
         interviewer = ET.SubElement(rdf_description, qualified_element("autoBWF", "Interviewer"))
@@ -144,6 +181,17 @@ def set_xmp(md, filename, base_command):
 
 
 def get_bwf_tech(allow_padding, file, verify_digest=False):
+    """Runs bwfmetaedit to extract BWF technical metadata from a BWF file.
+
+    Args:
+        allow_padding (bool): If True, add "--accept-nopadding" to the bwfmetaedit call.
+        file (str): The name of the target BWF file.
+        verify_digest (bool): If True, add "--MD5-verify" to the bwfmetaedit call.
+
+    Returns:
+        dict: Metadata values indexed by the field name. If field is empty, the value is an empty string.
+    """
+
     import io
     import csv
 
@@ -165,6 +213,15 @@ def get_bwf_tech(allow_padding, file, verify_digest=False):
 
 
 def parse_bwf_description(description):
+    """Parses a BWF Description string based on a hard-coded pre-defined convention.
+
+    Args:
+        description (str): The BWF Description string.
+
+    Returns:
+        dict: Metadata values indexed by the field name. If field is empty, the value is an empty string.
+    """
+
     import re
 
     md = {}
@@ -184,6 +241,16 @@ def parse_bwf_description(description):
 
 
 def get_bwf_core(allow_padding, file):
+    """Runs bwfmetaedit to extract BWF core metadata from a BWF file.
+
+    Args:
+        allow_padding (bool): If True, add "--accept-nopadding" to the bwfmetaedit call.
+        file (str): The name of the target BWF file.
+
+    Returns:
+        dict: Metadata values indexed by the field name. If field is empty, the value is an empty string.
+    """
+
     import io
     import csv
 
@@ -202,20 +269,6 @@ def get_bwf_core(allow_padding, file):
 
     core.update(parse_bwf_description(core["Description"]))
     return core
-
-
-def call_bwf(base_command, file, mdkey, text):
-    # deal with annoying inconsistencies in bwfmetaedit
-    if mdkey == "TimeReference":
-        key = "Timereference"
-    elif mdkey == "CodingHistory":
-        key = "History"
-    else:
-        key = mdkey
-
-    command = base_command.copy()
-    command.extend(['--' + key + "=" + text, file])
-    subprocess.run(command)
 
 
 if __name__ == "__main__":

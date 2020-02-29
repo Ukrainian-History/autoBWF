@@ -53,10 +53,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "topics": self.topicsLine,
             "names": self.namesLine,
             "events": self.eventsLine,
-            "places": self.placesLine
+            "places": self.placesLine,
+            "creator": self.creatorSelect,
         }
         self.xmp_fields = ["xmp_description", "owner", "language", "interviewer", "interviewee",
-                           "form", "host", "speaker", "performer", "topics", "names", "events", "places"]
+                           "form", "host", "speaker", "performer", "topics", "names", "events", "places",
+                           "creator"]
 
         # dict of all edited/template/original toggle menus, indexed by metadata term
         self.switchers = {
@@ -86,7 +88,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "topics": self.topicsSwitcher,
             "names": self.namesSwitcher,
             "events": self.eventsSwitcher,
-            "places": self.placesSwitcher
+            "places": self.placesSwitcher,
+            "creator": self.creatorSwitcher,
 
         }
 
@@ -120,6 +123,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.copyrightText.insertPlainText(
             config["copyright"][config["copyright"]["list"][0]]
         )
+        self.creatorSelect.addItems(config["creator"])
 
         #
         # set up signals/slots
@@ -452,6 +456,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.set_gui_text("CodingHistory", "".join(history_list), block=False)
 
     def save_metadata(self):
+        def call_bwf(base_command, file, mdkey, text):
+            # deal with annoying inconsistencies in bwfmetaedit
+            if mdkey == "TimeReference":
+                key = "Timereference"
+            elif mdkey == "CodingHistory":
+                key = "History"
+            else:
+                key = mdkey
+
+            command = base_command.copy()
+            command.extend(['--' + key + "=" + text, file])
+            subprocess.run(command)
+
         current_md = self.get_all_gui_texts()
         changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
         current_xmp = {k: current_md[k] for k in self.xmp_fields}
