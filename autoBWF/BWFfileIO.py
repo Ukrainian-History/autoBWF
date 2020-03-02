@@ -9,10 +9,6 @@ Attributes:
         (such as autoBWF.py) that import this module.
 
     namespaces (dict): Dict of XMP namespace URIs
-
-Todo:
-    * Refactor autoBWF.py to move remaining BWF writing code to this module
-
 """
 
 import subprocess
@@ -264,7 +260,6 @@ def get_bwf_core(file):
     """Runs bwfmetaedit to extract BWF core metadata from a BWF file.
 
     Args:
-        allow_padding (bool): If True, add "--accept-nopadding" to the bwfmetaedit call.
         file (str): The name of the target BWF file.
 
     Returns:

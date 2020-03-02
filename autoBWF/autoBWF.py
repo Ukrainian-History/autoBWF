@@ -163,25 +163,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionExport_metadata.setEnabled(True)
                 self.actionOpen.setEnabled(False)
                 self.populate_file_info(filename)
-
         if template:
             self.template_md = self.load_file(template)
             if self.template_md is not None:
                 self.populate_template_info()
 
     @staticmethod
-    def load_file(file):
+    def load_file(file, die_on_error=True):
         md = bwfio.check_wave(file)
         if md is not None:
             md.update(bwfio.get_bwf_core(file))
             md.update(bwfio.get_xmp(file))
-        else:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setText(file + " does not appear to be a valid Wave file")
-            msg.exec_()
+            return md
+
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(file + " does not appear to be a valid Wave file")
+        msg.exec_()
+
+        if die_on_error:
             QtCore.QCoreApplication.quit()
-            QtWidgets.QApplication.processEvents()
+
         return md
 
     def text_changed(self, input_widget):
@@ -281,12 +283,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def open_template(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open template file", "~")[0])
         if fname:
-            self.template_md = self.load_file(fname)
+            self.template_md = self.load_file(fname, die_on_error=False)
             if self.template_md is not None:
                 self.actionOpen_template.setEnabled(False)
                 self.populate_template_info()
 
-    def populate_file_info(self, file):
+    def populate_file_info(self, file, reload=False):
         import re
         import os.path
         from datetime import datetime
@@ -316,7 +318,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                     date_from_filename[6:]
             )
 
-            if date_created != date_from_filename:
+            if date_created != date_from_filename and not reload:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
                 msg.setText("Filename and timestamp dates disagree")
@@ -365,13 +367,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                               time.replace(":", ""))
             description = ""
 
-        self.update_coding_history()
+        self.update_coding_history(block=reload)
 
         #
         # insert existing values
         #
 
-        print(self.original_md)
         for field in self.gui_text_widgets.keys():
             if self.original_md[field] != "":
                 self.set_text_to_original(field)
@@ -413,15 +414,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                     self.switchers[field].model().item(2).setEnabled(True)
                     self.switchers[field].setCurrentIndex(2)
 
-    def clear_and_reload(self, filename):
-        for field in self.gui_text_widgets.keys():
-            self.set_gui_text(field, "")
-
     def copyright_activated(self, index):
         self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]],
                           block=False)
 
-    def update_coding_history(self):
+    def update_coding_history(self, block=False):
         deck = self.deckSelect.currentText()
         adc = self.adcSelect.currentText()
         software = self.softwareSelect.currentText()
@@ -443,7 +440,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             ",M=" + channels[self.original_md["Channels"]],
             ",T=" + self.config["software"][software]
         ]
-        self.set_gui_text("CodingHistory", "".join(history_list), block=False)
+        self.set_gui_text("CodingHistory", "".join(history_list), block)
 
     def save_metadata(self):
         def _call_bwf(file, mdkey, text):
@@ -529,6 +526,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         msg.exec_()
         if msg.clickedButton() == message_quit_button:
             QtCore.QCoreApplication.quit()
+        else:
+            # reset the GUI
+            self.original_md = {}
+            self.template_md = None
+            self.edited_md = {}
+            for field in self.gui_text_widgets.keys():
+                self.set_gui_text(field, "")
+            for switcher in self.switchers:
+                self.switchers[switcher].setEnabled(False)
+                for i in range(3):
+                    self.switchers[switcher].model().item(i).setEnabled(False)
+
+            # reload the newly-saved file
+            self.original_md = self.load_file(self.filename)
+            if self.original_md is not None:
+                self.actionOpen.setEnabled(False)
+                self.actionOpen_template.setEnabled(True)
+                self.populate_file_info(self.filename, reload=True)
 
         # TODO what if it wasn't successful???
 
