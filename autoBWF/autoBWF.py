@@ -9,21 +9,23 @@ from PyQt5 import QtCore
 
 from autoBWF.tabbed import Ui_autoBWF
 from autoBWF.export_dialog import Ui_Export
-from autoBWF.BWFfileIO import *
+import autoBWF.BWFfileIO as bwfio
 from autoBWF.autobwfconfig import default_config
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def __init__(self, filename, config, template, parent=None):
-        self.autobwf_ns = "http://ns.ukrhec.org/autoBWF/0.1"
-
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
 
         self.config = config
         self.filename = filename
-        if filename:
-            self.filepath = str(Path(filename).resolve())
+        self.original_md = {}
+        self.template_md = None
+        self.edited_md = {}
+
+        if config["accept-nopadding"]:
+            bwfio.bwfmetaedit.append("--accept-nopadding")
 
         # dict of all text elements in the UI, indexed by metadata term
         self.gui_text_widgets = {
@@ -90,16 +92,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "events": self.eventsSwitcher,
             "places": self.placesSwitcher,
             "creator": self.creatorSwitcher,
-
         }
-
-        self.original_md = {}
-        self.template_md = None
-        self.edited_md = {}
-
-        self.base_command = ["bwfmetaedit", "--specialchars"]
-        if config["accept-nopadding"]:
-            self.base_command.append("--accept-nopadding")
 
         #
         # configure dropdowns and texts
@@ -160,21 +153,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 lambda value, widget=switcher: self.switcher_changed(widget, value)
             )
 
+        # deal with files specified on the command line
         if filename:
-            self.tabWidget.setEnabled(True)
-            self.actionUpdate_metadata.setEnabled(True)
-            self.actionExport_metadata.setEnabled(True)
-            self.actionOpen.setEnabled(False)
-
-            md = get_bwf_tech(config["accept-nopadding"], filename)
-            if md["Errors"] != "":
-                print(filename + " does not appear to be a valid Wave file")
-            else:
-                self.original_md.update(md)
-            self.populate_file_info(filename)
+            self.filepath = str(Path(filename).resolve())
+            self.original_md = self.load_file(filename)
+            if self.original_md is not None:
+                self.tabWidget.setEnabled(True)
+                self.actionUpdate_metadata.setEnabled(True)
+                self.actionExport_metadata.setEnabled(True)
+                self.actionOpen.setEnabled(False)
+                self.populate_file_info(filename)
 
         if template:
-            self.populate_template_info(template)
+            self.template_md = self.load_file(template)
+            if self.template_md is not None:
+                self.populate_template_info()
+
+    @staticmethod
+    def load_file(file):
+        md = bwfio.check_wave(file)
+        if md is not None:
+            md.update(bwfio.get_bwf_core(file))
+            md.update(bwfio.get_xmp(file))
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText(file + " does not appear to be a valid Wave file")
+            msg.exec_()
+            QtCore.QCoreApplication.quit()
+            QtWidgets.QApplication.processEvents()
+        return md
 
     def text_changed(self, input_widget):
         text_now = self.get_gui_text(input_widget)
@@ -260,37 +268,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def open_file(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
         if fname:
-            # check to make sure file is legit
-            md = get_bwf_tech(self.config["accept-nopadding"], fname)
-            if md["Errors"] != "":
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Critical)
-                msg.setText(fname + " does not appear to be a valid Wave file")
-                msg.exec_()
-            else:
-                self.original_md.update(md)
+            self.original_md = self.load_file(fname)
+            if self.original_md is not None:
                 self.filename = fname
-
                 self.tabWidget.setEnabled(True)
                 self.actionUpdate_metadata.setEnabled(True)
+                self.actionExport_metadata.setEnabled(True)
                 self.actionOpen_template.setEnabled(True)
                 self.actionOpen.setEnabled(False)
-                self.actionExport_metadata.setEnabled(True)
                 self.populate_file_info(fname)
 
     def open_template(self):
         fname = str(QFileDialog.getOpenFileName(self, "Open template file", "~")[0])
         if fname:
-            # check to make sure file is legit
-            md = get_bwf_tech(self.config["accept-nopadding"], fname)
-            if md["Errors"] != "":
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Critical)
-                msg.setText(fname + " does not appear to be a valid Wave file")
-                msg.exec_()
-            else:
+            self.template_md = self.load_file(fname)
+            if self.template_md is not None:
                 self.actionOpen_template.setEnabled(False)
-                self.populate_template_info(fname)
+                self.populate_template_info()
 
     def populate_file_info(self, file):
         import re
@@ -377,9 +371,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         # insert existing values
         #
 
-        self.original_md.update(get_bwf_core(self.config["accept-nopadding"], file))
-        self.original_md.update(get_xmp(file, self.base_command))
-
+        print(self.original_md)
         for field in self.gui_text_widgets.keys():
             if self.original_md[field] != "":
                 self.set_text_to_original(field)
@@ -402,30 +394,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                               "The original can be restored using the drop-down menu next to the text box."
                         )
             msg.exec_()
-
             self.set_gui_text("Description", description, block=False)
 
         if self.original_md["MD5Stored"] != "":
             self.md5Check.setEnabled(False)
 
-    def populate_template_info(self, file):
+    def populate_template_info(self):
         # replace with template values if they exist
 
-        if file is not None:
-            self.template_md = get_bwf_core(self.config["accept-nopadding"], file)
-            self.template_md.update(get_xmp(file, self.base_command))
+        fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP", "IARL"]
+        fields_to_fill.extend(self.xmp_fields)
+        for field in fields_to_fill:
+            if self.template_md[field] != "":
+                self.set_text_to_template(field)
+                if self.original_md[field] != "" and self.original_md[field] != self.template_md[field]:
+                    self.switchers[field].setEnabled(True)
+                    self.switchers[field].model().item(1).setEnabled(True)
+                    self.switchers[field].model().item(2).setEnabled(True)
+                    self.switchers[field].setCurrentIndex(2)
 
-            fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP", "IARL"]
-            fields_to_fill.extend(self.xmp_fields)
-
-            for field in fields_to_fill:
-                if self.template_md[field] != "":
-                    self.set_text_to_template(field)
-                    if self.original_md[field] != "" and self.original_md[field] != self.template_md[field]:
-                        self.switchers[field].setEnabled(True)
-                        self.switchers[field].model().item(1).setEnabled(True)
-                        self.switchers[field].model().item(2).setEnabled(True)
-                        self.switchers[field].setCurrentIndex(2)
+    def clear_and_reload(self, filename):
+        for field in self.gui_text_widgets.keys():
+            self.set_gui_text(field, "")
 
     def copyright_activated(self, index):
         self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]],
@@ -456,8 +446,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.set_gui_text("CodingHistory", "".join(history_list), block=False)
 
     def save_metadata(self):
-        def call_bwf(base_command, file, mdkey, text):
-            # deal with annoying inconsistencies in bwfmetaedit
+        def _call_bwf(file, mdkey, text):
+            """Convenience function to deal with annoying inconsistencies in bwfmetaedit"""
+
             if mdkey == "TimeReference":
                 key = "Timereference"
             elif mdkey == "CodingHistory":
@@ -465,7 +456,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             else:
                 key = mdkey
 
-            command = base_command.copy()
+            command = bwfio.bwfmetaedit.copy()
             command.extend(['--' + key + "=" + text, file])
             subprocess.run(command)
 
@@ -491,7 +482,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.progressBar.setValue(1)
             self.statusLabel.setText("Generating MD5 digest")
             QtWidgets.QApplication.processEvents()
-            command = self.base_command.copy()
+            command = bwfio.bwfmetaedit.copy()
             command.extend(["--MD5-embed", self.filename])
             subprocess.run(command)
 
@@ -499,7 +490,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.progressBar.setValue(2)
             self.statusLabel.setText("Saving time reference")
             QtWidgets.QApplication.processEvents()
-            call_bwf(self.base_command, self.filename, "TimeReference", "0")
+            _call_bwf(self.filename, "TimeReference", "0")
 
         # Need to save coding history for last. If we don't, then for some bizarre reason there's duplication
         # of the last two characters of the history string...
@@ -509,19 +500,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.progressBar.setValue(3)
             self.statusLabel.setText("Saving {}".format(key))
             QtWidgets.QApplication.processEvents()
-            call_bwf(self.base_command, self.filename, key, current_md[key])
+            _call_bwf(self.filename, key, current_md[key])
 
         if coding_history:
             self.progressBar.setValue(4)
             self.statusLabel.setText("Saving coding history")
             QtWidgets.QApplication.processEvents()
-            call_bwf(self.base_command, self.filename, "CodingHistory", coding_history)
+            _call_bwf(self.filename, "CodingHistory", coding_history)
 
         # something has changed, therefore at minimum we need to update xmp:MetadataDate
         self.progressBar.setValue(5)
         self.statusLabel.setText("Saving XMP")
         QtWidgets.QApplication.processEvents()
-        set_xmp(current_xmp, self.filename, self.base_command)
+        bwfio.set_xmp(current_xmp, self.filename)
 
         time.sleep(0.6)  # wait at least a little to make it less visually disconserting
         self.stackedWidget.setCurrentIndex(0)
@@ -557,7 +548,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 ohms_file = None
 
             md = self.get_all_gui_texts()
-            md.update(parse_bwf_description(md["Description"]))
+            md.update(bwfio.parse_bwf_description(md["Description"]))
             md["Duration"] = self.original_md["Duration"]
 
             if vals["outfile"]:
@@ -624,7 +615,7 @@ def main():
         exit((
             "You must have the BWFMetaEdit CLI installed on your system to run autoBWF.\n"
             "Please download and install the latest version from https://mediaarea.net/BWFMetaEdit/Download.\n"
-            "Note that you must install the 'CLI' interface."))
+            "Note that you must install the 'CLI' version in addition to the GUI."))
 
     default_text = default_config()
 
@@ -651,20 +642,6 @@ def main():
     if args.config:
         print('Your configuration file is ' + str(config_file.resolve()))
         exit()
-
-    if filename:
-        # check to make sure file is legit
-        techMD = get_bwf_tech(config["accept-nopadding"], filename)
-        if techMD["Errors"] != "":
-            print(filename + " does not appear to be a valid Wave file")
-            sys.exit(1)
-
-    if template:
-        # check to make sure file is legit
-        dum = get_bwf_tech(config["accept-nopadding"], template)
-        if dum["Errors"] != "":
-            print(template + " does not appear to be a valid Wave file")
-            sys.exit(1)
 
     app = QtWidgets.QApplication(sys.argv)
     form = MainWindow(filename, config, template)

@@ -1,15 +1,25 @@
-"""BWF File IO.
+"""Perform IO on BWF files.
 
-This module provides convenience functions for reading from and writing to BWF files using bwfmetaedit calls.
+Convenience functions for reading from and writing to BWF files using bwfmetaedit subprocess calls.
+
+Attributes:
+    bwfmetaedit (list): List of strings to be passed to subprocess.run(). This list should be appended to (after
+        copy()-ing) in order to perform the needed function. Its primary role is to keep track of whether
+        the "--accept-nopadding" option is or is not to be used. It may be modified by other modules
+        (such as autoBWF.py) that import this module.
+
+    namespaces (dict): Dict of XMP namespace URIs
 
 Todo:
     * Refactor autoBWF.py to move remaining BWF writing code to this module
-"""
 
+"""
 
 import subprocess
 import os
 import xml.etree.ElementTree as ET
+
+bwfmetaedit = ["bwfmetaedit", "--specialchars"]
 
 namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
               'xmp': 'http://ns.adobe.com/xap/1.0/',
@@ -21,20 +31,17 @@ namespaces = {'dc': 'http://purl.org/dc/elements/1.1/',
               "xml": "http://www.w3.org/XML/1998/namespace"}
 
 
-def get_xmp(filename, base_command):
+def get_xmp(filename):
     """Runs bwfmetaedit to extract XMP metadata from a BWF file.
 
     Args:
         filename (str): The name of the target BWF file.
-        base_command (list): List of strings corresponding to the first part of the bwfmetaedit command line call.
-            Typically something like ["bwfmetaedit", "--specialchars"]
-            or ["bwfmetaedit", "--specialchars","--accept-nopadding"]
 
     Returns:
         dict:  Dict of metadata values indexed by the field name. If field is empty, the value is an empty string.
     """
 
-    command = base_command.copy()
+    command = bwfmetaedit.copy()
     command.extend(["--out-XMP-xml", filename])
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     outfile = filename + ".XMP.xml"
@@ -88,16 +95,13 @@ def get_xmp(filename, base_command):
     return md
 
 
-def set_xmp(md, filename, base_command):
+def set_xmp(md, filename):
     """Runs bwfmetaedit to extract XMP metadata from a BWF file.
 
     Args:
         md (dict): Dict of metadata values indexed by the field name.
             If field is empty, the value should be an empty string.
         filename (str): The name of the target BWF file.
-        base_command (list): List of strings corresponding to the first part of the bwfmetaedit command line call.
-            Typically something like ["bwfmetaedit", "--specialchars"]
-            or ["bwfmetaedit", "--specialchars","--accept-nopadding"]
     """
 
     from datetime import datetime
@@ -174,17 +178,36 @@ def set_xmp(md, filename, base_command):
 
     xmlfile = filename + ".XMP.xml"
     ET.ElementTree(root).write(xmlfile)
-    command = base_command.copy()
+    command = bwfmetaedit.copy()
     command.extend(['--in-XMP=' + xmlfile, filename])
     subprocess.run(command)
     os.remove(xmlfile)
 
 
-def get_bwf_tech(allow_padding, file, verify_digest=False):
+def check_wave(filename):
+    """Confirm that filename is a legitimate Wave file.
+
+    This is done by running bwfmetaedit to extract the technical metadata, which should work even if there is no
+    pre-existing BWF chunk.
+
+    Args:
+        filename (str): The name of the file.
+
+    Returns:
+        dict: Technical metadata values indexed by the field name. If field is empty, the value is an empty string.
+            If filename is not a Wave file, then the return value is None.
+    """
+    md = get_bwf_tech(filename)
+    if md["Errors"] == "":
+        return md
+    else:
+        return None
+
+
+def get_bwf_tech(file, verify_digest=False):
     """Runs bwfmetaedit to extract BWF technical metadata from a BWF file.
 
     Args:
-        allow_padding (bool): If True, add "--accept-nopadding" to the bwfmetaedit call.
         file (str): The name of the target BWF file.
         verify_digest (bool): If True, add "--MD5-verify" to the bwfmetaedit call.
 
@@ -195,11 +218,8 @@ def get_bwf_tech(allow_padding, file, verify_digest=False):
     import io
     import csv
 
-    if allow_padding:
-        command = ["bwfmetaedit", "--accept-nopadding", "--out-tech"]
-    else:
-        command = ["bwfmetaedit", "--out-tech"]
-
+    command = bwfmetaedit.copy()
+    command.append("--out-tech")
     if verify_digest:
         command.extend(["--MD5-verify", file])
     else:
@@ -240,7 +260,7 @@ def parse_bwf_description(description):
     return md
 
 
-def get_bwf_core(allow_padding, file):
+def get_bwf_core(file):
     """Runs bwfmetaedit to extract BWF core metadata from a BWF file.
 
     Args:
@@ -254,10 +274,8 @@ def get_bwf_core(allow_padding, file):
     import io
     import csv
 
-    if allow_padding:
-        command = ["bwfmetaedit", "--accept-nopadding", "--out-core", file]
-    else:
-        command = ["bwfmetaedit", "--out-core", file]
+    command = bwfmetaedit.copy()
+    command.extend(["--out-core", file])
 
     core_csv = subprocess.check_output(command, universal_newlines=True)
     f = io.StringIO(core_csv)
