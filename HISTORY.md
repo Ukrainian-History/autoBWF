@@ -1,5 +1,9 @@
 # History
 
+### 3.5.1 (2020-03-03)
+
+* Documentation updates
+
 ### 3.5.0 (2020-03-03)
 
 * Add XML export capability to the GUI
