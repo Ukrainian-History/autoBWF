@@ -1,5 +1,14 @@
 # History
 
+### 3.5.0 (2020-03-03)
+
+* Add XML export capability to the GUI
+* Warn user about unsaved data
+* Clear GUI and reload file after save
+* Add XMP Creator field
+* bwf2csv can now validate MD5 of data chunk
+* Other minor improvements and bug fixes
+
 ### 3.4.0 (2019-12-14)
 
 * Add capability to toggle between existing, tempate, and edited metadata

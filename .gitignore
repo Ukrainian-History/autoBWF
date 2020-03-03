@@ -16,3 +16,4 @@ dist
 
 docs/_build/*
 coverage.xml
+settings_demo/*

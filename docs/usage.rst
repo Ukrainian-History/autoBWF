@@ -103,7 +103,7 @@ made without significant rewriting, then you may be able to convince the maintai
 changes to accomodate your needs. Please create an "issue" `on GitHub <https://github.com/Ukrainian-History/
 autoBWF/issues>`_ that describes your needs (click on the green "New issue" button), and let's talk about it! (Please
 note that anything you write in a GitHub issue is visible to the entire Internet, so don't include anything
-that you don't want to reveal publically.) If you want to make substantial local modifications, feel free to fork
+that you don't want to reveal publicly.) If you want to make substantial local modifications, feel free to fork
 the project.
 
 

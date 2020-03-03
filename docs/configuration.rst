@@ -55,8 +55,8 @@ Program behavior
 Combo box elements
 ---------------------
 
-The prefilled values of the autoBWF combo box GUI elements (ISFT, ITCH, ISRC, Copyright owner, Form) are controlled by
-list value associated with the appropriate key::
+The prefilled values of the autoBWF combo box GUI elements (ISFT, ITCH, ISRC, Copyright owner, Form, Creator) are
+controlled by a list value associated with the appropriate key, e.g.::
 
     "isft": [
         "Audacity 2.0.3.0",
@@ -66,23 +66,6 @@ list value associated with the appropriate key::
         "Doe, John",
         "Doe, Jane"
     ],
-    "source": [
-        "Billy Bob Apocryphal papers",
-        "Apocryphal University Radio records"
-    ],
-    "owner": [
-        "Apocryphal State University",
-        "Big Donor"
-    ],
-    "form": [
-        "Live sound recordings",
-        "Interviews",
-        "Radio programs",
-        "Oral histories",
-        "Personal recordings",
-        "Field recordings",
-        "Poetry readings (Sound recordings)"
-    ]
 
 If you want a combo box to be empty be default but still have a set of preconfigured choices in the dropdown, then
 make the first element of the list an empty string::
@@ -97,7 +80,7 @@ make the first element of the list an empty string::
 Copyright boilerplate
 ----------------------
 
-The copyright dropdown menu and associated texts are controled by the "copyright" key::
+The copyright dropdown menu and associated texts are controlled by the "copyright" key::
 
     "copyright": {
         "list": ["Generic", "CC-BY-SA"],
@@ -116,6 +99,8 @@ the text field. For example, we can add a "public domain" menu choice as follows
         "CC-BY-SA": "This content is copyright by the Apocryphal State University, and is licenced under Creative Commons BY-SA. See https://creativecommons.org/licenses/by-sa/4.0/ for details.",
         "Public domain": "This content has been placed into the public domain."
     }
+
+The copyright boilerplate can include any text, including HTML tags (though they will not be rendered by autoBWF).
 
 CodingHistory constructor menus
 --------------------------------
