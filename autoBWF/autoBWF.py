@@ -133,7 +133,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.typeSelect.currentIndexChanged.connect(self.update_coding_history)
 
         self.actionUpdate_metadata.triggered.connect(self.save_metadata)
-        self.actionQuit.triggered.connect(self.close)
+        self.actionQuit.triggered.connect(self.close_window)
         self.actionOpen.triggered.connect(self.open_file)
         self.actionOpen_template.triggered.connect(self.open_template)
         self.actionExport_metadata.triggered.connect(self.export_metadata)
@@ -145,7 +145,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         for switcher in self.switchers:
             self.switchers[switcher].setEnabled(False)
-
             for i in range(3):
                 self.switchers[switcher].model().item(i).setEnabled(False)
 
@@ -225,6 +224,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         for field in self.gui_text_widgets.keys():
             md[field] = self.get_gui_text(field)
         return md
+
+    def get_current_and_changed(self):
+        current_md = self.get_all_gui_texts()
+        changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
+        changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
+                            if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
+
+        return current_md, changed_bwf_riff, changed_xmp
 
     def set_gui_text(self, widget_name, value, block=True):
         widget = self.gui_text_widgets[widget_name]
@@ -443,25 +450,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.set_gui_text("CodingHistory", "".join(history_list), block)
 
     def save_metadata(self):
-        def _call_bwf(file, mdkey, text):
-            """Convenience function to deal with annoying inconsistencies in bwfmetaedit"""
+        def _call_bwf(file, given_key, text):
+            """Convenience function to deal with annoying inconsistencies in bwfmetaedit field naming"""
 
-            if mdkey == "TimeReference":
-                key = "Timereference"
-            elif mdkey == "CodingHistory":
-                key = "History"
+            if given_key == "TimeReference":
+                renamed_key = "Timereference"
+            elif given_key == "CodingHistory":
+                renamed_key = "History"
             else:
-                key = mdkey
+                renamed_key = given_key
 
             command = bwfio.bwfmetaedit.copy()
-            command.extend(['--' + key + "=" + text, file])
+            command.extend(['--' + renamed_key + "=" + text, file])
             subprocess.run(command)
 
-        current_md = self.get_all_gui_texts()
-        changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
-        current_xmp = {k: current_md[k] for k in self.xmp_fields}
-        changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
-                            if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
+        current_md, changed_bwf_riff, changed_xmp = self.get_current_and_changed()
 
         if not changed_xmp and not changed_bwf_riff:
             msg = QMessageBox()
@@ -509,7 +512,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.progressBar.setValue(5)
         self.statusLabel.setText("Saving XMP")
         QtWidgets.QApplication.processEvents()
-        bwfio.set_xmp(current_xmp, self.filename)
+        bwfio.set_xmp({k: current_md[k] for k in self.xmp_fields}, self.filename)
 
         time.sleep(0.6)  # wait at least a little to make it less visually disconserting
         self.stackedWidget.setCurrentIndex(0)
@@ -551,7 +554,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         from autoBWF.bwf2pbcore import write_pbcore
         import autoBWF.autolame as autolame
 
-        # TODO check if there are modified fields and force save
+        md, changed_bwf_riff, changed_xmp = self.get_current_and_changed()
+
+        if changed_xmp or changed_bwf_riff:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText(("You have unsaved edits. Export will result in inconsistencies between "
+                         "internal and external metadata. Please save before exporting"))
+            msg.exec_()
+            return
 
         dialog = Export(self.filepath)
         accepted = dialog.exec_()
@@ -562,7 +573,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             else:
                 ohms_file = None
 
-            md = self.get_all_gui_texts()
             md.update(bwfio.parse_bwf_description(md["Description"]))
             md["Duration"] = self.original_md["Duration"]
 
@@ -571,6 +581,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
             if vals["do_lame"] and vals["mp3file"] != "":
                 subprocess.call(autolame.construct_command(self.filename, vals["mp3file"], md, str(vals["vbr"])))
+
+    def close_window(self):
+        current_md, changed_bwf_riff, changed_xmp = self.get_current_and_changed()
+
+        if changed_xmp or changed_bwf_riff:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setText("You have unsaved edits. Are you sure you want to quit?")
+            msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            retval = msg.exec_()
+            if retval == QMessageBox.Ok:
+                QtCore.QCoreApplication.quit()
+            else:
+                return
+        else:
+            QtCore.QCoreApplication.quit()
 
 
 class Export(QtWidgets.QDialog, Ui_Export):
