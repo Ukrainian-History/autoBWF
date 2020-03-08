@@ -79,7 +79,8 @@ def add_complex_child(parent, element_name, subelement_name, role_name, subeleme
             else:
                 add_child(element, subelement_name, item.strip())
 
-            add_child(element, role_name, role_value)
+            if role_name is not None:
+                add_child(element, role_name, role_value)
 
 
 def generate_pbcore(infile, metadata, ohms_tree=None):
@@ -99,6 +100,8 @@ def generate_pbcore(infile, metadata, ohms_tree=None):
     add_multivalue_child(pbcore_root, "pbcoreSubject", metadata["places"], {"subjectType": "geographic"})
 
     add_child(pbcore_root, "pbcoreDescription", metadata["xmp_description"])
+
+    add_complex_child(pbcore_root, "pbcoreCreator", "creator", None, metadata["creator"], None)
 
     add_complex_child(pbcore_root, "pbcoreContributor", "contributor",
                       "contributorRole", metadata["interviewer"], "interviewer")

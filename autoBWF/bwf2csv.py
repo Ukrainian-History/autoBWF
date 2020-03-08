@@ -14,7 +14,7 @@ def main():
     args = parser.parse_args()
 
     output_fields = ["OriginalFilename", "FileContent", "FileUse", "INAM", "ICRD", "form", "Duration", "language",
-                     "ISRC", "xmp_description", "interviewer", "interviewee", "host", "speaker",
+                     "ISRC", "creator", "xmp_description", "interviewer", "interviewee", "host", "speaker",
                      "performer", "topics", "names", "events", "places", "owner", "ICOP"]
 
     if args.digest:
@@ -33,12 +33,12 @@ def main():
         output.writeheader()
 
     for infile in args.infile:
-        metadata = get_bwf_core(True, infile)
+        metadata = get_bwf_core(infile)
         if args.digest:
-            metadata.update(get_bwf_tech(True, infile, verify_digest=True))
+            metadata.update(get_bwf_tech(infile, verify_digest=True))
         else:
-            metadata.update(get_bwf_tech(True, infile))
-        metadata.update(get_xmp(infile, ["bwfmetaedit", "--specialchars", "--accept-nopadding"]))
+            metadata.update(get_bwf_tech(infile))
+        metadata.update(get_xmp(infile))
         output.writerow({k: metadata[k] for k in output_fields})
 
 
