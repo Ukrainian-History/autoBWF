@@ -51,8 +51,8 @@ def main():
         else:
             outfile = args.outfile
 
-        metadata = get_bwf_core(True, infile)
-        metadata.update(get_xmp(infile, ["bwfmetaedit", "--specialchars", "--accept-nopadding"]))
+        metadata = get_bwf_core(infile)
+        metadata.update(get_xmp(infile))
         subprocess.call(construct_command(infile, outfile, metadata, str(args.vbr_level)))
 
 

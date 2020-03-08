@@ -35,7 +35,7 @@ def add_child(parent, element_name, element_value, attributes=None, namespace="p
         return element
 
 
-def add_multivalue_child(parent, element_name, element_value, attributes=None, namespace="pbcore"):
+def add_multivalue_child(parent, element_name, element_value, attributes=None):
     wikidata_regex = re.compile(r'(.+)\s+\{(Q\d+)\}')
 
     if element_value != "":
@@ -167,9 +167,9 @@ def main():
             ohmsfile = infile.rsplit('.', 1)[0] + '_ohms.xml'
         outfile = infile.rsplit('.', 1)[0] + '_pbcore.xml'
 
-        metadata = get_bwf_core(True, infile)
-        metadata.update(get_bwf_tech(True, infile))
-        metadata.update(get_xmp(infile, ["bwfmetaedit", "--specialchars", "--accept-nopadding"]))
+        metadata = get_bwf_core(infile)
+        metadata.update(get_bwf_tech(infile))
+        metadata.update(get_xmp(infile))
 
         write_pbcore(outfile, metadata, infile, ohmsfile)
 

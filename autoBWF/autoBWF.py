@@ -1,3 +1,14 @@
+"""An opinionated alternative GUI for FADGI BWFMetaEdit.
+
+The purpose of autoBWF is to provide an alternative GUI for embedding internal metadata in WAVE audio files
+using the Broadcast Wave standard, FADGI BWFMetaEdit, and XMP. Unlike the existing BWFMetaEdit GUI, autoBWF is
+extremely opinionated and will automatically generate metadata content based on file naming conventions,
+system metadata, and pre-configured repository defaults. In addition, it can copy metadata fields from a template
+file to avoid having to enter the same information multiple times for several master or derivative files of the same
+physical instantiation.
+
+"""
+
 import sys
 import subprocess
 import time
@@ -14,20 +25,37 @@ from autoBWF.autobwfconfig import default_config
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
-    def __init__(self, filename, config, template, parent=None):
-        super(MainWindow, self).__init__(parent)
+    """The main PyQt GUI window.
+
+    All metadata fields are indentified by a standard identifier. The values of these fields are stored in dicts,
+    and the text and switcher menu widgets associated with each field are also stored in dicts indexed by the
+    same identifiers.
+    """
+
+    def __init__(self, filename, config, template):
+        """Main window __init__ method.
+
+        Configures PyQt widgets, sets up signals/slots, and loads any files specified on the command line.
+
+        Args:
+            filename (str): Name of target Wave file specified on the command line.
+            config (dict): Parsed contents of the configuration file.
+            template (str): Name of template BWF file specified on the command line.
+
+        """
+        super(MainWindow, self).__init__(None)
         self.setupUi(self)
 
         self.config = config
         self.filename = filename
-        self.original_md = {}
-        self.template_md = None
-        self.edited_md = {}
+        self.original_md = {}  #: Embedded metadata already present in the target file
+        self.template_md = None  #: Embedded metadata present in the template file
+        self.edited_md = {}  #: Metadata values that have been edited by the GUI user.
 
         if config["accept-nopadding"]:
             bwfio.bwfmetaedit.append("--accept-nopadding")
 
-        # dict of all text elements in the UI, indexed by metadata term
+        #: dict of PyQt widgets: all text input widgets in the GUI, indexed by metadata field name
         self.gui_text_widgets = {
             "Description": self.descriptionLine,
             "Originator": self.originatorLine,
@@ -62,7 +90,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                            "form", "host", "speaker", "performer", "topics", "names", "events", "places",
                            "creator"]
 
-        # dict of all edited/template/original toggle menus, indexed by metadata term
+        #: dict of PyQt widgets: all original/edited/template toggle menus, indexed by metadata field name
         self.switchers = {
             "Description": self.descriptionSwitcher,
             "Originator": self.originatorSwitcher,
@@ -169,6 +197,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
     @staticmethod
     def load_file(file, die_on_error=True):
+        """Read metadata from a BWF file.
+
+        Args:
+            file (str): The name of the BWF file.
+            die_on_error (bool): If True, then exit the GUI if file is unreadable.
+
+        Returns:
+            Dict of metadata if successful, None otherwise.
+
+        """
         md = bwfio.check_wave(file)
         if md is not None:
             md.update(bwfio.get_bwf_core(file))
@@ -186,6 +224,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         return md
 
     def text_changed(self, input_widget):
+        """Slot function called in response to a change in the contents of a text widget.
+
+        Args:
+            input_widget (PyQt widget): The PyQt widget that experienced the text change.
+        """
         text_now = self.get_gui_text(input_widget)
         if self.original_md[input_widget] != text_now:
             self.gui_text_widgets[input_widget].setStyleSheet("color: red; font: normal")
@@ -201,6 +244,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             del self.edited_md[input_widget]
 
     def switcher_changed(self, input_widget, value):
+        """Slot function called in response to a change in an original/edited/template toggle menu.
+
+        Args:
+            input_widget (PyQt widget): The PyQt menu that experienced the change.
+            value (int): The selected menu item.
+        """
         if value == 0:
             self.set_text_to_edited(input_widget)
         if value == 1:
@@ -208,8 +257,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         if value == 2:
             self.set_text_to_template(input_widget)
 
-    def get_gui_text(self, widget_name):
-        widget = self.gui_text_widgets[widget_name]
+    def get_gui_text(self, md_field_name):
+        """Extract the current text from the widget corresponding to a metadata field.
+
+        Convenience function to deal with the fact that different widget types have different accessor methods.
+
+        Args:
+            md_field_name (str): The name of the metadata field to extract.
+
+        Returns:
+            The string contained in the text widget corresponding to the metadata field, or None if the widget
+            type is unrecognized.
+        """
+
+        widget = self.gui_text_widgets[md_field_name]
         widget_type = type(widget)
         if widget_type is QtWidgets.QPlainTextEdit:
             return widget.toPlainText()
@@ -220,12 +281,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         return None
 
     def get_all_gui_texts(self):
+        """Extract texts from all metadata widgets.
+
+        Returns:
+            dict of metadata values.
+        """
         md = {}
         for field in self.gui_text_widgets.keys():
             md[field] = self.get_gui_text(field)
         return md
 
     def get_current_and_changed(self):
+        """Extract texts from all metadata widgets and which metadata have been changed.
+
+        Returns:
+            Tuple of three dicts, containing the current GUI metadata values, the changed BWF/RIFF values,
+            and the changed XMP values, respectively.
+        """
+
         current_md = self.get_all_gui_texts()
         changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
         changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
@@ -234,10 +307,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         return current_md, changed_bwf_riff, changed_xmp
 
     def set_gui_text(self, widget_name, value, block=True):
+        """Set a GUI text element to a given value.
+
+        Args:
+            widget_name (str): The name of the widget whose text is to be changed.
+            value (str): The string that the contents of widget_name should be set to.
+            block (bool): If True, block all signals to prevent infinte recursion.
+        """
         widget = self.gui_text_widgets[widget_name]
         widget_type = type(widget)
         if block:
-            widget.blockSignals(True)  # prevent what would otherwise be an infinite recursion...
+            widget.blockSignals(True)
 
         if widget_type is QtWidgets.QPlainTextEdit:
             widget.clear()
@@ -252,17 +332,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             widget.blockSignals(False)
 
     def set_text_to_original(self, widget_name):
+        """Set the text in the widget corresponding to widget_name to the value in the target file."""
         text = self.original_md[widget_name]
         if text != "":
             self.set_gui_text(widget_name, text)
             self.gui_text_widgets[widget_name].setStyleSheet("color: grey; font: italic")
 
     def set_text_to_edited(self, widget_name):
+        """Set the text in the widget corresponding to widget_name to the last edited value."""
         text = self.edited_md[widget_name]
         self.set_gui_text(widget_name, text)
         self.gui_text_widgets[widget_name].setStyleSheet("color: red; font: regular")
 
     def set_text_to_template(self, widget_name):
+        """Set the text in the widget corresponding to widget_name to the value in the template file."""
         if self.template_md:
             text = self.template_md[widget_name]
             if text != "":
@@ -275,6 +358,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                     self.gui_text_widgets[widget_name].setStyleSheet("color: #F5D76E; font: italic")
 
     def open_file(self):
+        """Slot function called in response to the "Open" menu bar action."""
         fname = str(QFileDialog.getOpenFileName(self, "Open Wave file", "~")[0])
         if fname:
             self.original_md = self.load_file(fname)
@@ -288,6 +372,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.populate_file_info(fname)
 
     def open_template(self):
+        """Slot function called in response to the "Load template" menu bar action."""
         fname = str(QFileDialog.getOpenFileName(self, "Open template file", "~")[0])
         if fname:
             self.template_md = self.load_file(fname, die_on_error=False)
@@ -296,6 +381,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.populate_template_info()
 
     def populate_file_info(self, file, reload=False):
+        """Replace contents of text widgets with any pre-existing metadata in the target BWF file.
+
+        Args:
+            file (str): The name of the target file.
+            reload (bool): If True, prevent date warning messagebox and block signals, which is what is desired
+                if the file is being reloaded after metadata save.
+        """
+
         import re
         import os.path
         from datetime import datetime
@@ -408,7 +501,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.md5Check.setEnabled(False)
 
     def populate_template_info(self):
-        # replace with template values if they exist
+        """Replace contents of selected text widgets with any pre-existing metadata in the template BWF file."""
 
         fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP", "IARL"]
         fields_to_fill.extend(self.xmp_fields)
@@ -422,10 +515,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                     self.switchers[field].setCurrentIndex(2)
 
     def copyright_activated(self, index):
+        """Slot function called in response to a change in copyright selector menu.
+
+        Replaces copyright text widget contents with the corresponding text from the config file.
+        """
         self.set_gui_text("ICOP", self.config["copyright"][self.config["copyright"]["list"][index]],
                           block=False)
 
     def update_coding_history(self, block=False):
+        """Slot function called in response to a change in one of the Coding History selector menus.
+
+        Replaces BWF Coding History text widget contents with a new Coding History text constructed from the
+        current menu selections.
+
+        Args:
+            block (bool): If True, block all signals to prevent infinte recursion.
+        """
         deck = self.deckSelect.currentText()
         adc = self.adcSelect.currentText()
         software = self.softwareSelect.currentText()
@@ -450,6 +555,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.set_gui_text("CodingHistory", "".join(history_list), block)
 
     def save_metadata(self):
+        """Slot function called in response to the "Save metadata" menu bar action.
+
+        Performs bwfmetaedit calls to insert updated metadata into the BWF file.
+        """
         def _call_bwf(file, given_key, text):
             """Convenience function to deal with annoying inconsistencies in bwfmetaedit field naming"""
 
@@ -548,9 +657,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionOpen_template.setEnabled(True)
                 self.populate_file_info(self.filename, reload=True)
 
-        # TODO what if it wasn't successful???
-
     def export_metadata(self):
+        """Slot function called in response to the "Export metadata" menu bar action.
+
+        Exports metadata in the current target BWF file into a PBCore XML file and optionally creates an MP3
+        access file.
+        """
+
         from autoBWF.bwf2pbcore import write_pbcore
         import autoBWF.autolame as autolame
 
@@ -583,6 +696,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 subprocess.call(autolame.construct_command(self.filename, vals["mp3file"], md, str(vals["vbr"])))
 
     def close_window(self):
+        """Slot function called in response to the "Quit" menu bar action."""
+
+        if self.filename is None:
+            QtCore.QCoreApplication.quit()
+            return
+
         current_md, changed_bwf_riff, changed_xmp = self.get_current_and_changed()
 
         if changed_xmp or changed_bwf_riff:
@@ -600,6 +719,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
 
 class Export(QtWidgets.QDialog, Ui_Export):
+    """The "Export metadata" dialog box."""
     def __init__(self, path):
         super(self.__class__, self).__init__()
         self.setupUi(self)
