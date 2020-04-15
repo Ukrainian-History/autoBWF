@@ -5,4 +5,4 @@ Unlike the existing BWFMetaEdit GUI, autoBWF is extremely opinionated and will a
 
 Also included are two command line programs to simplify the creation of derivative files. `autolame.py` is a wrapper for the `lame` MP3 encoder that automatically transfers Wave internal metadata to appropriate ID3v2 tags. `autosplice` is a wrapper that generates `sox` commands from an EDL-like text file to splice audio from multiple input files, while also providing means to do basic fade in/out and audio level compression.
 
-For full installation, usage, and configuration information, please read the docs on [readthedocs.org](https://autobwf.readthedocs.io/en/stable/).
+For full installation, usage, and configuration information, please read the docs on [readthedocs.org](https://autobwf.readthedocs.io/en/release/).
