@@ -1,5 +1,14 @@
 # History
 
+### 3.5.2 (2020-04-15)
+
+Minor fixes and updates, including
+
+* adding Creator field to export utilities
+* additional code comments and minor bug fixes
+
+
+
 ### 3.5.1 (2020-03-03)
 
 * Documentation updates
