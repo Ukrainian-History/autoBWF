@@ -241,7 +241,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.gui_text_widgets[input_widget].setStyleSheet("color: grey; font: italic")
             self.switchers[input_widget].setCurrentIndex(1)
             self.switchers[input_widget].model().item(0).setEnabled(False)
-            del self.edited_md[input_widget]
+
+            # Under some circumstances, a copy event in the window manager (i.e. "ctrl-C")
+            # on a QPlainTextEdit widget can lead to the emission of a currentTextChanged signal.
+            # Therefore, we can't assume that the input_widget key exists in self.edited_md, as
+            # the text may not actually have been edited by the user.
+            if input_widget in self.edited_md.keys():
+                del self.edited_md[input_widget]
 
     def switcher_changed(self, input_widget, value):
         """Slot function called in response to a change in an original/edited/template toggle menu.
