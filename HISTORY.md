@@ -1,5 +1,9 @@
 # History
 
+### 3.5.3 (2021-02-09)
+
+Fix bug that caused GUI crash when copying text.
+
 ### 3.5.2 (2020-04-15)
 
 Minor fixes and updates, including
