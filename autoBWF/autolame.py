@@ -8,8 +8,16 @@ from autoBWF.BWFfileIO import *
 # Therefore, the extra tags that were encoded in the earlier versions are now also eliminated.
 
 
-def construct_command(infile, outfile, metadata, vbr_level):
-    command = ["lame", "-V", vbr_level, "--vbr-new"]
+def construct_command(infile, outfile, metadata, vbr_level, cbitrate=None):
+    if vbr_level and cbitrate:
+        raise ValueError("vbr_level and cbitrate cannot both have non-None values")
+    if vbr_level is None and cbitrate is None:
+        raise ValueError("either vbr_level or cbitrate must be something other than None")
+
+    if cbitrate:
+        command = ["lame", "-b", cbitrate]
+    else:
+        command = ["lame", "-V", vbr_level, "--vbr-new"]
 
     if metadata["INAM"] != "":
         command.extend(['--tv', 'TIT2={}'.format(metadata["INAM"])])
@@ -39,6 +47,7 @@ def main():
         description='Use lame to create mp3 file from BWF, using BWF metadata to populate IDv2 tags')
     parser.add_argument('-o', dest="outfile", help="MP3 file")
     parser.add_argument('--vbr-level', help="MP3 VBR encoding level", type=int, default=7)
+    parser.add_argument('--cbr', help="MP3 CBR bitrate", type=int, default=None)
     parser.add_argument('infile', nargs="+", help="WAV file")
     args = parser.parse_args()
 
@@ -53,7 +62,10 @@ def main():
 
         metadata = get_bwf_core(infile)
         metadata.update(get_xmp(infile))
-        subprocess.call(construct_command(infile, outfile, metadata, str(args.vbr_level)))
+        if args.cbr:
+            subprocess.call(construct_command(infile, outfile, metadata, None, cbitrate=str(args.cbr)))
+        else:
+            subprocess.call(construct_command(infile, outfile, metadata, str(args.vbr_level)))
 
 
 if __name__ == '__main__':
