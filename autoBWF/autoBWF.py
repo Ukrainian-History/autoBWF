@@ -182,6 +182,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         # deal with files specified on the command line
         if filename:
+            self.actionOpen_template.setEnabled(True)
             self.filepath = str(Path(filename).resolve())
             self.original_md = self.load_file(filename)
             if self.original_md is not None:
@@ -191,6 +192,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.actionOpen.setEnabled(False)
                 self.populate_file_info(filename)
         if template:
+            self.actionOpen_template.setEnabled(False)
             self.template_md = self.load_file(template)
             if self.template_md is not None:
                 self.populate_template_info()
