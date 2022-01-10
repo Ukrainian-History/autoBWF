@@ -1,6 +1,7 @@
 import argparse
 import csv
 import sys
+import xml.etree.ElementTree
 from os import path
 from autoBWF.BWFfileIO import *
 
@@ -33,13 +34,17 @@ def main():
         output.writeheader()
 
     for infile in args.infile:
-        metadata = get_bwf_core(infile)
-        if args.digest:
-            metadata.update(get_bwf_tech(infile, verify_digest=True))
-        else:
-            metadata.update(get_bwf_tech(infile))
-        metadata.update(get_xmp(infile))
-        output.writerow({k: metadata[k] for k in output_fields})
+        try:
+            metadata = get_bwf_core(infile)
+            if args.digest:
+                metadata.update(get_bwf_tech(infile, verify_digest=True))
+            else:
+                metadata.update(get_bwf_tech(infile))
+            metadata.update(get_xmp(infile))
+            output.writerow({k: metadata[k] for k in output_fields})
+        except xml.etree.ElementTree.ParseError:
+            print("while parsing {}".format(infile))
+            raise
 
 
 if __name__ == '__main__':
