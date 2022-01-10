@@ -14,8 +14,8 @@ def main():
     parser.add_argument('infile', nargs="+", help="WAV file(s)")
     args = parser.parse_args()
 
-    output_fields = ["OriginalFilename", "FileContent", "FileUse", "INAM", "ICRD", "form", "Duration", "language",
-                     "ISRC", "creator", "xmp_description", "interviewer", "interviewee", "host", "speaker",
+    output_fields = ["filename", "OriginalFilename", "FileContent", "FileUse", "INAM", "ICRD", "form", "Duration",
+                     "language", "ISRC", "creator", "xmp_description", "interviewer", "interviewee", "host", "speaker",
                      "performer", "topics", "names", "events", "places", "owner", "ICOP"]
 
     if args.digest:
@@ -36,6 +36,7 @@ def main():
     for infile in args.infile:
         try:
             metadata = get_bwf_core(infile)
+            metadata["filename"] = infile
             if args.digest:
                 metadata.update(get_bwf_tech(infile, verify_digest=True))
             else:
