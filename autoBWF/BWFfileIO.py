@@ -193,7 +193,11 @@ def check_wave(filename):
         dict: Technical metadata values indexed by the field name. If field is empty, the value is an empty string.
             If filename is not a Wave file, then the return value is None.
     """
-    md = get_bwf_tech(filename)
+    try:
+        md = get_bwf_tech(filename)
+    except subprocess.CalledProcessError:
+        return None
+
     if md["Errors"] == "":
         return md
     else:

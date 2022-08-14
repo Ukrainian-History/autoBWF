@@ -198,7 +198,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 self.populate_template_info()
 
     @staticmethod
-    def load_file(file, die_on_error=True):
+    def load_file(file, die_on_error=False):
         """Read metadata from a BWF file.
 
         Args:
@@ -217,7 +217,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
-        msg.setText(file + " does not appear to be a valid Wave file")
+        msg.setText(file + " does not exist or is not a valid Wave file")
         msg.exec_()
 
         if die_on_error:
@@ -308,11 +308,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         """
 
         current_md = self.get_all_gui_texts()
-        changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
-        changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
-                            if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
-
-        return current_md, changed_bwf_riff, changed_xmp
+        if self.original_md:  # prevent crash if GUI is quit but there was no file was ever loaded
+            changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
+            changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
+                                if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
+            return current_md, changed_bwf_riff, changed_xmp
+        else:
+            return None, None, None
 
     def set_gui_text(self, widget_name, value, block=True):
         """Set a GUI text element to a given value.
@@ -372,6 +374,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             self.original_md = self.load_file(fname)
             if self.original_md is not None:
                 self.filename = fname
+                self.filepath = str(Path(fname).resolve())
                 self.tabWidget.setEnabled(True)
                 self.actionUpdate_metadata.setEnabled(True)
                 self.actionExport_metadata.setEnabled(True)
