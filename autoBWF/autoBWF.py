@@ -701,7 +701,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
                 write_pbcore(vals["outfile"], md, self.filename, ohms_file)
 
             if vals["do_lame"] and vals["mp3file"] != "":
-                subprocess.call(autolame.construct_command(self.filename, vals["mp3file"], md, str(vals["vbr"])))
+                if vals["vbr_button"]:
+                    subprocess.call(autolame.construct_command(self.filename, vals["mp3file"],
+                                                               md, str(vals["vbr_level"])))
+                else:
+                    subprocess.call(autolame.construct_command(self.filename, vals["mp3file"],
+                                                               md, None, cbitrate=str(vals["cbr_rate"])))
 
     def close_window(self):
         """Slot function called in response to the "Quit" menu bar action."""
@@ -740,6 +745,7 @@ class Export(QtWidgets.QDialog, Ui_Export):
         self.outFile.insert(pbcore_path)
         mp3_path = path.replace(".wav", ".mp3")
         self.mp3File.insert(mp3_path)
+        self.cbrRate.setCurrentText("96")
 
     def get_outfile(self):
         filename = QFileDialog.getOpenFileName(self, "Select PBCore output file", "~")[0]
@@ -767,7 +773,10 @@ class Export(QtWidgets.QDialog, Ui_Export):
                 "mp3file": self.mp3File.text(),
                 "include_ohms": self.ohmsCheck.isChecked(),
                 "do_lame": self.lameCheck.isChecked(),
-                "vbr": int(self.vbrLevel.text())
+                "vbr_button": self.vbrButton.isChecked(),
+                "vbr_level": int(self.vbrLevel.text()),
+                "cbr_button": self.cbrButton.isChecked(),
+                "cbr_rate": int(self.cbrRate.currentText())
                 }
         return vals
 

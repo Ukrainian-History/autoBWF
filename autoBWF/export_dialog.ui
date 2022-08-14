@@ -6,25 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>679</width>
-    <height>212</height>
+    <width>695</width>
+    <height>323</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Destination PBCore</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="3">
+   <item row="0" column="2">
     <widget class="QLineEdit" name="outFile"/>
    </item>
-   <item row="0" column="4">
+   <item row="0" column="3">
     <widget class="QPushButton" name="outfileButton">
      <property name="text">
       <string>Select</string>
@@ -38,51 +38,166 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1" colspan="3">
+   <item row="1" column="1" colspan="2">
     <widget class="QLineEdit" name="ohmsFile"/>
    </item>
-   <item row="1" column="4">
+   <item row="1" column="3">
     <widget class="QPushButton" name="ohmsfileButton">
      <property name="text">
       <string>Select</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QCheckBox" name="lameCheck">
-     <property name="text">
-      <string>Generate MP3</string>
-     </property>
-    </widget>
+   <item row="2" column="0" colspan="4">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="lameCheck">
+       <property name="text">
+        <string>Generate MP3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QRadioButton" name="vbrButton">
+         <property name="text">
+          <string>VBR level</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="vbrLevel">
+         <property name="maximum">
+          <number>9</number>
+         </property>
+         <property name="value">
+          <number>7</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLineEdit" name="mp3File"/>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="mp3fileButton">
+       <property name="text">
+        <string>Select</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QRadioButton" name="cbrButton">
+         <property name="text">
+          <string>CBR bitrate</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="cbrRate">
+         <property name="currentText">
+          <string>96</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>16</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>24</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>32</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>40</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>48</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>64</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>80</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>96</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>112</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>128</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>160</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>192</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>224</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>256</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>320</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
    </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>VBR level</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QSpinBox" name="vbrLevel">
-     <property name="maximum">
-      <number>9</number>
-     </property>
-     <property name="value">
-      <number>7</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QLineEdit" name="mp3File"/>
-   </item>
-   <item row="2" column="4">
-    <widget class="QPushButton" name="mp3fileButton">
-     <property name="text">
-      <string>Select</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="3" colspan="2">
+   <item row="3" column="2" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -129,4 +244,7 @@
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
