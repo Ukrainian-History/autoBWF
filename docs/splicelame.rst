@@ -89,7 +89,7 @@ autolame
 
 Usage::
 
-    autolame [-h] [-o OUTFILE] [--vbr-level VBR_LEVEL] infile [infile ...]
+    autolame [-h] [-o OUTFILE] [--vbr-level VBR_LEVEL] [--cbr BITRATE] infile [infile ...]
 
 This is a CLI version of the PBCore "Generate MP3" functionality provided by the "Export metadata" button of the
 autoBWF GUI.Each `<infile>` will be converted to mp3 and the result will be saved to the same
@@ -100,4 +100,5 @@ files are migrated to ID3v2 tags in the resulting mp3 files.
 An output file name can be specified using the ``-o`` option, but in that case
 only one input file is allowed.
 
-The default VBR level is currently 7.
+The default VBR level is currently 7. If both ``--vbr-level`` and ``--cbr`` are specified, then the encoding will be
+performed at constant bit rate, and the VBR level will be ignored.

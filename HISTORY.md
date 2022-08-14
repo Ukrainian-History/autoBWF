@@ -1,5 +1,10 @@
 # History
 
+### 3.6 (2022-08-14)
+
+* Added the ability to export constant bitrate MP3 via autolame and the GUI
+* Bug fixes to prevent GUI crashes in corner cases
+
 ### 3.5.3 (2021-02-09)
 
 Fix bug that caused GUI crash when copying text.
