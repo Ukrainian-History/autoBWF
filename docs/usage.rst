@@ -63,13 +63,14 @@ Exporting metadata and generating access files
 You can use the "Export metadata" button to save the currently displayed metadata to a
 `PBCore <https://pbcore.org>`_ XML sidecar file. Clicking the button will bring up a window where you can specify
 the folder and file name of the PBCore file, and where you can optionally embed existing XML from other software (such
-as OHMS) within a PBCore `instantiationExtension <https://pbcore.org/elements/instantiationextension>`_ element. In
-addition, it is possible to automatically run `lame` to generate an MP3 access file from the target BWF. Only VBR
-encoding is currently supported.
+as `OHMS <https://www.oralhistoryonline.org/>`_) within a PBCore `instantiationExtension <https://pbcore.org/elements/instantiationextension>`_ element. In
+addition, it is possible to automatically run `lame` to generate an MP3 access file from the target BWF. The export
+dialog allows the user to choose between variable and constant bitrate. For VBR, the user can enter the quality level,
+while for CBR the user can choose the bitrate (in kHz).
 
 .. note::
     The metadata exported to PBCore correspond to the texts visible in the autoBWF GUI at the time that the "Export
-    metadata" button was clicked. Note that if you have edited metadata fields but have not saved the metadata
+    metadata" button was clicked. If you have edited metadata fields but have not saved the metadata
     to the BWF, then the exported PBCore will **not** match the internal metadata in the BWF.
 
 How does autoBWF generate metadata?
