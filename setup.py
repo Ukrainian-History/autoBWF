@@ -27,7 +27,8 @@ setup(
             'autolame=autoBWF.autolame:main',
             'autosplice=autoBWF.autosplice:main',
             'bwf2pbcore=autoBWF.bwf2pbcore:main',
-            'bwf2csv=autoBWF.bwf2csv:main'
+            'bwf2csv=autoBWF.bwf2csv:main',
+            'label2ohms=autoBWF.label2ohms:main'
         ],
     },
     install_requires=requirements,
