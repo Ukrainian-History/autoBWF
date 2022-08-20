@@ -701,7 +701,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             md["Duration"] = self.original_md["Duration"]
 
             if vals["outfile"]:
-                write_pbcore(vals["outfile"], md, self.filename, ohms_file)
+                write_pbcore(vals["outfile"], md, self.filename, ohms_file, vals["audacity_button"])
 
             if vals["do_lame"] and vals["mp3file"] != "":
                 if vals["vbr_button"]:
@@ -749,6 +749,7 @@ class Export(QtWidgets.QDialog, Ui_Export):
         mp3_path = path.replace(".wav", ".mp3")
         self.mp3File.insert(mp3_path)
         self.cbrRate.setCurrentText("96")
+        self.ohmsButton.click()
 
     def get_outfile(self):
         filename = QFileDialog.getOpenFileName(self, "Select PBCore output file", "~")[0]
@@ -779,7 +780,8 @@ class Export(QtWidgets.QDialog, Ui_Export):
                 "vbr_button": self.vbrButton.isChecked(),
                 "vbr_level": int(self.vbrLevel.text()),
                 "cbr_button": self.cbrButton.isChecked(),
-                "cbr_rate": int(self.cbrRate.currentText())
+                "cbr_rate": int(self.cbrRate.currentText()),
+                "audacity_button": self.audacityButton.isChecked()
                 }
         return vals
 
@@ -796,7 +798,7 @@ def main():
         exit((
             "You must have the BWFMetaEdit CLI installed on your system to run autoBWF.\n"
             "Please download and install the latest version from https://mediaarea.net/BWFMetaEdit/Download.\n"
-            "Note that you must install the 'CLI' version in addition to the GUI."))
+            "Note that you must install the 'CLI' version (in addition to the GUI, if desired)."))
 
     default_text = default_config()
 

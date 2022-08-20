@@ -13,42 +13,70 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0" colspan="2">
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Destination PBCore</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="2">
+   <item row="0" column="1">
     <widget class="QLineEdit" name="outFile"/>
    </item>
-   <item row="0" column="3">
+   <item row="0" column="2">
     <widget class="QPushButton" name="outfileButton">
      <property name="text">
       <string>Select</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QCheckBox" name="ohmsCheck">
-     <property name="text">
-      <string>Embed XML</string>
-     </property>
-    </widget>
+   <item row="1" column="0" colspan="3">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="ohmsCheck">
+       <property name="text">
+        <string>Embed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QRadioButton" name="ohmsButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>OHMS XML</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLineEdit" name="ohmsFile"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="ohmsfileButton">
+         <property name="text">
+          <string>Select</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="1">
+      <widget class="QRadioButton" name="audacityButton">
+       <property name="text">
+        <string>OHMS XML from Audacity labels</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="1" column="1" colspan="2">
-    <widget class="QLineEdit" name="ohmsFile"/>
-   </item>
-   <item row="1" column="3">
-    <widget class="QPushButton" name="ohmsfileButton">
-     <property name="text">
-      <string>Select</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="4">
+   <item row="2" column="0" colspan="3">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QCheckBox" name="lameCheck">
@@ -85,14 +113,18 @@
       </layout>
      </item>
      <item row="0" column="2">
-      <widget class="QLineEdit" name="mp3File"/>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="mp3fileButton">
-       <property name="text">
-        <string>Select</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLineEdit" name="mp3File"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="mp3fileButton">
+         <property name="text">
+          <string>Select</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item row="1" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -197,7 +229,7 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="2" colspan="2">
+   <item row="3" column="1" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

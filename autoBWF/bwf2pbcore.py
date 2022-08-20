@@ -4,6 +4,7 @@ import re
 import xml.etree.ElementTree as ET
 from os import path
 from autoBWF.BWFfileIO import *
+from autoBWF.label2ohms import create_ohms
 
 namespaces = {"xml": "http://www.w3.org/XML/1998/namespace",
               "pbcore": "http://www.pbcore.org/PBCore/PBCoreNamespace.html",
@@ -140,12 +141,15 @@ def generate_pbcore(infile, metadata, ohms_tree=None):
     return pbcore_root
 
 
-def write_pbcore(outfile, metadata, bwf_filename, ohms_filename=None):
+def write_pbcore(outfile, metadata, bwf_filename, ohms_filename=None, audacity_import=False):
     if ohms_filename and path.isfile(ohms_filename):
-        try:
-            ohms_root = ET.parse(ohms_filename).getroot()
-        except ET.ParseError:
-            raise IllFormedXML
+        if audacity_import:  # note that no sanity checking is done...
+            ohms_root = create_ohms(ohms_filename, metadata["INAM"])
+        else:
+            try:
+                ohms_root = ET.parse(ohms_filename).getroot()
+            except ET.ParseError:
+                raise IllFormedXML
     else:
         ohms_root = None
 

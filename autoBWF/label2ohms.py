@@ -30,7 +30,7 @@ def add_child(parent, element_name, element_value='', attributes=None):
     return element
 
 
-def write_ohms(labelfile, config):
+def create_ohms(labelfile, title):
     ohms_root = ET.Element(qualified_element("ohms", "ROOT"))
     record = add_child(ohms_root, "record")
     add_child(record, "version", "5.4")
@@ -39,10 +39,9 @@ def write_ohms(labelfile, config):
     content_name = labelfile.replace('_labels.txt', '')
     outfile = content_name + '_ohms.xml'
 
-    add_child(record, "title", content_name)
-    add_child(record, "repository", config["originator"])
+    add_child(record, "title", title)
     add_child(record, "translate", "0")
-    add_child(record, "media_url", "https://example.com/change-this.mp3")
+    add_child(record, "media_url", "https://example.com/replace-this-with-real-url.mp3")
     mediafile = add_child(record, "mediafile")
     add_child(mediafile, "host", "Other")
     add_child(mediafile, "clip_format", "audio")
@@ -63,7 +62,7 @@ def write_ohms(labelfile, config):
             add_child(point, "time", str(int_time))
             add_child(point, "title", title)
 
-    ET.ElementTree(ohms_root).write(outfile, xml_declaration=True, encoding='utf-8')
+    return ohms_root
 
 
 def main():
@@ -72,19 +71,10 @@ def main():
     parser.add_argument('infile', nargs="+", help="WAV file(s)")
     args = parser.parse_args()
 
-    dirs = AppDirs("autoBWF", "UHEC")
-    config_file = Path(dirs.user_data_dir) / "autobwfconfig.json"
-
-    try:
-        config_text = config_file.read_text()
-    except FileNotFoundError:
-        print("You must first run autoBWF in order to create a default configuration file.")
-        exit
-
-    config = json.loads(config_text)
-
     for infile in args.infile:
-        write_ohms(infile, config)
+        content_name = infile.replace('_labels.txt', '')
+        outfile = content_name + '_ohms.xml'
+        ET.ElementTree(create_ohms(infile, content_name)).write(outfile, xml_declaration=True, encoding='utf-8')
 
 
 if __name__ == '__main__':
