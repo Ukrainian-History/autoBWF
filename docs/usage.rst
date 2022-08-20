@@ -66,7 +66,7 @@ the folder and file name of the PBCore file, and where you can optionally embed 
 as `OHMS <https://www.oralhistoryonline.org/>`_) within a PBCore `instantiationExtension <https://pbcore.org/elements/instantiationextension>`_ element. In
 addition, it is possible to automatically run `lame` to generate an MP3 access file from the target BWF. The export
 dialog allows the user to choose between variable and constant bitrate. For VBR, the user can enter the quality level,
-while for CBR the user can choose the bitrate (in kHz).
+while for CBR the user can choose the bitrate (in kbps).
 
 .. note::
     The metadata exported to PBCore correspond to the texts visible in the autoBWF GUI at the time that the "Export

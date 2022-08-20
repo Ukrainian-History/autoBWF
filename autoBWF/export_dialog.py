@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'export_dialog_cbr.ui'
+# Form implementation generated from reading ui file 'export_dialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -109,8 +109,8 @@ class Ui_Export(object):
         self.lameCheck.setText(_translate("Export", "Generate MP3"))
         self.vbrButton.setText(_translate("Export", "VBR level"))
         self.mp3fileButton.setText(_translate("Export", "Select"))
-        self.cbrButton.setText(_translate("Export", "CBR bitrate"))
-        self.cbrRate.setCurrentText(_translate("Export", "96"))
+        self.cbrButton.setText(_translate("Export", "CBR bitrate (kbps)"))
+        self.cbrRate.setCurrentText(_translate("Export", "8"))
         self.cbrRate.setItemText(0, _translate("Export", "8"))
         self.cbrRate.setItemText(1, _translate("Export", "16"))
         self.cbrRate.setItemText(2, _translate("Export", "24"))

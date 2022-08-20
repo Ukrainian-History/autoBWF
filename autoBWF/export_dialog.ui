@@ -99,7 +99,7 @@
        <item>
         <widget class="QRadioButton" name="cbrButton">
          <property name="text">
-          <string>CBR bitrate</string>
+          <string>CBR bitrate (kbps)</string>
          </property>
          <attribute name="buttonGroup">
           <string notr="true">buttonGroup</string>
@@ -109,7 +109,7 @@
        <item>
         <widget class="QComboBox" name="cbrRate">
          <property name="currentText">
-          <string>96</string>
+          <string>8</string>
          </property>
          <item>
           <property name="text">
