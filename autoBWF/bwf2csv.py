@@ -16,10 +16,11 @@ def main():
 
     output_fields = ["filename", "OriginalFilename", "FileContent", "FileUse", "INAM", "ICRD", "form", "Duration",
                      "language", "ISRC", "creator", "xmp_description", "interviewer", "interviewee", "host", "speaker",
-                     "performer", "topics", "names", "events", "places", "owner", "ICOP"]
+                     "performer", "topics", "names", "events", "places", "owner", "ICOP", "ICMT", "MD5Stored",
+                     "OriginationDate", "OriginationTime"]
 
     if args.digest:
-        output_fields.extend(["MD5Stored", "MD5Generated", "Errors"])
+        output_fields.extend(["MD5Generated", "Errors"])
 
     if args.outfile is not None:
         if os.path.isfile(args.outfile):
