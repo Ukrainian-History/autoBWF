@@ -28,7 +28,8 @@ setup(
             'autosplice=autoBWF.autosplice:main',
             'bwf2pbcore=autoBWF.bwf2pbcore:main',
             'bwf2csv=autoBWF.bwf2csv:main',
-            'label2ohms=autoBWF.label2ohms:main'
+            'label2ohms=autoBWF.label2ohms:main',
+            'bwf2grist=autoBWF.bwf2grist:main'
         ],
     },
     install_requires=requirements,
@@ -40,6 +41,6 @@ setup(
     packages=find_packages(include=['autoBWF']),
     setup_requires=setup_requirements,
     url='https://github.com/Ukrainian-History/autoBWF',
-    version='3.8',
+    version='3.9',
     zip_safe=False,
 )

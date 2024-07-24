@@ -140,10 +140,30 @@ def cli(key, digest, yes, dry_run, quiet, files):
             if new_fields:
                 print("the BWF file has the following fields that are not in Grist:")
                 pretty_print(new_fields)
+                if click.confirm('Do you want to update the metadata in Grist?'):
+                    grist_out = requests.patch(f"{tables_base_url}/Digital_instantiations/records", headers=headers,
+                                               json={"records": [{"id": row_id, "fields": new_fields}]})
+
+                    if grist_out.status_code == requests.codes.ok:
+                        logger.info("digital instantiation %s successfully updated", identifier)
+                    elif grist_out.ok:
+                        logger.warning("digital instantiation update returned a status > 200 but < 400")
+                    else:
+                        logger.error("digital instantiation %s could not be updated", identifier)
 
             if differences:
                 print("the following fields in the BWF file differ from those in Grist:")
                 pretty_print(differences)
+                if click.confirm('Do you want to update the metadata in Grist?'):
+                    grist_out = requests.patch(f"{tables_base_url}/Digital_instantiations/records", headers=headers,
+                                               json={"records": [{"id": row_id, "fields": differences}]})
+
+                    if grist_out.status_code == requests.codes.ok:
+                        logger.info("digital instantiation %s successfully updated", identifier)
+                    elif grist_out.ok:
+                        logger.warning("digital instantiation update returned a status > 200 but < 400")
+                    else:
+                        logger.error("digital instantiation %s could not be updated", identifier)
 
             if not new_fields and not differences:
                 print("the metadata in the BWF file match those in Grist")
