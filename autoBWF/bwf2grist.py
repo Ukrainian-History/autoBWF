@@ -8,8 +8,8 @@ from datetime import datetime, timezone
 import click
 import requests
 
-from BWFfileIO import get_bwf_tech
-from BWFfileIO import get_bwf_core
+from autoBWF.BWFfileIO import get_bwf_tech
+from autoBWF.BWFfileIO import get_bwf_core
 
 
 @click.command()
