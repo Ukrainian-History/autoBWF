@@ -29,7 +29,7 @@ setup(
             'bwf2pbcore=autoBWF.bwf2pbcore:main',
             'bwf2csv=autoBWF.bwf2csv:main',
             'label2ohms=autoBWF.label2ohms:main',
-            'bwf2grist=autoBWF.bwf2grist:main'
+            'bwf2grist=autoBWF.bwf2grist:cli'
         ],
     },
     install_requires=requirements,
