@@ -4,10 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-click = "*"
-requests = "*"
-PyQt5 = "*"
-appdirs = "*"
 
 [dev-packages]
 
