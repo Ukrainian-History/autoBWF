@@ -14,10 +14,8 @@ def main():
     parser.add_argument('infile', nargs="+", help="WAV file(s)")
     args = parser.parse_args()
 
-    output_fields = ["filename", "OriginalFilename", "FileContent", "FileUse", "INAM", "ICRD", "form", "Duration",
-                     "language", "ISRC", "creator", "xmp_description", "interviewer", "interviewee", "host", "speaker",
-                     "performer", "topics", "names", "events", "places", "owner", "ICOP", "ICMT", "MD5Stored",
-                     "OriginationDate", "OriginationTime"]
+    output_fields = ["filename", "OriginalFilename", "FileContent", "FileUse", "INAM", "Duration",
+                     "ICOP", "ICMT", "MD5Stored", "OriginationDate", "OriginationTime"]
 
     if args.digest:
         output_fields.extend(["MD5Generated", "Errors"])
@@ -42,7 +40,6 @@ def main():
                 metadata.update(get_bwf_tech(infile, verify_digest=True))
             else:
                 metadata.update(get_bwf_tech(infile))
-            metadata.update(get_xmp(infile))
             output.writerow({k: metadata[k] for k in output_fields})
         except xml.etree.ElementTree.ParseError:
             print("while parsing {}".format(infile))

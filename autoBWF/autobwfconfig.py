@@ -90,22 +90,6 @@ def default_config():
         "Apocryphal State University",
         "Big Donor"
     ],
-    
-    "form": [
-        "Live sound recordings", 
-        "Interviews", 
-        "Radio programs", 
-        "Oral histories", 
-        "Personal recordings", 
-        "Field recordings",
-        "Poetry readings (Sound recordings)"
-    ],
-    
-    "creator": [
-        "",
-        "Apocryphal State University",
-        "Billy Bob Apocryphal"
-    ]
 }
 """
     return default

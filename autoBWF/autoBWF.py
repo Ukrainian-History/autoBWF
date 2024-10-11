@@ -67,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             # "ICRD": self.creationDateLine,
             "ITCH": self.technicianBox,
             "ISFT": self.isftSelect,
-            "ISRC": self.sourceSelect,
+            # "ISRC": self.sourceSelect,
             "ICMT": self.commentText,
             "ICOP": self.copyrightText,
             "IARL": self.iarlLine,
@@ -99,27 +99,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "OriginatorReference": self.originatorRefSwitcher,
             "CodingHistory": self.codingHistorySwitcher,
             "INAM": self.titleSwitcher,
-            "ICRD": self.creationDateSwitcher,
+            # "ICRD": self.creationDateSwitcher,
             "ITCH": self.technicianSwitcher,
             "ISFT": self.isftSwitcher,
-            "ISRC": self.sourceSwitcher,
+            # "ISRC": self.sourceSwitcher,
             "ICMT": self.commentSwitcher,
             "ICOP": self.copyrightSwitcher,
             "IARL": self.iarlSwitcher,
-            "xmp_description": self.XMPdescriptionSwitcher,
-            "owner": self.rightsOwnerSwitcher,
-            "language": self.languageSwitcher,
-            "interviewer": self.interviewerSwitcher,
-            "interviewee": self.intervieweeSwitcher,
-            "form": self.formSwitcher,
-            "host": self.hostSwitcher,
-            "speaker": self.speakerSwitcher,
-            "performer": self.performerSwitcher,
-            "topics": self.topicsSwitcher,
-            "names": self.namesSwitcher,
-            "events": self.eventsSwitcher,
-            "places": self.placesSwitcher,
-            "creator": self.creatorSwitcher,
+            # "xmp_description": self.XMPdescriptionSwitcher,
+            # "owner": self.rightsOwnerSwitcher,
+            # "language": self.languageSwitcher,
+            # "interviewer": self.interviewerSwitcher,
+            # "interviewee": self.intervieweeSwitcher,
+            # "form": self.formSwitcher,
+            # "host": self.hostSwitcher,
+            # "speaker": self.speakerSwitcher,
+            # "performer": self.performerSwitcher,
+            # "topics": self.topicsSwitcher,
+            # "names": self.namesSwitcher,
+            # "events": self.eventsSwitcher,
+            # "places": self.placesSwitcher,
+            # "creator": self.creatorSwitcher,
         }
 
         #
@@ -134,17 +134,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.technicianBox.addItems(config["technician"])
         self.isftSelect.addItems(config["isft"])
         self.iarlLine.insert(config["iarl"])
-        self.sourceSelect.addItems(config["source"])
+        # self.sourceSelect.addItems(config["source"])
         self.rightsOwnerSelect.addItems(config["owner"])
         self.deckSelect.addItems(config["deck"]["list"])
         self.adcSelect.addItems(config["adc"]["list"])
         self.softwareSelect.addItems(config["software"]["list"])
         self.copyrightSelect.addItems(config["copyright"]["list"])
-        self.formSelect.addItems(config["form"])
+        # self.formSelect.addItems(config["form"])
         self.copyrightText.insertPlainText(
             config["copyright"][config["copyright"]["list"][0]]
         )
-        self.creatorSelect.addItems(config["creator"])
+        # self.creatorSelect.addItems(config["creator"])
 
         #
         # set up signals/slots
@@ -309,10 +309,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
 
         current_md = self.get_all_gui_texts()
         if self.original_md:  # prevent crash if GUI is quit but there was no file was ever loaded
-            changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
+            # changed_xmp = {k: current_md[k] for k in self.xmp_fields if current_md[k] != self.original_md[k]}
             changed_bwf_riff = {k: current_md[k] for k in current_md.keys()
                                 if k not in self.xmp_fields and current_md[k] != self.original_md[k]}
-            return current_md, changed_bwf_riff, changed_xmp
+            return current_md, changed_bwf_riff
         else:
             return None, None, None
 
@@ -514,7 +514,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
     def populate_template_info(self):
         """Replace contents of selected text widgets with any pre-existing metadata in the template BWF file."""
 
-        fields_to_fill = ["CodingHistory", "INAM", "ICRD", "ITCH", "ISRC", "ICOP", "IARL"]
+        fields_to_fill = ["CodingHistory", "INAM", "ITCH", "ICOP", "IARL"]
         fields_to_fill.extend(self.xmp_fields)
         for field in fields_to_fill:
             if self.template_md[field] != "":
