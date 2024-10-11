@@ -64,31 +64,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "OriginatorReference": self.originatorRefLine,
             "CodingHistory": self.codingHistoryText,
             "INAM": self.titleLine,
-            # "ICRD": self.creationDateLine,
             "ITCH": self.technicianBox,
             "ISFT": self.isftSelect,
-            # "ISRC": self.sourceSelect,
             "ICMT": self.commentText,
             "ICOP": self.copyrightText,
             "IARL": self.iarlLine,
-            # "xmp_description": self.XMPdescriptionText,
-            # "owner": self.rightsOwnerSelect,
-            # "language": self.languageLine,
-            # "interviewer": self.interviewerLine,
-            # "interviewee": self.intervieweeLine,
-            # "form": self.formSelect,
-            # "host": self.hostLine,
-            # "speaker": self.speakerLine,
-            # "performer": self.performerLine,
-            # "topics": self.topicsLine,
-            # "names": self.namesLine,
-            # "events": self.eventsLine,
-            # "places": self.placesLine,
-            # "creator": self.creatorSelect,
         }
-        self.xmp_fields = ["xmp_description", "owner", "language", "interviewer", "interviewee",
-                           "form", "host", "speaker", "performer", "topics", "names", "events", "places",
-                           "creator"]
 
         #: dict of PyQt widgets: all original/edited/template toggle menus, indexed by metadata field name
         self.switchers = {
@@ -99,27 +80,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             "OriginatorReference": self.originatorRefSwitcher,
             "CodingHistory": self.codingHistorySwitcher,
             "INAM": self.titleSwitcher,
-            # "ICRD": self.creationDateSwitcher,
             "ITCH": self.technicianSwitcher,
             "ISFT": self.isftSwitcher,
-            # "ISRC": self.sourceSwitcher,
             "ICMT": self.commentSwitcher,
             "ICOP": self.copyrightSwitcher,
             "IARL": self.iarlSwitcher,
-            # "xmp_description": self.XMPdescriptionSwitcher,
-            # "owner": self.rightsOwnerSwitcher,
-            # "language": self.languageSwitcher,
-            # "interviewer": self.interviewerSwitcher,
-            # "interviewee": self.intervieweeSwitcher,
-            # "form": self.formSwitcher,
-            # "host": self.hostSwitcher,
-            # "speaker": self.speakerSwitcher,
-            # "performer": self.performerSwitcher,
-            # "topics": self.topicsSwitcher,
-            # "names": self.namesSwitcher,
-            # "events": self.eventsSwitcher,
-            # "places": self.placesSwitcher,
-            # "creator": self.creatorSwitcher,
         }
 
         #
@@ -134,17 +99,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         self.technicianBox.addItems(config["technician"])
         self.isftSelect.addItems(config["isft"])
         self.iarlLine.insert(config["iarl"])
-        # self.sourceSelect.addItems(config["source"])
-        self.rightsOwnerSelect.addItems(config["owner"])
         self.deckSelect.addItems(config["deck"]["list"])
         self.adcSelect.addItems(config["adc"]["list"])
         self.softwareSelect.addItems(config["software"]["list"])
         self.copyrightSelect.addItems(config["copyright"]["list"])
-        # self.formSelect.addItems(config["form"])
         self.copyrightText.insertPlainText(
             config["copyright"][config["copyright"]["list"][0]]
         )
-        # self.creatorSelect.addItems(config["creator"])
 
         #
         # set up signals/slots
@@ -212,7 +173,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
         md = bwfio.check_wave(file)
         if md is not None:
             md.update(bwfio.get_bwf_core(file))
-            md.update(bwfio.get_xmp(file))
             return md
 
         msg = QMessageBox()
@@ -628,12 +588,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             QtWidgets.QApplication.processEvents()
             _call_bwf(self.filename, "CodingHistory", coding_history)
 
-        # something has changed, therefore at minimum we need to update xmp:MetadataDate
-        self.progressBar.setValue(5)
-        self.statusLabel.setText("Saving XMP")
-        QtWidgets.QApplication.processEvents()
-        bwfio.set_xmp({k: current_md[k] for k in self.xmp_fields}, self.filename)
-
         time.sleep(0.6)  # wait at least a little to make it less visually disconserting
         self.stackedWidget.setCurrentIndex(0)
         QtWidgets.QApplication.processEvents()
@@ -718,9 +672,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_autoBWF):
             QtCore.QCoreApplication.quit()
             return
 
-        current_md, changed_bwf_riff, changed_xmp = self.get_current_and_changed()
+        current_md, changed_bwf_riff = self.get_current_and_changed()
 
-        if changed_xmp or changed_bwf_riff:
+        if changed_bwf_riff:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setText("You have unsaved edits. Are you sure you want to quit?")
