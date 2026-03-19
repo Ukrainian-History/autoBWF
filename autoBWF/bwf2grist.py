@@ -4,6 +4,7 @@ import subprocess
 import logging
 from logging.config import dictConfig
 from datetime import datetime, timezone
+import hashlib
 
 import click
 import requests
@@ -11,16 +12,29 @@ import requests
 from autoBWF.BWFfileIO import get_bwf_tech
 from autoBWF.BWFfileIO import get_bwf_core
 
+# Source - https://stackoverflow.com/a/3431838
+# Posted by quantumSoup, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-03-19, License - CC BY-SA 4.0
+
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
 
 @click.command()
 @click.option('--key', envvar='GRIST_KEY', help="provide Grist API key")
+@click.option('--doc-id', envvar='GRIST_DOC_ID', help="provide Grist document ID")
 @click.option('--digest', is_flag=True, help="verify MD5 digest of data chunk (may be very slow)")
+@click.option('--file-digest', is_flag=True, help="calculate and save MD5 digest of the entire wav file (may be very slow)")
 @click.option('-y', '--yes', is_flag=True, help="Assume 'yes' as answer to all prompts")
 @click.option('--dry-run', is_flag=True,
               help="Simulate Grist actions, but don't actually make changes in Grist")
 @click.option('-q', '--quiet', is_flag=True, help='turn off logging to stderr')
 @click.argument('files', nargs=-1)
-def cli(key, digest, yes, dry_run, quiet, files):
+def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
     """
     bwf2grist is a tool to interact with the Grist (getgrist.com) API to create, update, or validated rows(s) in a
     table of PBCore Digital Instantiations based on a BWF file.
@@ -69,7 +83,7 @@ def cli(key, digest, yes, dry_run, quiet, files):
                      "BitPerSample": "BitPerSample"}
 
     base_url = "https://docs.getgrist.com/api"
-    tables_base_url = f"{base_url}/docs/mjNHbyaMvvvbRET8NRN6Pf/tables"
+    tables_base_url = f"{base_url}/docs/{doc_id}/tables"
     headers = {"Authorization": f"Bearer {key}"}
 
     for infile in files:
@@ -109,6 +123,9 @@ def cli(key, digest, yes, dry_run, quiet, files):
         metadata["Channels"] = int(metadata["Channels"])
         metadata["SampleRate"] = int(metadata["SampleRate"])
         metadata["BitPerSample"] = int(metadata["BitPerSample"])
+
+        if file_digest:
+            metadata["FileMD5"] = md5(infile)
 
         if len(records) == 0:
             logger.debug("creating new digital instantiation %s", identifier)
