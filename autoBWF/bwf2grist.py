@@ -81,7 +81,7 @@ def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
                      "ICMT": "Digitization_comment", "MD5Stored": "MD5Stored", "OriginationDate": "OriginationDate",
                      "OriginationTime": "OriginationTime", "CodingHistory": "CodingHistory", "ITCH": "Technician",
                      "ISFT": "Creating_software", "Channels": "Channels", "SampleRate": "SampleRate",
-                     "BitPerSample": "BitPerSample"}
+                     "BitPerSample": "BitPerSample", "FileSize": "File_Size"}
 
     base_url = "https://docs.getgrist.com/api"
     tables_base_url = f"{base_url}/docs/{doc_id}/tables"
@@ -110,6 +110,8 @@ def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
         else:
             identifier = Path(metadata["filename"]).stem
             metadata["OriginalFilename"] = identifier
+
+        metadata["FileSize"] = path.getsize(infile)
 
         # remap BWFfileIO field names to Grist field names, and get rid of the unused ones
         metadata = {field_mapping[k]: metadata[k] for k in metadata.keys() if k in field_mapping.keys()}
@@ -143,6 +145,7 @@ def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
                 logger.warning("digital instantiation creation returned a status > 200 but < 400")
             else:
                 logger.error("digital instantiation %s could not be created", identifier)
+                print(grist_out.text)
         elif len(records) > 1:
             message = ("the identifier %s has more than one digital instantiation record in Grist"
                        " -- this isn't supposed to happen")
