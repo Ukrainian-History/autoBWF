@@ -76,6 +76,10 @@ def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
     dictConfig(logging_config)
     logger = logging.getLogger(__name__)
 
+    if not doc_id or not key:
+        logger.error('Must provide Grist API key and document ID')
+        exit(1)
+
     field_mapping = {"OriginalFilename": "Digital_instantiation_identifier", "FileUse": "FileUse",
                      "Duration": "Duration",
                      "ICMT": "Digitization_comment", "MD5Stored": "MD5Stored", "OriginationDate": "OriginationDate",
