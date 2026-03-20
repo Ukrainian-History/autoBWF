@@ -1,5 +1,6 @@
 import sys
 from os import path
+from pathlib import Path
 import subprocess
 import logging
 from logging.config import dictConfig
@@ -100,11 +101,15 @@ def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
         except subprocess.CalledProcessError:
             continue
 
-        if metadata["filename"] != metadata["OriginalFilename"]:
-            logger.warning('Current (%s) and original (%s) filenames do not match',
-                           infile, metadata["OriginalFilename"])
+        if metadata["OriginalFilename"] != "":
+            if metadata["filename"] != metadata["OriginalFilename"]:
+                logger.warning('Current (%s) and original (%s) filenames do not match',
+                               infile, metadata["OriginalFilename"])
 
-        identifier = metadata["OriginalFilename"]
+            identifier = metadata["OriginalFilename"]
+        else:
+            identifier = Path(metadata["filename"]).stem
+            metadata["OriginalFilename"] = identifier
 
         # remap BWFfileIO field names to Grist field names, and get rid of the unused ones
         metadata = {field_mapping[k]: metadata[k] for k in metadata.keys() if k in field_mapping.keys()}
