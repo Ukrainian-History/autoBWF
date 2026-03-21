@@ -85,7 +85,7 @@ def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
                      "ICMT": "Digitization_comment", "MD5Stored": "MD5Stored", "OriginationDate": "OriginationDate",
                      "OriginationTime": "OriginationTime", "CodingHistory": "CodingHistory", "ITCH": "Technician",
                      "ISFT": "Creating_software", "Channels": "Channels", "SampleRate": "SampleRate",
-                     "BitPerSample": "BitPerSample", "FileSize": "File_Size"}
+                     "BitPerSample": "BitPerSample", "FileSize": "File_Size", "Description": "Description"}
 
     base_url = "https://docs.getgrist.com/api"
     tables_base_url = f"{base_url}/docs/{doc_id}/tables"
@@ -97,7 +97,7 @@ def cli(key, doc_id, digest, file_digest, yes, dry_run, quiet, files):
             metadata["filename"] = infile
             if digest:
                 metadata.update(get_bwf_tech(infile, verify_digest=True))
-                if metadata["MD5Stored"] != metadata["MD5Calculated"]:
+                if metadata["MD5Stored"] != metadata["MD5Generated"]:
                     logger.error('Calculated and stored MD5 digests for %s do not match', infile)
                     continue
             else:
